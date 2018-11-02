@@ -88,7 +88,10 @@ eclipse {
     }
 
     jdt {
-        sourceCompatibility = 1.6
+        //sourceCompatibility = project.mainClassName
+    //classpath = sourceSets.main.runtimeClasspath
+    //standardInput = System.in
+    //workingD1.6
         targetCompatibility = 1.6
     }
 
