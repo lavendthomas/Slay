@@ -22,7 +22,7 @@ public class Slay extends ApplicationAdapter implements InputProcessor, GestureD
 	OrthographicCamera camera;
 
 
-	//Cooridnates on screen used for camera movement
+	//Coordinates on screen used for camera movement
 	int oldX;
 	int oldY;
 	boolean dragging;
