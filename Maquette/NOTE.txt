@@ -1,0 +1,20 @@
+﻿Manquants :
+
+- Settings (menu principal en arrière plan)
+
+- Settings (niveau en arrière plan)
+
+- l'écran de sélection des mondes en mode "multi" + fenêtre Play-Back quand on en choisit un
+
+- la fenêtre de sélection de la difficulté + nombre de joueurs
+
+- menu dans un niveau (Resume-Settings-Quit) + la fenêtre Yes-No
+
+- niveau avec l'overlay quand rien n'est sélectionné + quand on sélectionne un territoire
+
+
+A revoir :
+
+- l'écran de sélection de mondes
+
+- le menu principal
