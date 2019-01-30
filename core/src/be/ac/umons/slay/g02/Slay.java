@@ -157,8 +157,9 @@ public class Slay extends ApplicationAdapter implements InputProcessor, GestureD
 			return false;
 		}
 		Gdx.app.log("test", "Zoom : " +camera.zoom);
-		Vector2 trans = new Vector2((float) ((oldX - screenX) * Math.sqrt((double)camera.zoom)), (float)((screenY - oldY) * Math.sqrt((double)camera.zoom)));
+		Vector3 trans = new Vector3((float) ((oldX - screenX) * Math.sqrt((double)camera.zoom)), (float)((screenY - oldY) * Math.sqrt((double)camera.zoom)), 0);
 		camera.translate(trans);
+		//camera.unproject(trans);
 		oldX = screenX;
 		oldY = screenY;
 		return false;
@@ -171,7 +172,6 @@ public class Slay extends ApplicationAdapter implements InputProcessor, GestureD
 
 	@Override
 	public boolean scrolled(int amount) {
-		Gdx.app.log("test", "scrolled");
 		camera.zoom += ((float) amount / 10);
 		return true;
 	}
@@ -214,11 +214,12 @@ public class Slay extends ApplicationAdapter implements InputProcessor, GestureD
 
 	@Override
 	public boolean pinch(Vector2 initialPointer1, Vector2 initialPointer2, Vector2 pointer1, Vector2 pointer2) {
+		Gdx.app.log("test", "pinch to zoom : " +initialPointer1.toString());
 		return false;
 	}
 
 	@Override
 	public void pinchStop() {
-
+		Gdx.app.log("test", "pinchStop");
 	}
 }
