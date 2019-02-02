@@ -10,6 +10,10 @@ public class Soldier implements Entity {
         this.moved = moved;
     }
 
+    public SoldierLevel getSoldierLevel() {
+        return soldierLevel;
+    }
+
     public int getPrice() {
         return soldierLevel.getPrice();
     }
@@ -22,11 +26,11 @@ public class Soldier implements Entity {
         return this.moved;
     }
 
-    boolean canAttack (SoldierLevel other){
-        if (this.soldierLevel.getLevel() > other.getLevel()) {
+    public boolean canAttack (Soldier other){
+        if (this.soldierLevel.getLevel() > other.getSoldierLevel().getLevel()) {
             return true;
         }
-        else if (this.soldierLevel.getLevel() == 3 && this.soldierLevel.getLevel() == other.getLevel()) {
+        else if (this.soldierLevel.getLevel() == 3 && this.soldierLevel.getLevel() == other.getSoldierLevel().getLevel()) {
             return Math.random() <0.7; // 0.7 Pour plus de chances d'avoir true
         }
         else {
