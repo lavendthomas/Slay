@@ -1,20 +1,38 @@
 package be.ac.umons.slay.g02.entities;
 
-public class Soldier extends MobileEntity {
+public class Soldier implements Entity {
 
-    SoldierLevel level;
+    SoldierLevel soldierLevel;
+    boolean moved;
 
-    Soldier(SoldierLevel level) {
-        this.level = level;
+    Soldier(SoldierLevel level, boolean moved) {
+        this.soldierLevel = level;
+        this.moved = moved;
     }
 
-    @Override
-    int getPrice() {
-        return level.getPrice();
+    public int getPrice() {
+        return soldierLevel.getPrice();
     }
 
-    @Override
-    int getCosts() {
-        return level.getCosts();
+    public int getCost() {
+        return soldierLevel.getCost();
     }
+
+    boolean getMoved () {
+        return this.moved;
+    }
+
+    boolean canAttack (SoldierLevel other){
+        if (this.soldierLevel.getLevel() > other.getLevel()) {
+            return true;
+        }
+        else if (this.soldierLevel.getLevel() == 3 && this.soldierLevel.getLevel() == other.getLevel()) {
+            return Math.random() <0.7; // 0.7 Pour plus de chances d'avoir true
+        }
+        else {
+            return false;
+        }
+    }
+
+
 }

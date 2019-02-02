@@ -1,8 +1,7 @@
 package be.ac.umons.slay.g02.entities;
 
-public abstract class Entity {
+public interface Entity {
+    int getPrice();
 
-    abstract int getPrice();
-
-    abstract int getCosts();
+    int getCost();
 }

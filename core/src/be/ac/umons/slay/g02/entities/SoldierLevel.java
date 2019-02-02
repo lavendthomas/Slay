@@ -7,28 +7,27 @@ public enum SoldierLevel {
     L2(2, 40, 14),
     L3(3, 80, 41);
 
-    private int costs;
-
-    private int price;
-
     private int level;
+    private int price;
+    private int cost;
 
-    SoldierLevel(int level, int price, int costs) {
+    SoldierLevel(int level, int price, int cost) {
         this.level = level;
-        this.costs = costs;
         this.price = price;
+        this.cost = cost;
+    }
+
+    public int getLevel () {
+        return this.level;
     }
 
     public int getPrice() {
-        return price;
+        return this.price;
     }
 
-    public int getCosts() {
-        return costs;
+    public int getCost() {
+        return this.cost;
     }
 
-    public int getLevel() {
-        return level;
-    }
 }
 
