@@ -1,0 +1,20 @@
+<?xml version = "1.0"?>
+<world name="Island of War" map="g0-A-5">
+    <players number="2" />
+    <items>
+        <item
+        type="capital" coins="20" x="1" y="1" />
+        <item
+        type="tree" x="2" y="3" />
+        <item
+        type="farm" id="f1" x="7" y="2" />
+        <item
+        type="field" id="f1" x="7" y="1" />
+        </items>
+    <units>
+        <unit type="soldier" level="0" x="2" y="2" />
+        <unit type="soldier" level="2" x="2" y="4" />
+        <unit type="farmer" id="f1" level="2" x="7" y="1" />
+    </units>
+</world>
+ 

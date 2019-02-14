@@ -7,6 +7,23 @@ import be.ac.umons.slay.g02.entities.StaticEntity;
 public class Level implements Playable {
     Tile [][] tileMap;
 
+    /**
+     * Creates an empty level
+     * @param x the width of the level
+     * @param y the height of the level
+     */
+    public Level(int x, int y) {
+        tileMap = new Tile[x][y];
+    }
+
+    /**
+     * Places the tile in parameter in the mentioned coordinates
+     * @param tile The tile to place
+     * @param coords The coordiantes to place the tile to
+     */
+    void set(Tile tile, Coordinate coords) {
+        tileMap[coords.getX()][coords.getY()] = tile;
+    }
 
     public void select(Coordinate coordinate) {
 
