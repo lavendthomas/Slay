@@ -28,7 +28,7 @@ public class Slay extends ApplicationAdapter implements ApplicationListener {
 
     @Override
     public void create() {
-        map = new TmxMapLoader().load("worlds/g02_01.tmx");
+        map = new TmxMapLoader().load("worlds/g02_10.tmx");
 
         renderer = new HexagonalTiledMapRenderer(map, 1);
 
