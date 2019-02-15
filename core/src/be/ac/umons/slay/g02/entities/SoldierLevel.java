@@ -29,5 +29,14 @@ public enum SoldierLevel {
         return this.cost;
     }
 
+    public static SoldierLevel fromLevel(int lvl) {
+        for (SoldierLevel soldierLevel: SoldierLevel.values()) {
+            if (lvl == soldierLevel.level) {
+                return soldierLevel;
+            }
+        }
+        return L0; // Give a default value if the level doesn't exist
+    }
+
 }
 

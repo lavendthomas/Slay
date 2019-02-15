@@ -5,7 +5,11 @@ public class Soldier implements Entity {
     SoldierLevel soldierLevel;
     boolean moved;
 
-    Soldier(SoldierLevel level, boolean moved) {
+    public Soldier(SoldierLevel level) {
+        this.soldierLevel = level;
+    }
+
+    public Soldier(SoldierLevel level, boolean moved) {
         this.soldierLevel = level;
         this.moved = moved;
     }

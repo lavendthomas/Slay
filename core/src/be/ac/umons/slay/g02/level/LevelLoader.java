@@ -18,9 +18,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import be.ac.umons.slay.g02.entities.Soldier;
+import be.ac.umons.slay.g02.entities.SoldierLevel;
+import be.ac.umons.slay.g02.entities.StaticEntity;
+
 public class LevelLoader {
 
-    public static final String LEVELS_PATH = "levels";
+    public static final String LEVELS_PATH = "worlds";
     public static final int WATER = 9;
     public static final int TERRITORY = 7;
 
@@ -93,7 +97,7 @@ public class LevelLoader {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Coordinate coords = new Coordinate(i, j);
-                // TODO Detect if 2 cells are part of the same territory and add the teritory
+                // TODO Detect if 2 cells are part of the same territory and add the territory
             }
         }
 
@@ -101,7 +105,7 @@ public class LevelLoader {
 
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            File fileXML = Gdx.files.internal(LEVELS_PATH + File.separator + levelname + ".xml").file();
+            File fileXML = Gdx.files.internal(LEVELS_PATH + File.separator + levelname + "d" + ".xml").file();
             Document xml = builder.parse(fileXML);
             Element root = xml.getDocumentElement();
             name = root.getAttribute("name");
@@ -117,14 +121,17 @@ public class LevelLoader {
                     // handle items
                     for (int j = 0; j < n.getChildNodes().getLength(); j++) {
                         // add each item to the map
+
                         Node item = n.getChildNodes().item(j);
                         if (item.getNodeName().equals("item")) {
                             Element itm = (Element) item;
                             String type = itm.getAttribute("type");
                             int x = Integer.parseInt(itm.getAttribute("x"));
                             int y = Integer.parseInt(itm.getAttribute("y"));
-                            System.out.println(type + " " + x + " " + y);
-                            //TODO find the object to add from enum or something like that
+                            Coordinate coords = new Coordinate(x, y);
+                            StaticEntity e = StaticEntity.fromString(type);
+                            level.set(e, coords);
+                            // TODO read the coins if the item is a capital and add it to the territory
                         }
                     }
 
@@ -132,13 +139,20 @@ public class LevelLoader {
                     // handle units
                     for (int j = 0; j < n.getChildNodes().getLength(); j++) {
                         // add each item to the map
+
                         Node unit = n.getChildNodes().item(j);
                         if (unit.getNodeName().equals("unit")) {
                             Element unt = (Element) unit;
                             String type = unt.getAttribute("type");
                             int x = Integer.parseInt(unt.getAttribute("x"));
                             int y = Integer.parseInt(unt.getAttribute("y"));
-                            System.out.println(type + " " + x + " " + y);
+                            Coordinate coords = new Coordinate(x, y);
+
+                            if (type.equals("soldier")) {
+                                int lvl = Integer.parseInt(unt.getAttribute("level"));
+                                Soldier s = new Soldier(SoldierLevel.fromLevel(lvl));
+                                level.set(s, coords);
+                            }
                         }
                     }
                 }

@@ -25,6 +25,10 @@ public class Level implements Playable {
         tileMap[coords.getX()][coords.getY()] = tile;
     }
 
+    void set(Entity entity, Coordinate coords) {
+        tileMap[coords.getX()][coords.getY()].setEntity(entity);
+    }
+
     public void select(Coordinate coordinate) {
 
     }
@@ -48,13 +52,13 @@ public class Level implements Playable {
         }
         else {
             if (this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity() instanceof be.ac.umons.slay.g02.entities.StaticEntity) {
-                if (this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity() == StaticEntity.Tree) {
+                if (this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity() == StaticEntity.TREE) {
                     //Le couper + gain pièces
                 }
-                else if (this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity() == StaticEntity.Grave) {
+                else if (this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity() == StaticEntity.GRAVE) {
                     //La supprimer et se déplacer
                 }
-                else if (this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity() == StaticEntity.Capital) {
+                else if (this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity() == StaticEntity.CAPITAL) {
                     // Vérifier que le soldat et d'un niveau suffisant pour la détruire et déplacer
                 }
             }
