@@ -31,7 +31,7 @@ public enum StaticEntity implements Entity {
      */
     public static StaticEntity fromString(String name) {
         for (StaticEntity entity : StaticEntity.values()) {
-            if (entity.name == name) {
+            if (entity.name.equals(name)) {
                 return entity;
             }
         }

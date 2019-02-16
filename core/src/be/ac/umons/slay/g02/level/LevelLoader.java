@@ -28,41 +28,14 @@ public class LevelLoader {
     public static final int WATER = 9;
     public static final int TERRITORY = 7;
 
-    public static Level load(String levelname) {
+    public static Map load(String levelname) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         String name;
         int players;
         int width = 0;
         int height = 0;
 
-        // Load the size of the map from the TMX file
-        /*
-        try {
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            File fileXML = Gdx.files.internal(LEVELS_PATH + File.separator + levelname +".tmx").file();
-            Document xml = builder.parse(fileXML);
-            Element map = xml.getDocumentElement();
-
-            for (int i=0; i<map.getChildNodes().getLength(); i++) {
-                Node n = map.getChildNodes().item(i);
-                if (n.getNodeName().equals("layer")) {
-                    Element elem = (Element) n;
-                    width = Integer.parseInt(elem.getAttribute("width"));
-                    height = Integer.parseInt(elem.getAttribute("height"));
-                    break;          // We assume every layer has the same size
-                }
-            }
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } */
-
         TiledMap map = new TmxMapLoader().load(LEVELS_PATH + File.separator + levelname + ".tmx");
-
-
         MapProperties prop = map.getProperties();
 
         width = prop.get("width", Integer.class);
@@ -105,7 +78,7 @@ public class LevelLoader {
 
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            File fileXML = Gdx.files.internal(LEVELS_PATH + File.separator + levelname + "d" + ".xml").file();
+            File fileXML = Gdx.files.internal(LEVELS_PATH + File.separator + levelname + ".xml").file();
             Document xml = builder.parse(fileXML);
             Element root = xml.getDocumentElement();
             name = root.getAttribute("name");
@@ -157,7 +130,6 @@ public class LevelLoader {
                     }
                 }
             }
-
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -165,6 +137,26 @@ public class LevelLoader {
         } catch (SAXException e) {
             e.printStackTrace();
         }
-        return level;
+        return new Map(level, map);
     }
+
+    public static class Map {
+        private Level lvl;
+        private TiledMap map;
+
+        Map (Level lvl, TiledMap map) {
+            this.lvl = lvl;
+            this.map = map;
+        }
+
+        public Level getLevel(){
+            return this.lvl;
+        }
+
+        public TiledMap getMap() {
+            return this.map;
+        }
+
+    }
+
 }

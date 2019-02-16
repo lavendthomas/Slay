@@ -8,15 +8,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
-import com.badlogic.gdx.maps.tiled.TiledMapTileSets;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 
-import be.ac.umons.slay.g02.level.Tile;
-
+import be.ac.umons.slay.g02.level.Level;
+import be.ac.umons.slay.g02.level.LevelLoader;
 
 public class Slay extends ApplicationAdapter implements ApplicationListener {
 
@@ -28,11 +25,13 @@ public class Slay extends ApplicationAdapter implements ApplicationListener {
 
     @Override
     public void create() {
-        map = new TmxMapLoader().load("worlds/g02_10.tmx");
 
+        LevelLoader.Map m = LevelLoader.load("g02_01");
+        Level level = m.getLevel();
+        map = m.getMap();
         renderer = new HexagonalTiledMapRenderer(map, 1);
-
         tileset = map.getTileSets().getTileSet(0);
+
 
 
         MapProperties prop = map.getProperties();
