@@ -42,5 +42,13 @@ public class Soldier implements Entity {
         }
     }
 
+    // a la place de canAttack
+    public boolean canMove (Soldier other) {
+        if (this.soldierLevel.getLevel() == 3 && this.soldierLevel.getLevel() == other.getSoldierLevel().getLevel())
+            return Math.random() <0.7; // 0.7 Pour plus de chances d'avoir true
+
+        return (this.soldierLevel.getLevel() > other.getSoldierLevel().getLevel());
+    }
+
 
 }
