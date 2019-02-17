@@ -59,4 +59,12 @@ public class Territory {
 
 
     }
+
+    public void addCoins (int n) {
+        this.coins += n;
+    }
+
+    public void incrIncome () {
+        this.income += 1;
+    }
 }

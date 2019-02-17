@@ -52,8 +52,8 @@ public class Tile {
         }
     }
 
-    public void killEntity() {
-        this.entity = null;
+    public Territory getTerritory () {
+        return this.territory;
     }
 
 }
