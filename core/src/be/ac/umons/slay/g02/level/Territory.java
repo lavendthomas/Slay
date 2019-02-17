@@ -26,11 +26,24 @@ public class Territory {
         }
     }
 
+    /**
+     * Adds all of the ressources from the other territory to this one
+     *
+     * @param other
+     */
+    public void mergeResources(Territory other) {
+        coins += other.coins;
+    }
+
     public void add(Tile cell) {
+        income += 1;
+        tileCount += 1;
         cells.add(cell);
     }
 
     public boolean remove(Tile cell) {
+        income -= 1;        // TODO always ?
+        tileCount -= 1;
         return this.cells.remove(cell);
     }
 

@@ -6,7 +6,6 @@ import java.util.List;
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.StaticEntity;
-import sun.font.CoreMetrics;
 
 
 public class Level implements Playable {
@@ -99,7 +98,7 @@ public class Level implements Playable {
     /**
      * Merges the territories of adjacent cells
      */
-    private void mergeTerritories() {
+    public void mergeTerritories() {
         List<Coordinate> processed = new LinkedList<Coordinate>();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -122,14 +121,30 @@ public class Level implements Playable {
             // Base case: We already checked this cell
             return;
         } else {
+            processed.add(pos);
+
             int x = pos.getX();
             int y = pos.getY();
-            // Try to merge territory with upper cell
+            // Try to merge territory with cell on the left
             if (x > 1) {
-                tileMap[x][y].hasSameOwner(tileMap[x-1][y]); // TODO
+                tileMap[x][y].mergeTerritories(tileMap[x - 1][y]);
+                mergeTerritories(new Coordinate(x - 1, y), processed);
             }
-
-            processed.add(pos);
+            // Try to merge territory with the cell on the right
+            if (x < width - 1) {
+                tileMap[x][y].mergeTerritories(tileMap[x + 1][y]);
+                mergeTerritories(new Coordinate(x + 1, y), processed);
+            }
+            // Try to merge territory with the cell above
+            if (y > 1) {
+                tileMap[x][y].mergeTerritories(tileMap[x][y - 1]);
+                mergeTerritories(new Coordinate(x, y - 1), processed);
+            }
+            // Try to merge territory with the cell below
+            if (y > 1) {
+                tileMap[x][y].mergeTerritories(tileMap[x][y + 1]);
+                mergeTerritories(new Coordinate(x, y + 1), processed);
+            }
         }
     }
 

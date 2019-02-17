@@ -41,9 +41,15 @@ public class Tile {
         return territory.hasSameOwner(other.territory);
     }
 
-    public boolean mergeTerritories() {
-        // TODO
-        return false;
+    public boolean mergeTerritories(Tile other) {
+        if (hasSameOwner(other)) {
+            territory.add(other);
+            other.territory.remove(other);
+            other.territory = territory;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void killEntity() {
