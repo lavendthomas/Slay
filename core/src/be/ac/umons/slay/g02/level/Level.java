@@ -148,4 +148,12 @@ public class Level implements Playable {
         }
     }
 
+    private void splitTerritories() {
+        /*
+        Idea: We start from one cell and we keep in this territory all the cells that are
+        adjacent to this one and in the same territory. All the others are separated in another
+        territory and continue to split until all the cells in the territory are adjacent.
+         */
+    }
+
 }

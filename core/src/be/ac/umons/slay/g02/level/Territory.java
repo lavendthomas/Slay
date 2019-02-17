@@ -24,30 +24,39 @@ public class Territory {
         for (Tile cell : cells) {
             this.cells.add(cell);
         }
-    }
-
-    /**
-     * Adds all of the ressources from the other territory to this one
-     *
-     * @param other
-     */
-    public void mergeResources(Territory other) {
-        coins += other.coins;
+        tileCount = cells.length;
     }
 
     public void add(Tile cell) {
-        income += 1;
+        income += 1;        // TODO always ? Tree,...
         tileCount += 1;
         cells.add(cell);
     }
 
     public boolean remove(Tile cell) {
-        income -= 1;        // TODO always ?
+        income -= 1;        // TODO always ? Tree,...
         tileCount -= 1;
         return this.cells.remove(cell);
     }
 
     public boolean hasSameOwner(Territory other) {
         return owner.equals(other.owner);
+    }
+
+    /**
+     * Splits a territory in multiple territories if part of their cells are not linked
+     */
+    public void split() {
+        /*
+        Idea: We start from one cell and we keep in this territory all the cells that are
+        adjacent to this one and in the same territory. All the others are separated in another
+        territory and continue to split until all the cells in the territory are adjacent.
+         */
+        if (cells.size() == 0) {
+            return;
+        }
+        Tile startCell = cells.get(0);
+
+
     }
 }
