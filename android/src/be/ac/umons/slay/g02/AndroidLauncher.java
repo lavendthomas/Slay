@@ -4,8 +4,9 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import be.ac.umons.slay.g02.Slay;
+
 import be.ac.umons.slay.g02.gui.Menu;
+import be.ac.umons.slay.g02.gui.screens.Menu;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override

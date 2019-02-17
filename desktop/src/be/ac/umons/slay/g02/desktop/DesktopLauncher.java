@@ -1,10 +1,8 @@
 package be.ac.umons.slay.g02.desktop;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import be.ac.umons.slay.g02.Slay;
-import be.ac.umons.slay.g02.gui.Menu;
+import be.ac.umons.slay.g02.gui.Main;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
@@ -21,6 +19,6 @@ public class DesktopLauncher {
 		// cache la barre du haut
 		cfg.fullscreen = false;
 
-		new LwjglApplication(new Menu(), cfg);
+		new LwjglApplication(new Main(), cfg);
 	}
 }
