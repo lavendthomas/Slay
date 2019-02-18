@@ -9,11 +9,11 @@ public class Coordinate {
         this.y = y;
     }
 
-    int getX() {
+    public int getX() {
         return this.x;
     }
 
-    int getY() {
+    public int getY() {
         return this.y;
     }
 

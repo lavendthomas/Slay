@@ -20,7 +20,7 @@ public class Territory {
     private int treeCount;
     //private Player owner    Player à refaire car impossible interface héritant d'une classe mais besoin de modéliser le proprio d'un territoire
 
-    public Territory(Tile... cells) {
+    public Territory(Player owner, Tile... cells) {
         for (Tile cell : cells) {
             this.cells.add(cell);
         }
@@ -60,11 +60,20 @@ public class Territory {
 
     }
 
-    public void addCoins (int n) {
+    List<Tile> getCells() {
+        //TODO should return a copy for encapsulation
+        return cells;
+    }
+
+    Player getOwner() {
+        return owner;
+    }
+
+    public void addCoins(int n) {
         this.coins += n;
     }
 
-    public void incrIncome () {
+    public void incrIncome() {
         this.income += 1;
     }
 }
