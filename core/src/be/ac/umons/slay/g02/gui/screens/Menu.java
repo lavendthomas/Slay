@@ -1,20 +1,15 @@
-package be.ac.umons.slay.g02.gui;
+package be.ac.umons.slay.g02.gui.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,47 +17,31 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import be.ac.umons.slay.g02.gui.Main;
 
-import java.awt.Rectangle;
+import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
+import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
+import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
+import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 
-import javax.swing.GroupLayout;
+// classe qui affiche le menu principal
+public class Menu implements Screen {
 
-import static com.badlogic.gdx.utils.Align.bottomRight;
-
-// est utilisee comme la classe main
-public class Menu extends Game {
-    private SpriteBatch batch;
-    private Skin skinRainbow;
     private Stage stage;
-
-
-    ShapeRenderer shapeRenderer;
-
-    TextureAtlas buttonAtlas;
-    NinePatch buttonNinePatch;
-
     private Game game;
-
-
-    int SCREEN_HEIGHT;
-    int SCREEN_WIDTH;
-    private static final int VIRTUAL_WIDTH = 1920;
-    private static final int VIRTUAL_HEIGHT = 1080;
     TextButton buttonPlay;
     TextButton buttonHall;
     TextButton buttonSettings;
     TextButton buttonExit;
     ImageButton buttonProfileLeft;
     ImageButton buttonProfileRight;
-    Sound buttonMenuSound;
     int buttonCenterWidth;
     int buttonCenterHeight;
     int buttonCenterGap;
@@ -83,20 +62,18 @@ public class Menu extends Game {
     int xHotSpot;
     int yHotSpot;
 
-
-
-
-
     Texture texture;
     TextureRegion mainBackground;
 
     FitViewport fitViewport;
 
+    // juste le temps des tests, a enlever
+    TextButton boutonNiveau;
 
+    public Menu(Game aGame) {
+        game = aGame;
+        stage = new Stage(new ScreenViewport());
 
-
-    @Override
-    public void create() {
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();
 
@@ -113,21 +90,23 @@ public class Menu extends Game {
 
         imageAnonymous = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/anonymous.png"))));
 
-        buttonMenuSound = Gdx.audio.newSound(Gdx.files.internal("sounds/button_2.wav"));
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        BitmapFont fontRainbow = new BitmapFont(Gdx.files.internal("skins/rainbow/font-button-export.fnt"),
+                Gdx.files.internal("skins/rainbow/rainbow-ui.png"), false);
+        labelStyle.font = fontRainbow;
+        labelStyle.fontColor = Color.RED;
 
 
 
+/*      // affichage message, ca marche
 
-        // determine l'ecran actuel, test
-        setScreen(new MainScreen(game));
-
-
-
-
-        batch = new SpriteBatch();
-        skinRainbow = new Skin(Gdx.files.internal("skins/rainbow/rainbow-ui.json"));
-
-        stage = new Stage();
+        Label title = new Label("Playing Screen", Main.skinRainbow,"button");
+        title.setAlignment(Align.center);
+        title.setY(Gdx.graphics.getHeight() * 2 / 3);
+        title.setWidth(Gdx.graphics.getWidth());
+        stage.addActor(title);
+*/
 
 
 
@@ -136,22 +115,8 @@ public class Menu extends Game {
 
 
         // ne pas faire ca, ca donne un truc bizarre en plein ecran
-        texture = new Texture(Gdx.files.internal("backgrounds/menu_5.png"));
-        mainBackground = new TextureRegion(texture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        batch = new SpriteBatch();
-
-
-
-
-
-
-
-
-
-
-
-
-
+        //       texture = new Texture(Gdx.files.internal("backgrounds/menu_5.png"));
+        //      mainBackground = new TextureRegion(texture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 
 
@@ -166,17 +131,10 @@ public class Menu extends Game {
         tableProfile.setDebug(false);
         stage.addActor(tableProfile);
 
-
-
-
-
-
-        buttonPlay = new TextButton("PLAY", skinRainbow);
-        buttonHall = new TextButton("HALL OF FAME", skinRainbow);
-        buttonSettings = new TextButton("SETTINGS", skinRainbow);
-        buttonExit = new TextButton("EXIT", skinRainbow);
-
-
+        buttonPlay = new TextButton("PLAY", Main.skinRainbow);
+        buttonHall = new TextButton("HALL OF FAME", Main.skinRainbow);
+        buttonSettings = new TextButton("SETTINGS", Main.skinRainbow);
+        buttonExit = new TextButton("EXIT", Main.skinRainbow);
 
 
 
@@ -184,7 +142,6 @@ public class Menu extends Game {
         // a transformer en ImageTextButton pour afficher Not Logged
         buttonProfileLeft = new ImageButton(imageAnonymous);
         buttonProfileRight = new ImageButton(imageAnonymous);
-
 
 
 
@@ -202,26 +159,6 @@ public class Menu extends Game {
 
 
 
-
-
-
-
-/*
-        button.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
-                progressLabel.addAction(new TemporalAction(duration){
-                    LabelFormatter formatter = new LabelFormatter(message);
-                    @Override protected void update(float percent) {
-                        progressLabel.setText(formatter.getText(percent));
-                    }
-                });
-            }
-        });
-*/
-
-
-
-
         // change cursor aspect
         pm = new Pixmap(Gdx.files.internal("cursors/cursor_2.png"));
         // x = pm.getWidth()/2 et y = pm.getHeight()/2 si on veut que ca pointe au centre du curseur
@@ -233,25 +170,18 @@ public class Menu extends Game {
 
 
 
-
-
-
-
-
-
         buttonPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonMenuSound.play(0.2f);
+                Main.soundButton1.play(0.2f);
                 game.setScreen(new LevelSelection(game));
-                //       buttonPlay.setText("Coming Soon");
             }
         });
 
         buttonHall.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonMenuSound.play(0.2f);
+                Main.soundButton1.play(0.2f);
                 buttonHall.setText("Coming Soon");
             }
         });
@@ -259,7 +189,7 @@ public class Menu extends Game {
         buttonSettings.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonMenuSound.play(0.2f);
+                Main.soundButton1.play(0.2f);
                 buttonSettings.setText("Coming Soon");
             }
         });
@@ -268,6 +198,7 @@ public class Menu extends Game {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
+//              System.exit(0);
             }
         });
 
@@ -307,46 +238,58 @@ public class Menu extends Game {
             }
         });
 
-        Gdx.input.setInputProcessor(stage);
-
-
-
-
+        // bouton le temps de faire les tests, a enlever
+        boutonNiveau = new TextButton("NIVEAU", Main.skinRainbow);
+        boutonNiveau.setPosition(tableCenterPositionX+buttonCenterWidth*5/6,tableCenterPositionY/*Main.SCREEN_HEIGHT/2*/);
+        boutonNiveau.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Main.soundButton1.play(0.2f);
+                game.setScreen(new GameScreen(game));
+            }
+        });
+        stage.addActor(boutonNiveau);
     }
 
-    @Override
-    public void dispose() {
-        cursor.dispose();
-        skinRainbow.dispose();
-        pm.dispose();
-        buttonMenuSound.dispose();
-        batch.dispose();
-        stage.dispose();
-    }
-
-    @Override
-    public void render() {
-        // permet de passer d'un ecran a l'autre
-        super.render();
-
-        //      Gdx.gl.glClearColor(1,1,1,1);
-        //     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 
 /*
+        button.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
+                progressLabel.addAction(new TemporalAction(duration){
+                    LabelFormatter formatter = new LabelFormatter(message);
+                    @Override protected void update(float percent) {
+                        progressLabel.setText(formatter.getText(percent));
+                    }
+                });
+            }
+        });
+*/
+
+
+
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        stage.draw();
+        // permet de jouer les events sur les boutons quand on met le curseur sur eux
+        stage.act();
+
+
+/*      // tests affichage rectangle, marche pas
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.identity();
         shapeRenderer.setColor(0, 0, 0, 1);
         shapeRenderer.rect(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 500, 500);
         shapeRenderer.end();
 */
-
-
-        batch.begin();
-
-
-
-
 /*
         shape.begin(ShapeRenderer.ShapeType.Line);
         shape.rect(100, 100, 100, 100);
@@ -362,43 +305,35 @@ public class Menu extends Game {
         shapeRenderer.circle(200, 300, 200);
         shapeRenderer.end();
 */
-
-/*      // test affichage message
-        BitmapFont textFont = new BitmapFont(Gdx.files.internal("skins/default.png"), Gdx.files.internal("skins/default.fnt"), false);
-        textFont.draw(batch, "Level Complete", 500, 500);
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-        batch.end();
-
-        stage.draw();
-        // permet de jouer les events sur les boutons quand on met le curseur sur eux
-        stage.act();
     }
 
     @Override
     public void resize(int width, int height) {
-        skinRainbow.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
-
-
+        Main.skinRainbow.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
     }
 
     @Override
     public void pause() {
+
     }
 
     @Override
     public void resume() {
+
+    }
+
+    @Override
+    public void hide() {
+
+    }
+
+    @Override
+    public void dispose() {
+        cursor.dispose();
+        Main.skinRainbow.dispose();
+        pm.dispose();
+        Main.soundButton1.dispose();
+        Main.soundButton2.dispose();
+        stage.dispose();
     }
 }
