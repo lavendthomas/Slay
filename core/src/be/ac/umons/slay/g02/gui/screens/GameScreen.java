@@ -5,20 +5,34 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.tiled.AtlasTmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
+import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.sun.org.apache.xerces.internal.parsers.IntegratedParserConfiguration;
+
+import java.util.HashMap;
 
 import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
+import be.ac.umons.slay.g02.level.Tile;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -27,56 +41,49 @@ import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 
 // classe qui affiche l'interface pendant une partie
 public class GameScreen implements Screen {
+
     private Stage stage;
     private Game game;
 
     private TiledMap map;
+    private Level level;
     private HexagonalTiledMapRenderer renderer;
     OrthographicCamera camera;
-    private TiledMapTileSet tileset;
+    Batch batch;
+
+    int x;
+    int y;
+
+    TiledMapTileLayer background;
+    TiledMapTileLayer territories;
+    TiledMapTileLayer entities;
+
+    final HashMap<String, Texture> textMap;
+    TextureAtlas textureAtlas;
 
     public GameScreen(Game aGame) {
+
+        textureAtlas = new TextureAtlas("android/assets/tileset.txt");
+        textMap  = new HashMap<String, Texture>();
+        addSprites();
+
         game = aGame;
         stage = new Stage(new ScreenViewport());
 
- /*       Label.LabelStyle labelStyle = new Label.LabelStyle();
-        BitmapFont fontRainbow = new BitmapFont(Gdx.files.internal("skins/rainbow/font-button-export.fnt"),
-                Gdx.files.internal("skins/rainbow/rainbow-ui.png"), false);
-        labelStyle.font = fontRainbow;
-        labelStyle.fontColor = Color.RED;
-*/
-
-/*        // change cursor aspect
-        pm = new Pixmap(Gdx.files.internal("cursors/cursor_2.png"));
-        // x = pm.getWidth()/2 et y = pm.getHeight()/2 si on veut que ca pointe au centre du curseur
-        // = 0 ca pointe au bout de la fleche
-        xHotSpot = 0;
-        yHotSpot = 0;
-        cursor = Gdx.graphics.newCursor(pm, xHotSpot, yHotSpot);
-        Gdx.graphics.setCursor(cursor);
-*/
-
-        LevelLoader.Map m = LevelLoader.load("g02_01");
-        Level level = m.getLevel();
-        map = m.getMap();
-        renderer = new HexagonalTiledMapRenderer(map, 1);
-        tileset = map.getTileSets().getTileSet(0);
-
+        //Chargement de la map et du Level associé
+        LevelLoader.Map lvlLoader = LevelLoader.load("g02_10");
+        level = lvlLoader.getLevel();
+        map = lvlLoader.getMap();
 
 
         MapProperties prop = map.getProperties();
         int w = prop.get("width", Integer.class);
         int h = prop.get ("height", Integer.class);
 
-        float sw = Gdx.graphics.getWidth();
-        float sh = Gdx.graphics.getHeight();
 
-
-        camera = new OrthographicCamera(w * 64, h * 64);
-        camera.position.set((w * 64)/2, (h * 64)/2, 0);
-        camera.update();
-
-
+        background = (TiledMapTileLayer) map.getLayers().get(0);
+        territories = (TiledMapTileLayer) map.getLayers().get(1);
+        entities = (TiledMapTileLayer) map.getLayers().get(2);
 
 
         // bouton BACK
@@ -91,6 +98,11 @@ public class GameScreen implements Screen {
         });
 
         stage.addActor(buttonBack);
+        renderer = new HexagonalTiledMapRenderer(map, 1);
+        camera = new OrthographicCamera(w * 64, h * 64);
+        camera.position.set((w * 64)/2, (h * 64)/2, 0);
+        camera.update();
+
     }
 
     @Override
@@ -103,15 +115,29 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.setView(camera);
-        renderer.render();
-        TiledMapTile tile = tileset.getTile(0);
-        if (Gdx.input.justTouched()) {
-            System.out.println(Gdx.input.getX());
-            System.out.println(Gdx.input.getY());
-        }
-
         stage.draw();
         stage.act();
+
+
+        int[] backgroundLayers = { 0, 1 }; // don't allocate every frame!
+        int[] foregroundLayers = { 2 };    // don't allocate every frame!
+        renderer.render(backgroundLayers);
+        renderer.render(foregroundLayers);
+
+        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+        cell.setTile(background.getCell(1,1).getTile());
+
+        entities.setCell(4,4, cell);
+
+        //récupère position clic gauche de souris
+        if (Gdx.input.justTouched()) {
+            Vector3 touchPos = new Vector3();
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+            camera.unproject(touchPos);
+            x = (int) touchPos.x-75;
+            y = (int) touchPos.y-75;
+        }
+
     }
 
     @Override
@@ -143,6 +169,17 @@ public class GameScreen implements Screen {
 //      Main.soundButton1.dispose();
         Main.soundButton2.dispose();
         stage.dispose();
+    }
+
+    private void addSprites () {
+        Array<TextureAtlas.AtlasRegion> regions = textureAtlas.getRegions();
+
+        for (TextureAtlas.AtlasRegion region : regions) {
+            Texture text = region.getTexture();
+            textMap.put(region.name, text);
+        }
+
+
     }
 }
 
