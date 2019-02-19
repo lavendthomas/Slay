@@ -58,14 +58,8 @@ public class GameScreen implements Screen {
     TiledMapTileLayer territories;
     TiledMapTileLayer entities;
 
-    final HashMap<String, Texture> textMap;
-    TextureAtlas textureAtlas;
 
     public GameScreen(Game aGame) {
-
-        textureAtlas = new TextureAtlas("android/assets/tileset.txt");
-        textMap  = new HashMap<String, Texture>();
-        addSprites();
 
         game = aGame;
         stage = new Stage(new ScreenViewport());
@@ -81,13 +75,15 @@ public class GameScreen implements Screen {
         int h = prop.get ("height", Integer.class);
 
 
-        background = (TiledMapTileLayer) map.getLayers().get(0);
-        territories = (TiledMapTileLayer) map.getLayers().get(1);
-        entities = (TiledMapTileLayer) map.getLayers().get(2);
+        background = (TiledMapTileLayer) map.getLayers().get("Background");
+        territories = (TiledMapTileLayer) map.getLayers().get("Territories");
+        entities = (TiledMapTileLayer) map.getLayers().get("Entities");
 
+
+        background.getCell(1,1).getTile().setId(1);
 
         // bouton BACK
-        TextButton buttonBack = new TextButton("Back",Main.skinRainbow);
+        TextButton buttonBack = new TextButton("Back",Main.skinMain);
         buttonBack.setPosition(Main.SCREEN_WIDTH/2-buttonBack.getWidth()/2-15,2*buttonBack.getHeight());
         buttonBack.addListener(new ClickListener() {
             @Override
@@ -142,7 +138,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        Main.skinRainbow.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
+        Main.skinMain.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
     }
 
     @Override
@@ -164,22 +160,11 @@ public class GameScreen implements Screen {
     public void dispose() {
 //      cursor.dispose();
         map.dispose();
-        Main.skinRainbow.dispose();
+        Main.skinMain.dispose();
 //      pm.dispose();
 //      Main.soundButton1.dispose();
         Main.soundButton2.dispose();
         stage.dispose();
-    }
-
-    private void addSprites () {
-        Array<TextureAtlas.AtlasRegion> regions = textureAtlas.getRegions();
-
-        for (TextureAtlas.AtlasRegion region : regions) {
-            Texture text = region.getTexture();
-            textMap.put(region.name, text);
-        }
-
-
     }
 }
 

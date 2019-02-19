@@ -17,7 +17,7 @@ public class DesktopLauncher {
 //		config.height = 1200;
 
 		// cache la barre du haut
-		cfg.fullscreen = true;
+		cfg.fullscreen = false;
 
 		new LwjglApplication(new Main(), cfg);
 	}
