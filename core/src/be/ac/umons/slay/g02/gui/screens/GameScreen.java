@@ -16,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 
@@ -24,10 +23,15 @@ import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
+import static be.ac.umons.slay.g02.gui.Main.cursor;
+import static be.ac.umons.slay.g02.gui.Main.pm;
+import static be.ac.umons.slay.g02.gui.Main.skinMain;
+import static be.ac.umons.slay.g02.gui.Main.soundButton1;
+import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 
 // classe qui affiche l'interface pendant une partie
 public class GameScreen implements Screen {
-    private Stage stage;
+    private Stage stageGameScreen;
     private Game game;
 
     private TiledMap map;
@@ -37,24 +41,14 @@ public class GameScreen implements Screen {
 
     public GameScreen(Game aGame) {
         game = aGame;
-        stage = new Stage(new ScreenViewport());
+        stageGameScreen = new Stage(new ScreenViewport());
 
  /*       Label.LabelStyle labelStyle = new Label.LabelStyle();
         BitmapFont fontRainbow = new BitmapFont(Gdx.files.internal("skins/rainbow/font-button-export.fnt"),
                 Gdx.files.internal("skins/rainbow/rainbow-ui.png"), false);
         labelStyle.font = fontRainbow;
-        labelStyle.fontColor = Color.RED;
 */
 
-/*        // change cursor aspect
-        pm = new Pixmap(Gdx.files.internal("cursors/cursor_2.png"));
-        // x = pm.getWidth()/2 et y = pm.getHeight()/2 si on veut que ca pointe au centre du curseur
-        // = 0 ca pointe au bout de la fleche
-        xHotSpot = 0;
-        yHotSpot = 0;
-        cursor = Gdx.graphics.newCursor(pm, xHotSpot, yHotSpot);
-        Gdx.graphics.setCursor(cursor);
-*/
 
         LevelLoader.Map m = LevelLoader.load("g02_01");
         Level level = m.getLevel();
@@ -80,22 +74,22 @@ public class GameScreen implements Screen {
 
 
         // bouton BACK
-        TextButton buttonBack = new TextButton("Back",Main.skinRainbow);
-        buttonBack.setPosition(Main.SCREEN_WIDTH/2-buttonBack.getWidth()/2-15,2*buttonBack.getHeight());
+        TextButton buttonBack = new TextButton("Back", skinMain);
+        buttonBack.setPosition(SCREEN_WIDTH/2-buttonBack.getWidth()/2-15,2*buttonBack.getHeight());
         buttonBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Main.soundButton2.play(0.2f);
+                soundButton2.play(0.2f);
                 game.setScreen(new Menu(game));
             }
         });
 
-        stage.addActor(buttonBack);
+        stageGameScreen.addActor(buttonBack);
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stageGameScreen);
     }
 
     @Override
@@ -110,39 +104,36 @@ public class GameScreen implements Screen {
             System.out.println(Gdx.input.getY());
         }
 
-        stage.draw();
-        stage.act();
+        stageGameScreen.draw();
+        stageGameScreen.act();
     }
 
     @Override
     public void resize(int width, int height) {
-        Main.skinRainbow.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
+        skinMain.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
-//      cursor.dispose();
+        cursor.dispose();
+        pm.dispose();
+        soundButton1.dispose();
+        soundButton2.dispose();
+        skinMain.dispose();
         map.dispose();
-        Main.skinRainbow.dispose();
-//      pm.dispose();
-//      Main.soundButton1.dispose();
-        Main.soundButton2.dispose();
-        stage.dispose();
+        stageGameScreen.dispose();
     }
 }
 
