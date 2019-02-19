@@ -18,6 +18,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -49,14 +50,16 @@ public class GameScreen implements Screen {
     private Level level;
     private HexagonalTiledMapRenderer renderer;
     OrthographicCamera camera;
-    Batch batch;
 
     int x;
     int y;
+    int w;
+    int h;
 
     TiledMapTileLayer background;
     TiledMapTileLayer territories;
     TiledMapTileLayer entities;
+    TiledMapTileSet set;
 
 
     public GameScreen(Game aGame) {
@@ -65,22 +68,21 @@ public class GameScreen implements Screen {
         stage = new Stage(new ScreenViewport());
 
         //Chargement de la map et du Level associé
-        LevelLoader.Map lvlLoader = LevelLoader.load("g02_10");
+        LevelLoader.Map lvlLoader = LevelLoader.load("g02_07");
         level = lvlLoader.getLevel();
         map = lvlLoader.getMap();
 
-
         MapProperties prop = map.getProperties();
-        int w = prop.get("width", Integer.class);
-        int h = prop.get ("height", Integer.class);
+        w = prop.get("width", Integer.class);
+        h = prop.get ("height", Integer.class);
 
 
         background = (TiledMapTileLayer) map.getLayers().get("Background");
         territories = (TiledMapTileLayer) map.getLayers().get("Territories");
         entities = (TiledMapTileLayer) map.getLayers().get("Entities");
+        set = map.getTileSets().getTileSet("tileset");
 
-
-        background.getCell(1,1).getTile().setId(1);
+        renderer = new HexagonalTiledMapRenderer(map, 1);
 
         // bouton BACK
         TextButton buttonBack = new TextButton("Back",Main.skinMain);
@@ -92,9 +94,9 @@ public class GameScreen implements Screen {
                 game.setScreen(new Menu(game));
             }
         });
+        background.getCell(x,y).setTile(set.getTile(1)); // temporaire
 
         stage.addActor(buttonBack);
-        renderer = new HexagonalTiledMapRenderer(map, 1);
         camera = new OrthographicCamera(w * 64, h * 64);
         camera.position.set((w * 64)/2, (h * 64)/2, 0);
         camera.update();
@@ -111,27 +113,16 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.setView(camera);
+        renderer.render();
         stage.draw();
         stage.act();
 
 
-        int[] backgroundLayers = { 0, 1 }; // don't allocate every frame!
-        int[] foregroundLayers = { 2 };    // don't allocate every frame!
-        renderer.render(backgroundLayers);
-        renderer.render(foregroundLayers);
-
-        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-        cell.setTile(background.getCell(1,1).getTile());
-
-        entities.setCell(4,4, cell);
-
         //récupère position clic gauche de souris
         if (Gdx.input.justTouched()) {
-            Vector3 touchPos = new Vector3();
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPos);
-            x = (int) touchPos.x-75;
-            y = (int) touchPos.y-75;
+            x = Gdx.input.getX();
+            y = Gdx.input.getY();
+            System.out.println("x " + x + " y " + y);
         }
 
     }
