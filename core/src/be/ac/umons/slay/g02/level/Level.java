@@ -67,7 +67,7 @@ public class Level implements Playable {
 
     /**
      * Move entity
-     *
+     * <p>
      * Les autres cas devront être éliminés avant de pouvoir faire appel à cette méthode (au moment de déterminer leur périmètre de déplacement)
      *
      * @param oldCoord
@@ -98,7 +98,7 @@ public class Level implements Playable {
                         moveEntity(oldCoord, newCoord);
                         return true;
                     } else if (to.getEntity() == StaticEntity.CAPITAL) {
-                        if (((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 1 ) {
+                        if (((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 1) {
                             moveEntity(oldCoord, newCoord);
                             return true;
                         }
@@ -138,9 +138,9 @@ public class Level implements Playable {
     }
 
 
-        /**
-         * Merges the territories of adjacent cells
-         */
+    /**
+     * Merges the territories of adjacent cells
+     */
     public void mergeTerritories() {
         List<Coordinate> processed = new LinkedList<Coordinate>();
         for (int i = 0; i < width; i++) {
@@ -197,6 +197,77 @@ public class Level implements Playable {
         adjacent to this one and in the same territory. All the others are separated in another
         territory and continue to split until all the cells in the territory are adjacent.
          */
+
+        List<Territory> processedTerritories = new LinkedList<Territory>();
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Coordinate pos = new Coordinate(i, j);
+                Tile cell = tileMap[i][j];
+                if (!processedTerritories.contains(cell.getTerritory())) { // TODO check that this works
+                    List<Coordinate> neighbours = neighbourTilesInSameTerritory(pos);
+                    List<Tile> tiles = new LinkedList<Tile>();  // List of all tiles in neighbourhood
+                    for (Coordinate p : neighbours) {         // in the same territory
+                        tiles.add(tileMap[p.getX()][p.getY()]);
+                    }
+                    // If the list is equal
+                    if (tiles.containsAll(cell.getTerritory().getCells())) {
+                        // If all the cells in the territory are in the neighbourhood,
+                        // we don't have to split anything
+                        // TODO useless because being checked after ?
+                        continue;
+                    } else {
+                        // Remove all the cells that are not in the neighborhood
+                        // and create a new territory for them
+                        Territory newTerr = new Territory(cell.getTerritory().getOwner());
+                        for (Tile t : cell.getTerritory().getCells()) {
+                            if (!tiles.contains(t)) {
+                                t.setTerritory(newTerr);
+                            }
+                        }
+                    }
+                    processedTerritories.add(cell.getTerritory());
+                }
+            }
+        }
+    }
+
+
+    private List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
+        List<Coordinate> neighbors = new LinkedList<Coordinate>();
+        Tile cell = tileMap[pos.getX()][pos.getY()];
+
+        if (cell.getTerritory() == null) {
+            return neighbors;
+        } else {
+            neighbourTilesInSameTerritory(pos,cell.getTerritory(), neighbors);
+            return neighbors;
+        }
+    }
+
+    /**
+     * Adds all of the neighbours in the same territory to the
+     * @param pos The current position
+     * @param territory the territory of the neighbourhood
+     * @param known All already known cells in the neighbourhood in the same territory
+     */
+    private void neighbourTilesInSameTerritory(Coordinate pos,Territory territory, List<Coordinate> known) {
+        Tile cell = tileMap[pos.getX()][pos.getY()];
+        if (cell.getTerritory() == null) {
+            return;
+        }
+        if (known.contains(cell)) {
+            return;
+        }
+        if (!cell.getTerritory().equals(territory)) {
+            return;
+        }
+        known.add(pos);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX()+1, pos.getY()), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX()-1, pos.getY()), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY()+1), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY()-1), territory, known);
+
     }
 
 }

@@ -52,8 +52,16 @@ public class Tile {
         }
     }
 
-    public Territory getTerritory () {
+    public Territory getTerritory() {
         return this.territory;
+    }
+
+    public void setTerritory(Territory t) {
+        if (territory != null) {
+            territory.remove(this);
+        }
+        territory = t;
+        t.add(this);
     }
 
 }
