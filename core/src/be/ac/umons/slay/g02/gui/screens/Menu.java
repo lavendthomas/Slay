@@ -3,39 +3,39 @@ package be.ac.umons.slay.g02.gui.screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import be.ac.umons.slay.g02.gui.Main;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
+import static be.ac.umons.slay.g02.gui.Main.camera;
+import static be.ac.umons.slay.g02.gui.Main.soundButton1;
+import static be.ac.umons.slay.g02.gui.Main.soundButton2;
+import static be.ac.umons.slay.g02.gui.Main.pm;
+import static be.ac.umons.slay.g02.gui.Main.cursor;
 
 // classe qui affiche le menu principal
 public class Menu implements Screen {
 
-    private Stage stage;
     private Game game;
+    private Stage stageMenu;
+    public static Skin skinMenu;
     TextButton buttonPlay;
     TextButton buttonHall;
     TextButton buttonSettings;
@@ -57,25 +57,21 @@ public class Menu implements Screen {
     Table tableCenter;
     Table tableProfile;
 
-    Pixmap pm;
-    Cursor cursor;
-    int xHotSpot;
-    int yHotSpot;
-
     Texture texture;
-    TextureRegion mainBackground;
-
-    FitViewport fitViewport;
 
     // juste le temps des tests, a enlever
     TextButton boutonNiveau;
 
+    SpriteBatch batch;
+    private Sprite sprite;
+
+
+
     public Menu(Game aGame) {
         game = aGame;
-        stage = new Stage(new ScreenViewport());
+        stageMenu = new Stage(new ScreenViewport());
 
-        SCREEN_HEIGHT = Gdx.graphics.getHeight();
-        SCREEN_WIDTH = Gdx.graphics.getWidth();
+        skinMenu = new Skin(Gdx.files.internal("skins/rainbow-soldier/rainbow-ui.json"));
 
         buttonCenterWidth = SCREEN_WIDTH*2/7;
         buttonCenterHeight = SCREEN_HEIGHT/14;
@@ -90,51 +86,27 @@ public class Menu implements Screen {
 
         imageAnonymous = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/anonymous.png"))));
 
-
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        BitmapFont fontRainbow = new BitmapFont(Gdx.files.internal("skins/rainbow/font-button-export.fnt"),
-                Gdx.files.internal("skins/rainbow/rainbow-ui.png"), false);
-        labelStyle.font = fontRainbow;
-        labelStyle.fontColor = Color.RED;
-
-
-
-/*      // affichage message, ca marche
-
-        Label title = new Label("Playing Screen", Main.skinRainbow,"button");
-        title.setAlignment(Align.center);
-        title.setY(Gdx.graphics.getHeight() * 2 / 3);
-        title.setWidth(Gdx.graphics.getWidth());
-        stage.addActor(title);
-*/
-
-
-
-        // a changer car l'image ne s'affiche pas bien
-        stage.addActor(new Image(new Texture("backgrounds/menu_5.png")));
-
-
-        // ne pas faire ca, ca donne un truc bizarre en plein ecran
-        //       texture = new Texture(Gdx.files.internal("backgrounds/menu_5.png"));
-        //      mainBackground = new TextureRegion(texture, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-
-
-
+        // background
+        batch = new SpriteBatch();
+        texture = new Texture(Gdx.files.internal("backgrounds/menu_5.png"));
+        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        sprite = new Sprite(texture);
+        sprite.setOrigin(0,0);
+        sprite.setPosition(-sprite.getWidth()/2,-sprite.getHeight()/2);
 
         tableCenter = new Table();
         tableCenter.setPosition(tableCenterPositionX,tableCenterPositionY);
-        stage.addActor(tableCenter);
-
+        stageMenu.addActor(tableCenter);
         tableProfile = new Table();
         tableProfile.setPosition(tableProfilePositionX,tableProfilePositionY);
         // juste pour afficher les contours de la table si besoin, a enlever
         tableProfile.setDebug(false);
-        stage.addActor(tableProfile);
+        stageMenu.addActor(tableProfile);
 
-        buttonPlay = new TextButton("PLAY", Main.skinRainbow);
-        buttonHall = new TextButton("HALL OF FAME", Main.skinRainbow);
-        buttonSettings = new TextButton("SETTINGS", Main.skinRainbow);
-        buttonExit = new TextButton("EXIT", Main.skinRainbow);
+        buttonPlay = new TextButton("PLAY", skinMenu);
+        buttonHall = new TextButton("HALL OF FAME", skinMenu);
+        buttonSettings = new TextButton("SETTINGS", skinMenu);
+        buttonExit = new TextButton("EXIT", skinMenu);
 
 
 
@@ -159,21 +131,10 @@ public class Menu implements Screen {
 
 
 
-        // change cursor aspect
-        pm = new Pixmap(Gdx.files.internal("cursors/cursor_2.png"));
-        // x = pm.getWidth()/2 et y = pm.getHeight()/2 si on veut que ca pointe au centre du curseur
-        // = 0 ca pointe au bout de la fleche
-        xHotSpot = 0;
-        yHotSpot = 0;
-        cursor = Gdx.graphics.newCursor(pm, xHotSpot, yHotSpot);
-        Gdx.graphics.setCursor(cursor);
-
-
-
         buttonPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Main.soundButton1.play(0.2f);
+                soundButton1.play(0.2f);
                 game.setScreen(new LevelSelection(game));
             }
         });
@@ -181,7 +142,7 @@ public class Menu implements Screen {
         buttonHall.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Main.soundButton1.play(0.2f);
+                soundButton1.play(0.2f);
                 buttonHall.setText("Coming Soon");
             }
         });
@@ -189,7 +150,7 @@ public class Menu implements Screen {
         buttonSettings.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Main.soundButton1.play(0.2f);
+                soundButton1.play(0.2f);
                 buttonSettings.setText("Coming Soon");
             }
         });
@@ -225,7 +186,7 @@ public class Menu implements Screen {
                 buttonProfileRight.addAction(Actions.alpha(50));
 
 
-            }
+        }
 
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 buttonProfileRight.clearActions();
@@ -239,16 +200,16 @@ public class Menu implements Screen {
         });
 
         // bouton le temps de faire les tests, a enlever
-        boutonNiveau = new TextButton("NIVEAU", Main.skinRainbow);
+        boutonNiveau = new TextButton("NIVEAU", skinMenu);
         boutonNiveau.setPosition(tableCenterPositionX+buttonCenterWidth*5/6,tableCenterPositionY/*Main.SCREEN_HEIGHT/2*/);
         boutonNiveau.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Main.soundButton1.play(0.2f);
+                soundButton1.play(0.2f);
                 game.setScreen(new GameScreen(game));
             }
         });
-        stage.addActor(boutonNiveau);
+        stageMenu.addActor(boutonNiveau);
     }
 
 
@@ -266,20 +227,27 @@ public class Menu implements Screen {
         });
 */
 
-
-
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stageMenu);
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.draw();
+        batch.begin();
+
+        // place le background correctement dans la fenetre
+        batch.setProjectionMatrix(camera.combined);
+
+        sprite.draw(batch);
+
+        batch.end();
+
+        stageMenu.draw();
         // permet de jouer les events sur les boutons quand on met le curseur sur eux
-        stage.act();
+
+        stageMenu.act();
+
 
 
 /*      // tests affichage rectangle, marche pas
@@ -309,7 +277,7 @@ public class Menu implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        Main.skinRainbow.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
+        skinMenu.getFont("button").getData().setScale(SCREEN_WIDTH*0.8f/VIRTUAL_WIDTH,SCREEN_HEIGHT*0.8f/VIRTUAL_HEIGHT);
     }
 
     @Override
@@ -330,10 +298,10 @@ public class Menu implements Screen {
     @Override
     public void dispose() {
         cursor.dispose();
-        Main.skinRainbow.dispose();
         pm.dispose();
-        Main.soundButton1.dispose();
-        Main.soundButton2.dispose();
-        stage.dispose();
+        soundButton1.dispose();
+        soundButton2.dispose();
+        skinMenu.dispose();
+        stageMenu.dispose();
     }
 }
