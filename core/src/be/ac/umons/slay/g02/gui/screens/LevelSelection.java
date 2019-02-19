@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -28,6 +29,19 @@ public class LevelSelection implements Screen {
 
     private Game game;
     private Stage stageLevelSelection;
+    Table table;
+
+    int buttonGapY;
+
+    Label labelIsland;
+    Label labelHuman;
+    Label labelDifficulty;
+    Label labelHall;
+
+    TextButton buttonStats;
+    TextButton buttonMore;
+    TextButton buttonBack;
+    TextButton buttonPlay;
 
     public LevelSelection(Game aGame) {
         game = aGame;
@@ -41,17 +55,58 @@ public class LevelSelection implements Screen {
 
 
 
+        buttonGapY = SCREEN_HEIGHT/14;
+
+
+/*
         // affichage texte
         Label title = new Label("Level Selection Screen", skinMain,"button");
         title.setAlignment(Align.center);
         title.setY(SCREEN_HEIGHT*2/3);
         title.setWidth(Gdx.graphics.getWidth());
         stageLevelSelection.addActor(title);
+*/
 
 
 
-        TextButton buttonBack = new TextButton("Back", skinMain);
-        buttonBack.setPosition(SCREEN_WIDTH/2-buttonBack.getWidth()/2-15,SCREEN_HEIGHT/4-buttonBack.getHeight()/2);
+        labelIsland = new Label("Island", skinMain,"button");
+        //      labelIsland.setPosition(SCREEN_WIDTH/100 , SCREEN_HEIGHT*4/5);
+        //       stageLevelSelection.addActor(labelIsland);
+
+        labelHuman = new Label("Number of human players", skinMain,"button");
+//        labelHuman.setPosition(SCREEN_WIDTH/100 , SCREEN_HEIGHT*3/5);
+//        stageLevelSelection.addActor(labelHuman);
+
+        labelDifficulty = new Label("Difficulty", skinMain,"button");
+  //      labelDifficulty.setPosition(SCREEN_WIDTH/100 , SCREEN_HEIGHT*2/5);
+        //      stageLevelSelection.addActor(labelDifficulty);
+
+        labelHall = new Label("Hall Of Fame", skinMain,"button");
+
+
+
+        buttonStats = new TextButton("Statistiques", skinMain);
+//        buttonStats.setPosition(SCREEN_WIDTH/20, buttonStats.getHeight());
+        buttonStats.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton2.play(0.2f);
+                game.setScreen(new Menu(game));
+            }
+        });
+
+        buttonMore = new TextButton("More", skinMain);
+//        buttonMore.setPosition(SCREEN_WIDTH/20, buttonMore.getHeight());
+        buttonMore.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton2.play(0.2f);
+                game.setScreen(new Menu(game));
+            }
+        });
+
+        buttonBack = new TextButton("Back", skinMain);
+ //       buttonBack.setPosition(SCREEN_WIDTH/20, buttonBack.getHeight());
         buttonBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -60,7 +115,46 @@ public class LevelSelection implements Screen {
             }
         });
 
-        stageLevelSelection.addActor(buttonBack);
+ //       stageLevelSelection.addActor(buttonBack);
+
+        buttonPlay = new TextButton("Play", skinMain);
+ //       buttonPlay.setPosition(SCREEN_WIDTH/2-buttonPlay.getWidth()/2, buttonPlay.getHeight());
+        buttonPlay.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(0.2f);
+                game.setScreen(new GameScreen(game));
+            }
+        });
+
+ //       stageLevelSelection.addActor(buttonPlay);
+
+        table = new Table();
+        table.setFillParent(true);
+
+        table.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        table.setDebug(true);
+
+        stageLevelSelection.addActor(table);
+
+        table.add(labelIsland);
+        //       table.add(buttonIslandLeft);
+//       table.add(labelIslandNumber);
+        //       table.add(buttonIslandRight);
+        //      table.add(imageMap);
+        table.add(buttonStats);
+        table.add(labelHall);
+        table.row().pad(buttonGapY, 0, buttonGapY, 0);
+        table.add(labelHuman);
+        //     table.add(buttonHumanNumber);
+        table.row().pad(buttonGapY, 0, buttonGapY, 0);
+        table.add(labelDifficulty);
+        //     table.add(buttonDifficulty);
+        table.row().pad(buttonGapY, 0, buttonGapY, 0);
+        table.add(buttonBack);
+        table.add(buttonPlay);
+
     }
 
     @Override

@@ -75,12 +75,12 @@ public class GameScreen implements Screen {
 
         // bouton BACK
         TextButton buttonBack = new TextButton("Back", skinMain);
-        buttonBack.setPosition(SCREEN_WIDTH/2-buttonBack.getWidth()/2-15,2*buttonBack.getHeight());
+        buttonBack.setPosition(SCREEN_WIDTH/2-buttonBack.getWidth()/2,2*buttonBack.getHeight());
         buttonBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(0.2f);
-                game.setScreen(new Menu(game));
+                game.setScreen(new LevelSelection(game));
             }
         });
 
