@@ -4,6 +4,10 @@ package be.ac.umons.slay.g02.players;
 public abstract class Player {
     String name;
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
