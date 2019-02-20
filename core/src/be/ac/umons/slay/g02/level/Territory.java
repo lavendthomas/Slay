@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.level;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import be.ac.umons.slay.g02.players.Player;
@@ -21,6 +22,8 @@ public class Territory {
     //private Player owner    Player à refaire car impossible interface héritant d'une classe mais besoin de modéliser le proprio d'un territoire
 
     public Territory(Player owner, Tile... cells) {
+        this.owner = owner;
+        this.cells = new ArrayList<Tile>();
         for (Tile cell : cells) {
             this.cells.add(cell);
         }
@@ -40,6 +43,9 @@ public class Territory {
     }
 
     public boolean hasSameOwner(Territory other) {
+        if (other == null) {
+            return false;
+        }
         return owner.equals(other.owner);
     }
 
@@ -61,7 +67,7 @@ public class Territory {
     }
 
     List<Tile> getCells() {
-        //TODO should return a copy for encapsulation
+        // TODO should return a copy for encapsulation
         return cells;
     }
 

@@ -35,17 +35,17 @@ public class Tile {
     }
 
     public boolean hasSameOwner(Tile other) {
-        if (territory == null || other == null) {
+        if (territory == null) {
             return false;
         }
         return territory.hasSameOwner(other.territory);
     }
 
     public boolean mergeTerritories(Tile other) {
-        if (hasSameOwner(other)) {
-            territory.add(other);
+         if (hasSameOwner(other)) {
             other.territory.remove(other);
             other.territory = territory;
+            territory.add(other);
             return true;
         } else {
             return false;
@@ -56,12 +56,16 @@ public class Tile {
         return this.territory;
     }
 
-    public void setTerritory(Territory t) {
+    void setTerritory(Territory t) {
         if (territory != null) {
             territory.remove(this);
         }
         territory = t;
         t.add(this);
+    }
+
+    boolean hasTerritory() {
+        return !(territory == null);
     }
 
 }

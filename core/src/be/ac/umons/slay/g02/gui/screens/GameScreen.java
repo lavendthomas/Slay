@@ -5,35 +5,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.maps.tiled.AtlasTmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
-import com.badlogic.gdx.maps.tiled.renderers.BatchTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.sun.org.apache.xerces.internal.parsers.IntegratedParserConfiguration;
-
-import java.util.HashMap;
 
 import be.ac.umons.slay.g02.gui.Main;
+import be.ac.umons.slay.g02.level.FileFormatException;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
-import be.ac.umons.slay.g02.level.Tile;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -68,7 +54,12 @@ public class GameScreen implements Screen {
         stage = new Stage(new ScreenViewport());
 
         //Chargement de la map et du Level associé
-        LevelLoader.Map lvlLoader = LevelLoader.load("g02_07");
+        LevelLoader.Map lvlLoader = null;
+        try {
+            lvlLoader = LevelLoader.load("g02_01");
+        } catch (FileFormatException e) {
+            e.printStackTrace();
+        }
         level = lvlLoader.getLevel();
         map = lvlLoader.getMap();
 
@@ -124,7 +115,6 @@ public class GameScreen implements Screen {
             y = Gdx.input.getY();
             System.out.println("x " + x + " y " + y);
         }
-
     }
 
     @Override

@@ -49,6 +49,20 @@ public class Level implements Playable {
         tileMap[coords.getX()][coords.getY()].setEntity(entity);
     }
 
+    /**
+     * Return the tile at the mentioned coordinates
+     *
+     * @param coords the coordinates for which we want the tile
+     * @return A Tile
+     */
+    Tile get(Coordinate coords) {
+        return tileMap[coords.getX()][coords.getY()];
+    }
+
+    void setTerritory(Territory t, Coordinate coords) {
+        tileMap[coords.getX()][coords.getY()].setTerritory(t);
+    }
+
     public void select(Coordinate coordinate) {
 
     }
@@ -184,14 +198,22 @@ public class Level implements Playable {
                 mergeTerritories(new Coordinate(x, y - 1), processed);
             }
             // Try to merge territory with the cell below
-            if (y > 1) {
+            if (y < height - 1) {
                 tileMap[x][y].mergeTerritories(tileMap[x][y + 1]);
                 mergeTerritories(new Coordinate(x, y + 1), processed);
+            }
+            if (x > 1 && y < height - 1) {
+                tileMap[x][y].mergeTerritories(tileMap[x - 1][y + 1]);
+                mergeTerritories(new Coordinate(x - 1, y + 1), processed);
+            }
+            if (x < width - 1 && y > 1) {
+                tileMap[x][y].mergeTerritories(tileMap[x + 1][y - 1]);
+                mergeTerritories(new Coordinate(x + 1, y - 1), processed);
             }
         }
     }
 
-    private void splitTerritories() {
+    public void splitTerritories() {
         /*
         Idea: We start from one cell and we keep in this territory all the cells that are
         adjacent to this one and in the same territory. All the others are separated in another
@@ -204,6 +226,11 @@ public class Level implements Playable {
             for (int j = 0; j < height; j++) {
                 Coordinate pos = new Coordinate(i, j);
                 Tile cell = tileMap[i][j];
+
+                if (!cell.hasTerritory()) {
+                    continue;
+                }
+
                 if (!processedTerritories.contains(cell.getTerritory())) { // TODO check that this works
                     List<Coordinate> neighbours = neighbourTilesInSameTerritory(pos);
                     List<Tile> tiles = new LinkedList<Tile>();  // List of all tiles in neighbourhood
@@ -240,18 +267,19 @@ public class Level implements Playable {
         if (cell.getTerritory() == null) {
             return neighbors;
         } else {
-            neighbourTilesInSameTerritory(pos,cell.getTerritory(), neighbors);
+            neighbourTilesInSameTerritory(pos, cell.getTerritory(), neighbors);
             return neighbors;
         }
     }
 
     /**
      * Adds all of the neighbours in the same territory to the
-     * @param pos The current position
+     *
+     * @param pos       The current position
      * @param territory the territory of the neighbourhood
-     * @param known All already known cells in the neighbourhood in the same territory
+     * @param known     All already known cells in the neighbourhood in the same territory
      */
-    private void neighbourTilesInSameTerritory(Coordinate pos,Territory territory, List<Coordinate> known) {
+    private void neighbourTilesInSameTerritory(Coordinate pos, Territory territory, List<Coordinate> known) {
         Tile cell = tileMap[pos.getX()][pos.getY()];
         if (cell.getTerritory() == null) {
             return;
@@ -263,11 +291,26 @@ public class Level implements Playable {
             return;
         }
         known.add(pos);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX()+1, pos.getY()), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX()-1, pos.getY()), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY()+1), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY()-1), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY()), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY()), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() + 1), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() - 1), territory, known);
 
     }
 
+    public int countTerritories() {
+        List<Territory> territories = new LinkedList<Territory>();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Tile cell = tileMap[i][j];
+                if (cell.hasTerritory()) {
+                    if (!territories.contains(cell.getTerritory())) {
+                        System.out.println("x:" + i + " y:" + j + " perso: " + cell.getTerritory().getOwner().getName());
+                        territories.add(cell.getTerritory());
+                    }
+                }
+            }
+        }
+        return territories.size();
+    }
 }

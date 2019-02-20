@@ -21,6 +21,8 @@ import org.xml.sax.SAXException;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.players.HumanPlayer;
+import be.ac.umons.slay.g02.players.Player;
 
 public class LevelLoader {
 
@@ -28,7 +30,7 @@ public class LevelLoader {
     public static final int WATER = 9;
     public static final int TERRITORY = 7;
 
-    public static Map load(String levelname) {
+    public static Map load(String levelname) throws FileFormatException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         String name;
         int players;
@@ -50,29 +52,53 @@ public class LevelLoader {
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
+                TileType type = Tile.fromId(background.getCell(i, j).getTile().getId()).toTileType(); //TODO crash si id = 0
                 Coordinate coords = new Coordinate(i, j);
-                switch (background.getCell(i, j).getTile().getId()) {
-                    case WATER:
-                        level.set(new Tile(TileType.WATER), coords);
-                        break;
-                    case TERRITORY:
-                        level.set(new Tile(TileType.NEUTRAL), coords);
-                        break;
-                    // TODO default value ?
-                }
+                level.set(new be.ac.umons.slay.g02.level.Tile(type), coords);
             }
         }
+
+        Player p1 = new HumanPlayer("p1");
+        Player p2 = new HumanPlayer("p2");
 
         // Add territories
 
         TiledMapTileLayer terr = (TiledMapTileLayer) map.getLayers().get("Territories");
-
+        int p1nb = 0;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
+                // Creates a new territory for each tile then merges them.
                 Coordinate coords = new Coordinate(i, j);
-                // TODO Detect if 2 cells are part of the same territory and add the territory
+                int id;
+                if (terr.getCell(i, j) == null) {
+                    // No cell if the id is 0
+                    id = 0;
+                } else {
+                    id = terr.getCell(i, j).getTile().getId();
+                }
+
+                if (id != 0) {
+                    if (p1nb == 0) {
+                        p1nb = id;
+                    }
+                    if (id == p1nb) {
+                        // The tile is owned by p1
+                        be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
+                        level.setTerritory(new Territory(p1, tile), coords);
+                    } else {
+                        // Add the tile is owned by p2
+                        be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
+                        level.setTerritory(new Territory(p2, tile), coords);
+                    }
+                }
             }
         }
+
+        System.out.println("Territories: " + level.countTerritories());
+        level.mergeTerritories();
+        System.out.println("Territories: " + level.countTerritories());
+        level.mergeTerritories();
+        System.out.println("Territories: " + level.countTerritories());
 
         // Add entities
 
@@ -131,11 +157,11 @@ public class LevelLoader {
                 }
             }
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            throw new FileFormatException();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new FileFormatException();
         } catch (SAXException e) {
-            e.printStackTrace();
+            throw new FileFormatException();
         }
         return new Map(level, map);
     }
@@ -144,12 +170,12 @@ public class LevelLoader {
         private Level lvl;
         private TiledMap map;
 
-        Map (Level lvl, TiledMap map) {
+        Map(Level lvl, TiledMap map) {
             this.lvl = lvl;
             this.map = map;
         }
 
-        public Level getLevel(){
+        public Level getLevel() {
             return this.lvl;
         }
 
@@ -157,6 +183,37 @@ public class LevelLoader {
             return this.map;
         }
 
+    }
+
+    public enum Tile {
+
+        TERRITORY(7, TileType.NEUTRAL),
+        WATER(9, TileType.WATER);
+
+        int id;
+        TileType type;
+
+        Tile(int id, TileType type) {
+            this.id = id;
+            this.type = type;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public TileType toTileType() {
+            return type;
+        }
+
+        public static Tile fromId(int id) throws FileFormatException {
+            for (Tile tile : LevelLoader.Tile.values()) {
+                if (tile.id == id) {
+                    return tile;
+                }
+            }
+            throw new FileFormatException();
+        }
     }
 
 }
