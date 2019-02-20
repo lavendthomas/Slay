@@ -11,8 +11,6 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.0'
-        
-
     }
 }
 
@@ -82,7 +80,9 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        
+
+        testCompile "junit:junit:4.12"
+        testCompile "org.mockito:mockito-core:2.+"
     }
 }
 
