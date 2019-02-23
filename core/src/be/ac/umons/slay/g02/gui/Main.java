@@ -74,6 +74,7 @@ public class Main extends Game {
 
     @Override
     public void resize(int width, int height) {
+        //stage.getViewport().setScreenBounds(0,0, width, height);
     }
 
     @Override
