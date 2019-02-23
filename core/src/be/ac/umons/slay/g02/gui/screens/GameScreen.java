@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import be.ac.umons.slay.g02.gui.Main;
+import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 
@@ -39,15 +40,14 @@ public class GameScreen implements Screen, InputProcessor {
     private TiledMap map;
     private Level level;
     private HexagonalTiledMapRenderer renderer;
-    OrthographicCamera camera;
+    private OrthographicCamera camera;
 
-    private int nbreW;
-    private int nbreH;
     private int tileW;
     private int tileH;
-    private int side;
-    private int worldW;
-    private int worldH;
+    private int nbreW;
+    private int nbreH;
+    private int size;
+    private double simplError;
 
     private TiledMapTileLayer background;
     private TiledMapTileLayer territories;
@@ -80,12 +80,14 @@ public class GameScreen implements Screen, InputProcessor {
             nbreH = prop.get("height", Integer.class);
             tileW = prop.get("tilewidth", Integer.class);
             tileH = prop.get("tileheight", Integer.class);
-            side = prop.get("hexsidelength", Integer.class);
+            size = prop.get("hexsidelength", Integer.class);
 
-            worldW = nbreW/2 * tileW + nbreW/2 * tileW/2;
-            worldH = nbreH * tileH + tileH/2;
+            simplError = size * sqrt(3) - round(size * sqrt(3));
+
+            int worldW = nbreW/2 * tileW + nbreW/2 * tileW/2;
+            int worldH = nbreH * tileH + tileH/2;
             camera = new OrthographicCamera();
-            stage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
+            stage = new Stage(new FillViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
 
             stage.getViewport().setWorldSize(worldW, worldH);
             stage.getViewport().setScreenPosition(worldW/2 , worldH/2);
@@ -105,9 +107,6 @@ public class GameScreen implements Screen, InputProcessor {
             }
         });
         stage.addActor(buttonBack);
-
-
-
     }
 
     @Override
@@ -121,18 +120,20 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.setView(camera);
         stage.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
-
         stage.draw();
         stage.act();
 
         //récupère position clic gauche de souris
         if (Gdx.input.justTouched()) {
-            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/side * 0.42);
+            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/size * simplError);
             Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + 55 - shift, 0));
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
-            Hex hex = pixelToHex((int) vect.x, (int) vect.y);
-            System.out.println("x " + hex.q + " y " + hex.r);
-            background.getCell(hex.q, hex.r).setTile(set.getTile(1));
+            HexManagement manage = new HexManagement(this.size);
+            Coordinate coord = manage.pixelToHex((int) vect.x, (int) vect.y);
+            System.out.println("x " + coord.getX() + " y " + coord.getY());
+            if (coord.getX() >= 0 && coord.getX() < nbreW && coord.getY() >= 0 && coord.getY() < nbreH) {
+                background.getCell(coord.getX(), coord.getY()).setTile(set.getTile(1));
+            }
         }
         renderer.render();
     }
@@ -203,61 +204,6 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
 
-    private Hex pixelToHex (int xp, int yp) {
-        double q = (2/3f * xp)/this.side;
-        double r = (-xp/3f + sqrt(3)/3f*yp) / this.side;
-        return cube_to_oddq(cube_round(q, -q-r, r));
-    }
-
-
-    private Hex cube_to_oddq (Cube cube) {
-        int col = cube.x;
-        int row = cube.z + (cube.x + (cube.x&1)) / 2;
-        return new Hex(col, row);
-    }
-
-    private Cube cube_round (double x, double y, double z) {
-        int rx = (int) round(x);
-        int ry = (int) round(y);
-        int rz = (int) round(z);
-
-        double x_diff = abs(rx - x);
-        double y_diff = abs(ry - y);
-        double z_diff = abs(rz - z);
-
-        if ((x_diff > y_diff) && (x_diff > z_diff)) {
-            rx = -ry-rz;
-        }
-        else if (y_diff > z_diff) {
-            ry = -rx-rz;
-        }
-        else {
-            rz = -rx-ry;
-        }
-        return new Cube(rx, ry, rz);
-    }
-
-    private class Hex {
-        int q;
-        int r;
-
-        private Hex (int q, int r) {
-            this.q = q;
-            this.r = r;
-        }
-    }
-
-    private class Cube {
-        int x;
-        int y;
-        int z;
-
-        private Cube (int x, int y, int z) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-    }
 
 }
 
