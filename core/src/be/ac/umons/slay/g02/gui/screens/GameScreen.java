@@ -127,7 +127,8 @@ public class GameScreen implements Screen, InputProcessor {
 
         //récupère position clic gauche de souris
         if (Gdx.input.justTouched()) {
-            Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/side * 0.42);
+            Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + 55 - shift, 0));
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
             Hex hex = pixelToHex((int) vect.x, (int) vect.y);
             System.out.println("x " + hex.q + " y " + hex.r);
@@ -211,7 +212,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     private Hex cube_to_oddq (Cube cube) {
         int col = cube.x;
-        int row = cube.z + (cube.x - (cube.x&1)) / 2;
+        int row = cube.z + (cube.x + (cube.x&1)) / 2;
         return new Hex(col, row);
     }
 
