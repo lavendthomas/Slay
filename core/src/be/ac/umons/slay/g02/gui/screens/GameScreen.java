@@ -47,9 +47,10 @@ public class GameScreen implements Screen, InputProcessor {
     private int nbreH;
     private int tileW;
     private int tileH;
-    private int side;
+    private int size;
     private int worldW;
     private int worldH;
+    private double errorOffset;
 
     private TiledMapTileLayer background;
     private TiledMapTileLayer territories;
@@ -84,7 +85,8 @@ public class GameScreen implements Screen, InputProcessor {
             nbreH = prop.get("height", Integer.class);
             tileW = prop.get("tilewidth", Integer.class);
             tileH = prop.get("tileheight", Integer.class);
-            side = prop.get("hexsidelength", Integer.class);
+            size = prop.get("hexsidelength", Integer.class);
+            errorOffset = size * sqrt(3) - round(size * sqrt(3));
 
             worldW = nbreW/2 * tileW + nbreW/2 * tileW/2;
             worldH = nbreH * tileH + tileH/2;
@@ -131,16 +133,13 @@ public class GameScreen implements Screen, InputProcessor {
 
         //récupère position clic gauche de souris
         if (Gdx.input.justTouched()) {
-            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/side * 0.42);
-            Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + 55 - shift, 0));
+            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/size * errorOffset);
+            Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
-            HexManagement manage = new HexManagement(this.side);
-            Coordinate coord = manage.pixelToHex((int) vect.x, (int) vect.y);
+            Coordinate coord = HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
             Gdx.app.debug("slay","x " + coord.getX() + " y " + coord.getY());
+            HexManagement.drawTile(coord, set.getTile(8), entities);
 
-            if (coord.getX() >= 0 && coord.getX() < nbreW && coord.getY() >= 0 && coord.getY() < nbreW) {
-                background.getCell(coord.getX(), coord.getY()).setTile(set.getTile(1));
-            }
         }
         renderer.render();
     }
