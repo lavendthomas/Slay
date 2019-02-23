@@ -135,7 +135,9 @@ public class GameScreen implements Screen, InputProcessor {
             Coordinate coord = manage.pixelToHex((int) vect.x, (int) vect.y);
             System.out.println("x " + coord.getX() + " y " + coord.getY());
 
-            background.getCell(coord.getX(), coord.getY()).setTile(set.getTile(1));
+            if (coord.getX() >= 0 && coord.getX() < nbreW && coord.getY() >= 0 && coord.getY() < nbreW) {
+                background.getCell(coord.getX(), coord.getY()).setTile(set.getTile(1));
+            }
         }
         renderer.render();
     }
