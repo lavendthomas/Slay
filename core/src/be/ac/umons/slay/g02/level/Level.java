@@ -1,5 +1,7 @@
 package be.ac.umons.slay.g02.level;
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -55,7 +57,7 @@ public class Level implements Playable {
      * @param coords the coordinates for which we want the tile
      * @return A Tile
      */
-    Tile get(Coordinate coords) {
+    public Tile get(Coordinate coords) {
         return tileMap[coords.getX()][coords.getY()];
     }
 
@@ -160,7 +162,9 @@ public class Level implements Playable {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Coordinate pos = new Coordinate(i, j);
-                mergeTerritories(pos, processed);
+                if (!processed.contains(pos)) {
+                    mergeTerritories(pos, processed);
+                }
             }
         }
     }
@@ -182,34 +186,44 @@ public class Level implements Playable {
 
             int x = pos.getX();
             int y = pos.getY();
-            // Try to merge territory with cell on the left
+            // Try to merge territory with cell on the left (upper)
             if (x > 1) {
-                tileMap[x][y].mergeTerritories(tileMap[x - 1][y]);
-                mergeTerritories(new Coordinate(x - 1, y), processed);
+                if (tileMap[x][y].mergeTerritories(tileMap[x - 1][y])) {
+                    mergeTerritories(new Coordinate(x - 1, y), processed);
+                }
             }
-            // Try to merge territory with the cell on the right
-            if (x < width - 1) {
-                tileMap[x][y].mergeTerritories(tileMap[x + 1][y]);
-                mergeTerritories(new Coordinate(x + 1, y), processed);
-            }
-            // Try to merge territory with the cell above
-            if (y > 1) {
-                tileMap[x][y].mergeTerritories(tileMap[x][y - 1]);
-                mergeTerritories(new Coordinate(x, y - 1), processed);
+            // Try to merge territory with cell on the left (lower)
+            if (x > 1 && y > 1) {
+                if (tileMap[x][y].mergeTerritories(tileMap[x - 1][y - 1])) {
+                    mergeTerritories(new Coordinate(x - 1, y - 1), processed);
+                }
             }
             // Try to merge territory with the cell below
+            if (y > 1) {
+                if (tileMap[x][y].mergeTerritories(tileMap[x][y - 1])) {
+                    mergeTerritories(new Coordinate(x, y - 1), processed);
+                }
+            }
+            // Try to merge territory with the cell on the right (lower)
+            if (x < width - 1) {
+                if (tileMap[x][y].mergeTerritories(tileMap[x + 1][y])) {
+                    mergeTerritories(new Coordinate(x + 1, y), processed);
+                }
+            }
+            // Try to merge territory with the cell on the right (upper)
+            if (x < width - 1 && y < height - 1) {
+                if (tileMap[x][y].mergeTerritories(tileMap[x + 1][y + 1])) {
+                    mergeTerritories(new Coordinate(x + 1, y + 1), processed);
+                }
+            }
+            // Try to merge territory with the cell above
             if (y < height - 1) {
-                tileMap[x][y].mergeTerritories(tileMap[x][y + 1]);
-                mergeTerritories(new Coordinate(x, y + 1), processed);
+                if (tileMap[x][y].mergeTerritories(tileMap[x][y + 1])) {
+                    mergeTerritories(new Coordinate(x, y + 1), processed);
+                }
             }
-            if (x > 1 && y < height - 1) {
-                tileMap[x][y].mergeTerritories(tileMap[x - 1][y + 1]);
-                mergeTerritories(new Coordinate(x - 1, y + 1), processed);
-            }
-            if (x < width - 1 && y > 1) {
-                tileMap[x][y].mergeTerritories(tileMap[x + 1][y - 1]);
-                mergeTerritories(new Coordinate(x + 1, y - 1), processed);
-            }
+
+
         }
     }
 
@@ -305,7 +319,7 @@ public class Level implements Playable {
                 Tile cell = tileMap[i][j];
                 if (cell.hasTerritory()) {
                     if (!territories.contains(cell.getTerritory())) {
-                        System.out.println("x:" + i + " y:" + j + " perso: " + cell.getTerritory().getOwner().getName());
+                        Gdx.app.debug("slay", "x:" + i + " y:" + j + " perso: " + cell.getTerritory().getOwner().getName());
                         territories.add(cell.getTerritory());
                     }
                 }

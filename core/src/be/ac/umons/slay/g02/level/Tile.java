@@ -68,4 +68,8 @@ public class Tile {
         return !(territory == null);
     }
 
+    @Override
+    public String toString() {
+        return "[" + type.toString() + ":" + entity + ":" + territory +"]";
+    }
 }

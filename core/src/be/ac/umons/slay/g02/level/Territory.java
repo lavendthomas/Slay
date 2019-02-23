@@ -82,4 +82,9 @@ public class Territory {
     public void incrIncome() {
         this.income += 1;
     }
+
+    @Override
+    public String toString() {
+        return "{"+ owner + ":" + hashCode() +" $: " + coins +"}";
+    }
 }

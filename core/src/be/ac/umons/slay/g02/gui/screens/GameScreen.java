@@ -42,12 +42,13 @@ public class GameScreen implements Screen, InputProcessor {
     private HexagonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
 
-    private int tileW;
-    private int tileH;
     private int nbreW;
     private int nbreH;
-    private int size;
-    private double simplError;
+    private int tileW;
+    private int tileH;
+    private int side;
+    private int worldW;
+    private int worldH;
 
     private TiledMapTileLayer background;
     private TiledMapTileLayer territories;
@@ -80,14 +81,12 @@ public class GameScreen implements Screen, InputProcessor {
             nbreH = prop.get("height", Integer.class);
             tileW = prop.get("tilewidth", Integer.class);
             tileH = prop.get("tileheight", Integer.class);
-            size = prop.get("hexsidelength", Integer.class);
+            side = prop.get("hexsidelength", Integer.class);
 
-            simplError = size * sqrt(3) - round(size * sqrt(3));
-
-            int worldW = nbreW/2 * tileW + nbreW/2 * tileW/2;
-            int worldH = nbreH * tileH + tileH/2;
+            worldW = nbreW/2 * tileW + nbreW/2 * tileW/2;
+            worldH = nbreH * tileH + tileH/2;
             camera = new OrthographicCamera();
-            stage = new Stage(new FillViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
+            stage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
 
             stage.getViewport().setWorldSize(worldW, worldH);
             stage.getViewport().setScreenPosition(worldW/2 , worldH/2);
@@ -107,6 +106,9 @@ public class GameScreen implements Screen, InputProcessor {
             }
         });
         stage.addActor(buttonBack);
+
+
+
     }
 
     @Override
@@ -120,20 +122,20 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.setView(camera);
         stage.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
+
         stage.draw();
         stage.act();
 
         //récupère position clic gauche de souris
         if (Gdx.input.justTouched()) {
-            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/size * simplError);
+            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/side * 0.42);
             Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + 55 - shift, 0));
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
-            HexManagement manage = new HexManagement(this.size);
+            HexManagement manage = new HexManagement(this.side);
             Coordinate coord = manage.pixelToHex((int) vect.x, (int) vect.y);
             System.out.println("x " + coord.getX() + " y " + coord.getY());
-            if (coord.getX() >= 0 && coord.getX() < nbreW && coord.getY() >= 0 && coord.getY() < nbreH) {
-                background.getCell(coord.getX(), coord.getY()).setTile(set.getTile(1));
-            }
+
+            background.getCell(coord.getX(), coord.getY()).setTile(set.getTile(1));
         }
         renderer.render();
     }
@@ -202,8 +204,5 @@ public class GameScreen implements Screen, InputProcessor {
     public boolean scrolled(int amount) {
         return false;
     }
-
-
-
 }
 
