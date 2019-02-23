@@ -1,7 +1,9 @@
 package be.ac.umons.slay.g02.gui.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -20,7 +22,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import be.ac.umons.slay.g02.gui.Main;
+import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 
@@ -57,6 +61,9 @@ public class GameScreen implements Screen, InputProcessor {
     GameScreen(Game aGame) {
         game = aGame;
 
+        // Show debug messages
+        Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO remove
+
         try {
             //Chargement de la map et du Level associé
             LevelLoader.Map lvlLoader = LevelLoader.load("g02_01");
@@ -82,13 +89,13 @@ public class GameScreen implements Screen, InputProcessor {
             tileH = prop.get("tileheight", Integer.class);
             side = prop.get("hexsidelength", Integer.class);
 
-            worldW = nbreW/2 * tileW + nbreW/2 * tileW/2;
-            worldH = nbreH * tileH + tileH/2;
+            worldW = nbreW / 2 * tileW + nbreW / 2 * tileW / 2;
+            worldH = nbreH * tileH + tileH / 2;
             camera = new OrthographicCamera();
             stage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
 
             stage.getViewport().setWorldSize(worldW, worldH);
-            stage.getViewport().setScreenPosition(worldW/2 , worldH/2);
+            stage.getViewport().setScreenPosition(worldW / 2, worldH / 2);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +112,6 @@ public class GameScreen implements Screen, InputProcessor {
             }
         });
         stage.addActor(buttonBack);
-
 
 
     }
@@ -127,12 +133,13 @@ public class GameScreen implements Screen, InputProcessor {
 
         //récupère position clic gauche de souris
         if (Gdx.input.justTouched()) {
-            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/side * 0.42);
+            int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / side * 0.42);
             Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + 55 - shift, 0));
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
             Hex hex = pixelToHex((int) vect.x, (int) vect.y);
-            System.out.println("x " + hex.q + " y " + hex.r);
+            Gdx.app.debug("slay","x " + hex.q + " y " + hex.r);
             background.getCell(hex.q, hex.r).setTile(set.getTile(1));
+            Gdx.app.debug("slay", level.get(new Coordinate(hex.q, hex.r)).toString());
         }
         renderer.render();
     }
@@ -162,6 +169,7 @@ public class GameScreen implements Screen, InputProcessor {
         Main.skinMain.dispose();
         stage.dispose();
     }
+
     @Override
     public boolean keyDown(int keycode) {
         return false;
@@ -203,20 +211,20 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
 
-    private Hex pixelToHex (int xp, int yp) {
-        double q = (2/3f * xp)/this.side;
-        double r = (-xp/3f + sqrt(3)/3f*yp) / this.side;
-        return cube_to_oddq(cube_round(q, -q-r, r));
+    private Hex pixelToHex(int xp, int yp) {
+        double q = (2 / 3f * xp) / this.side;
+        double r = (-xp / 3f + sqrt(3) / 3f * yp) / this.side;
+        return cube_to_oddq(cube_round(q, -q - r, r));
     }
 
 
-    private Hex cube_to_oddq (Cube cube) {
+    private Hex cube_to_oddq(Cube cube) {
         int col = cube.x;
-        int row = cube.z + (cube.x + (cube.x&1)) / 2;
+        int row = cube.z + (cube.x + (cube.x & 1)) / 2;
         return new Hex(col, row);
     }
 
-    private Cube cube_round (double x, double y, double z) {
+    private Cube cube_round(double x, double y, double z) {
         int rx = (int) round(x);
         int ry = (int) round(y);
         int rz = (int) round(z);
@@ -226,13 +234,11 @@ public class GameScreen implements Screen, InputProcessor {
         double z_diff = abs(rz - z);
 
         if ((x_diff > y_diff) && (x_diff > z_diff)) {
-            rx = -ry-rz;
-        }
-        else if (y_diff > z_diff) {
-            ry = -rx-rz;
-        }
-        else {
-            rz = -rx-ry;
+            rx = -ry - rz;
+        } else if (y_diff > z_diff) {
+            ry = -rx - rz;
+        } else {
+            rz = -rx - ry;
         }
         return new Cube(rx, ry, rz);
     }
@@ -241,7 +247,7 @@ public class GameScreen implements Screen, InputProcessor {
         int q;
         int r;
 
-        private Hex (int q, int r) {
+        private Hex(int q, int r) {
             this.q = q;
             this.r = r;
         }
@@ -252,7 +258,7 @@ public class GameScreen implements Screen, InputProcessor {
         int y;
         int z;
 
-        private Cube (int x, int y, int z) {
+        private Cube(int x, int y, int z) {
             this.x = x;
             this.y = y;
             this.z = z;

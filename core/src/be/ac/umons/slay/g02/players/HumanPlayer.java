@@ -6,4 +6,8 @@ public class HumanPlayer extends Player {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
 }
