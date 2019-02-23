@@ -298,17 +298,19 @@ public class Level implements Playable {
         if (cell.getTerritory() == null) {
             return;
         }
-        if (known.contains(cell)) {
+        if (known.contains(pos)) {
             return;
         }
         if (!cell.getTerritory().equals(territory)) {
             return;
         }
         known.add(pos);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY()), territory, known);
         neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY()), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() + 1), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY() - 1), territory, known);
         neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() - 1), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY()), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY() + 1), territory, known);
+        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() + 1), territory, known);
 
     }
 

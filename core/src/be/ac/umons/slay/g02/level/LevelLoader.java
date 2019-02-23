@@ -93,10 +93,8 @@ public class LevelLoader {
                 }
             }
         }
-
-        //System.out.println("Territories: " + level.countTerritories());
+        
         level.mergeTerritories();
-        //System.out.println("Territories: " + level.countTerritories());
 
         // Add entities
 
