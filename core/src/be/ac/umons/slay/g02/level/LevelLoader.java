@@ -93,7 +93,7 @@ public class LevelLoader {
                 }
             }
         }
-        
+
         level.mergeTerritories();
 
         // Add entities

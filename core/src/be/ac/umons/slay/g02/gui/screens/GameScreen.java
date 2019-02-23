@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.gui.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -57,6 +58,8 @@ public class GameScreen implements Screen, InputProcessor {
 
     GameScreen(Game aGame) {
         game = aGame;
+
+        Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO remove
 
         try {
             //Chargement de la map et du Level associé
@@ -133,7 +136,7 @@ public class GameScreen implements Screen, InputProcessor {
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
             HexManagement manage = new HexManagement(this.side);
             Coordinate coord = manage.pixelToHex((int) vect.x, (int) vect.y);
-            System.out.println("x " + coord.getX() + " y " + coord.getY());
+            Gdx.app.debug("slay","x " + coord.getX() + " y " + coord.getY());
 
             if (coord.getX() >= 0 && coord.getX() < nbreW && coord.getY() >= 0 && coord.getY() < nbreW) {
                 background.getCell(coord.getX(), coord.getY()).setTile(set.getTile(1));
