@@ -1,13 +1,14 @@
 package be.ac.umons.slay.g02.level;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.FileHandler;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,7 +38,8 @@ public class LevelLoader {
         int width = 0;
         int height = 0;
 
-        TiledMap map = new TmxMapLoader().load(LEVELS_PATH + File.separator + levelname + ".tmx");
+        TiledMap map = new TmxMapLoader().load(LEVELS_PATH + "/" +levelname + ".tmx");
+
         MapProperties prop = map.getProperties();
 
         width = prop.get("width", Integer.class);
@@ -100,8 +102,9 @@ public class LevelLoader {
 
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            File fileXML = Gdx.files.internal(LEVELS_PATH + File.separator + levelname + ".xml").file();
-            Document xml = builder.parse(fileXML);
+            FileHandle fileXML = Gdx.files.internal(LEVELS_PATH + "/" +  levelname + ".xml");
+            fileXML.copyTo(Gdx.files.local( "currentLevel.xml"));
+            Document xml = builder.parse(Gdx.files.local( "currentLevel.xml").file());
             Element root = xml.getDocumentElement();
             name = root.getAttribute("name");
 
@@ -153,11 +156,14 @@ public class LevelLoader {
                 }
             }
         } catch (ParserConfigurationException e) {
-            throw new FileFormatException();
+            Gdx.app.error("slay", e.getMessage());
+            throw new FileFormatException(e);
         } catch (IOException e) {
-            throw new FileFormatException();
+            Gdx.app.error("slay", e.getMessage());
+            throw new FileFormatException(e);
         } catch (SAXException e) {
-            throw new FileFormatException();
+            Gdx.app.error("slay", e.getMessage());
+            throw new FileFormatException(e);
         }
         return new Map(level, map);
     }
