@@ -3,6 +3,7 @@ package be.ac.umons.slay.g02.gui.screens;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -155,7 +156,12 @@ public class GameScreen implements Screen, InputProcessor {
                 Gdx.app.debug("slay","1x " + coord1.getX() + " 1y " + coord1.getY());
                 Gdx.app.debug("slay","2x " + coord2.getX() + " 2y " + coord2.getY());
             }
-
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
+            camera.zoom -= 0.02;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+            camera.zoom += 0.02;
         }
         chargeLevel(level);
         renderer.render();
