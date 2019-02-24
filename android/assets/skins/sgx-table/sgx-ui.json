@@ -141,10 +141,10 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 	default: {
-		up: button-small
+		up: button
 		down: button-small-pressed
 		over: button-small-over
-		disabled: button-small-disabled
+		disabled: button-disabled
 	}
 	close: {
 		up: button-close
@@ -152,9 +152,9 @@ com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		over: button-close-over
 	}
 	switch: {
-		up: switch-off-over
+		up: switch-off
 		over: switch-off-over
-		checked: switch-on-over
+		checked: switch-on
 		checkedOver: switch-on-over
 		disabled: switch-off-disabled
 	}
@@ -213,7 +213,7 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		checkboxOff: switch-off
 		checkboxOnDisabled: switch-on-disabled
 		checkboxOffDisabled: switch-off-disabled
-		font: title
+		font: small
 		fontColor: font
 		overFontColor: font-over
 		disabledFontColor: font-disabled
@@ -281,12 +281,12 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 		imageChecked: switch-on
 		imageCheckedOver: switch-on-over
 		imageDisabled: switch-off-disabled
-		font: title
+		font: small
 	}
 	big: {
 		font: font
 		fontColor: font
-		overFontColor: font-over
+		overFontColor: font
 		disabledFontColor: font-disabled
 		up: button
 		down: button-pressed
@@ -330,7 +330,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
 	default: {
-		font: font
+		font: small
 		fontColorSelected: font-over
 		fontColorUnselected: font-over
 		selection: list-selection
@@ -360,7 +360,7 @@ com.badlogic.gdx.scenes.scene2d.ui.ScrollPane$ScrollPaneStyle: {
 }
 com.badlogic.gdx.scenes.scene2d.ui.SelectBox$SelectBoxStyle: {
 	default: {
-		font: font
+		font: small
 		fontColor: font
 		disabledFontColor: font-disabled-alt
 		background: select-box
@@ -397,12 +397,12 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	default: {
 		font: font
 		fontColor: font
-		overFontColor: font-over
+		overFontColor: font
 		disabledFontColor: font-disabled
-		up: button-small
-		down: button-small-pressed
-		over: button-small-over
-		disabled: button-small-disabled
+		up: button
+		down: button-pressed
+		over: button-over
+		disabled: button-disabled
 	}
 	number: {
 		font: small
@@ -427,7 +427,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	menu-button: {
 		font: font
 		fontColor: font
-		overFontColor: font-over
+		overFontColor: font
 		up: file-menu-button
 		down: file-menu-button-pressed
 		over: file-menu-button-over
@@ -464,7 +464,7 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	big: {
 		font: title
 		fontColor: font
-		overFontColor: font-over
+		overFontColor: font
 		disabledFontColor: font-disabled
 		up: button
 		down: button-pressed

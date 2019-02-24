@@ -8,25 +8,29 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.HashMap;
 
-import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
@@ -34,7 +38,14 @@ import be.ac.umons.slay.g02.level.Tile;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
-import static java.lang.Math.abs;
+import static be.ac.umons.slay.g02.gui.Main.cursor;
+import static be.ac.umons.slay.g02.gui.Main.pm;
+import static be.ac.umons.slay.g02.gui.Main.skinSgx;
+import static be.ac.umons.slay.g02.gui.Main.soundButton1;
+import static be.ac.umons.slay.g02.gui.Main.soundButton2;
+import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.gui.screens.Menu.disableButton;
+import static be.ac.umons.slay.g02.gui.screens.Menu.enableButton;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
@@ -48,6 +59,11 @@ public class GameScreen implements Screen, InputProcessor {
     private Level level;
     private HexagonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
+
+    private ImageButton buttonPause;
+    private ImageButton buttonNext;
+    private TextButton buttonResume;
+    private TextButton buttonQuit;
 
     private int nbreW;
     private int nbreH;
@@ -96,30 +112,147 @@ public class GameScreen implements Screen, InputProcessor {
             size = prop.get("hexsidelength", Integer.class);
             errorOffset = size * sqrt(3) - round(size * sqrt(3));
 
-            worldW = nbreW/2 * tileW + nbreW/2 * tileW/2;
-            worldH = nbreH * tileH + tileH/2;
+            worldW = nbreW / 2 * tileW + nbreW / 2 * tileW / 2;
+            worldH = nbreH * tileH + tileH / 2;
             camera = new OrthographicCamera();
             stage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
 
             stage.getViewport().setWorldSize(worldW, worldH);
-            stage.getViewport().setScreenPosition(worldW/2 , worldH/2);
+            stage.getViewport().setScreenPosition(worldW / 2, worldH / 2);
+
+
+            // boutons :
+
+            TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/dots.png"))));
+
+            buttonPause = new ImageButton(imageDots);
+            buttonPause.setSize(SCREEN_WIDTH * 2 / 100, SCREEN_HEIGHT * 5 / 100);
+            buttonPause.setPosition((SCREEN_WIDTH - buttonPause.getWidth()) * 97 / 100, (SCREEN_HEIGHT - buttonPause.getHeight()) * 94 / 100);
+            buttonPause.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    soundButton1.play(0.2f);
+                    showPauseWindow();
+                }
+            });
+            stage.addActor(buttonPause);
+
+            TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
+
+            buttonNext = new ImageButton(imageNext);
+            buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+            buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+            buttonNext.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    soundButton3.play(0.2f);
+
+                    //        methode pour terminer le tour du joueur
+                }
+            });
+            stage.addActor(buttonNext);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        // bouton BACK
-        TextButton buttonBack = new TextButton("Back", Main.skinMain);
-        buttonBack.setPosition((int) (Main.SCREEN_WIDTH / 2) - buttonBack.getWidth() / 2 - 15, 2 * buttonBack.getHeight());
-        buttonBack.addListener(new ClickListener() {
+    public void showPauseWindow() {
+//      il faudra desactiver tout le background ici et le reactiver dans le bouton Resume
+        disableButton(buttonPause, buttonNext);
+
+        final Window windowPause = new Window("Pause", skinSgx);
+        windowPause.setSize(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3);
+        windowPause.setPosition(SCREEN_WIDTH / 2 - windowPause.getWidth() / 2, SCREEN_HEIGHT / 2 - windowPause.getHeight() / 2);
+        windowPause.setMovable(false);
+
+        // place le titre de la fenetre au milieu
+        windowPause.getTitleTable().padLeft(windowPause.getWidth() / 2 - windowPause.getTitleLabel().getWidth() / 2);
+
+        Table table = new Table();
+        table.setDebug(true);
+        windowPause.addActor(table);
+        table.setFillParent(true);
+        table.center();
+
+        buttonResume = new TextButton("Resume", skinSgx, "big");
+        buttonResume.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Main.soundButton2.play(0.2f);
-                game.setScreen(new Menu(game));
+                soundButton2.play(0.2f);
+                windowPause.remove();
+                enableButton(buttonPause);
             }
         });
-        stage.addActor(buttonBack);
 
+        buttonQuit = new TextButton("Quit Game", skinSgx, "big");
+        buttonQuit.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(0.2f);
+                showWindowQuit();
+            }
+        });
+
+        buttonResume.setWidth(windowPause.getWidth() * 40 / 100);
+
+        buttonQuit.setWidth(windowPause.getWidth() * 40 / 100);
+
+        windowPause.add(buttonResume).padBottom(windowPause.getWidth() * 7 / 100).fill().width(Value.percentWidth(1f));
+        windowPause.row();
+        windowPause.add(buttonQuit).fill().width(Value.percentWidth(1f));
+
+        stage.addActor(windowPause);
+    }
+
+    public void showWindowQuit() {
+        disableButton(buttonResume, buttonQuit);
+
+        final Window windowQuit = new Window("Quit Game", skinSgx);
+        windowQuit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
+        windowQuit.setPosition(SCREEN_WIDTH / 2 - windowQuit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowQuit.getHeight() / 2);
+        windowQuit.setMovable(false);
+
+        // place le titre de la fenetre au milieu
+        windowQuit.getTitleTable().padLeft(windowQuit.getWidth() / 2 - windowQuit.getTitleLabel().getWidth() / 2);
+
+        Table table = new Table();
+        windowQuit.addActor(table);
+        table.setFillParent(true);
+        table.padTop(windowQuit.getHeight() * 17 / 100);
+
+        Label labelQuitConfirm = new Label("Are you sure ?", skinSgx, "white");
+
+        TextButton buttonYes = new TextButton("Yes", skinSgx, "big");
+        buttonYes.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton2.play(0.2f);
+                stage.clear();
+                game.setScreen(new LevelSelection(game));
+            }
+        });
+
+        TextButton buttonNo = new TextButton("No", skinSgx, "big");
+        buttonNo.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton2.play(0.2f);
+                windowQuit.remove();
+                enableButton(buttonResume, buttonQuit);
+            }
+        });
+
+        table.add(labelQuitConfirm).width(Value.percentWidth(1f)).colspan(2).padBottom(SCREEN_WIDTH / 3 * 8 / 100);
+        table.row();
+        buttonYes.setWidth(SCREEN_WIDTH / 3 * 20 / 100);
+        buttonNo.setWidth(SCREEN_WIDTH / 3 * 20 / 100);
+
+        table.add(buttonYes).padRight(windowQuit.getWidth() * 8 / 100).fill();
+
+        table.add(buttonNo).fill();
+
+        stage.addActor(windowQuit);
     }
 
     @Override
@@ -129,7 +262,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClearColor(103 / 255f, 173 / 255f, 244 / 255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.setView(camera);
         stage.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
@@ -159,10 +292,10 @@ public class GameScreen implements Screen, InputProcessor {
         renderer.render();
     }
 
-    public void chargeLevel (Level level) {
+    public void chargeLevel(Level level) {
         for (int i = 0; i < level.getTileMap().length; i++) {
             for (int j = 0; j < level.getTileMap()[i].length; j++) {
-                Tile tile =  level.getTileMap()[i][j];
+                Tile tile = level.getTileMap()[i][j];
                 if (tile.getEntity() != null) {
                     TiledMapTile image = tileMap.get(tile.getEntity().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);
@@ -177,11 +310,11 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     // méthode ptr à améliorer
-    public HashMap<String, TiledMapTile> chargeTileMap (TiledMapTileSet set) {
-        String [] nameList = {"hex_green", "hex_red", "hex_darkgreen", "hex_pink", "hex_yellow", "hex_darkred", "hex_neutral", "hex_darkblue", "hex_water", "grave", "capital", "tree", "L0", "L1", "L2", "L3"};
-        HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile> ();
-        for (int i = 0; i < nameList.length; i ++) {
-            tileMap.put(nameList[i], set.getTile(i+1));
+    public HashMap<String, TiledMapTile> chargeTileMap(TiledMapTileSet set) {
+        String[] nameList = {"hex_green", "hex_red", "hex_darkgreen", "hex_pink", "hex_yellow", "hex_darkred", "hex_neutral", "hex_darkblue", "hex_water", "grave", "capital", "tree", "L0", "L1", "L2", "L3"};
+        HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile>();
+        for (int i = 0; i < nameList.length; i++) {
+            tileMap.put(nameList[i], set.getTile(i + 1));
         }
         return tileMap;
     }
@@ -207,10 +340,16 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
+        cursor.dispose();
+        pm.dispose();
+        soundButton1.dispose();
+        soundButton2.dispose();
+        soundButton3.dispose();
+        skinSgx.dispose();
         map.dispose();
-        Main.skinMain.dispose();
         stage.dispose();
     }
+
     @Override
     public boolean keyDown(int keycode) {
         return false;
