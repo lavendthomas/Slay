@@ -19,7 +19,6 @@ public class Territory {
     private int outgoings;
     private int tileCount;
     private int treeCount;
-    //private Player owner    Player à refaire car impossible interface héritant d'une classe mais besoin de modéliser le proprio d'un territoire
 
     public Territory(Player owner, Tile... cells) {
         this.owner = owner;
@@ -71,7 +70,7 @@ public class Territory {
         return cells;
     }
 
-    Player getOwner() {
+    public Player getOwner() {
         return owner;
     }
 

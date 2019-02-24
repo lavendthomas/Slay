@@ -22,6 +22,7 @@ import org.xml.sax.SAXException;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.players.Colors;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 
@@ -60,15 +61,32 @@ public class LevelLoader {
             }
         }
 
-        Player p1 = new HumanPlayer("p1");
-        Player p2 = new HumanPlayer("p2");
+        // A améliorer pour plus d'abstraction pour que les couleurs puissent être modifier par exemple
+        Player p1 = new HumanPlayer("p1", Colors.C2);
+        Player p2 = new HumanPlayer("p2", Colors.C4);
 
         // Add territories
 
         TiledMapTileLayer terr = (TiledMapTileLayer) map.getLayers().get("Territories");
-        int p1nb = 0;
+        //int p1nb = 0;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
+                // Creates a new territory for each tile then merges them.
+                Coordinate coords = new Coordinate(i, j);
+                Colors color;
+                if (terr.getCell(i, j) != null) {
+                    color = Colors.fromId(terr.getCell(i, j).getTile().getId());
+                    be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
+                    if (color.equals(p1.getColor())) {
+                        level.getTileMap()[i][j].setTerritory(new Territory(p1, tile));
+                    } else {
+                        level.getTileMap()[i][j].setTerritory(new Territory(p2, tile));
+                    }
+                }
+            }
+        }
+
+/*
                 // Creates a new territory for each tile then merges them.
                 Coordinate coords = new Coordinate(i, j);
                 int id;
@@ -78,23 +96,20 @@ public class LevelLoader {
                 } else {
                     id = terr.getCell(i, j).getTile().getId();
                 }
-
-                if (id != 0) {
-                    if (p1nb == 0) {
-                        p1nb = id;
-                    }
-                    if (id == p1nb) {
-                        // The tile is owned by p1
-                        be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
-                        level.setTerritory(new Territory(p1, tile), coords);
-                    } else {
-                        // Add the tile is owned by p2
-                        be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
-                        level.setTerritory(new Territory(p2, tile), coords);
-                    }
+                if (p1nb == 0) {
+                    p1nb = id;
                 }
-            }
-        }
+                if (id == p1nb) {
+                    // The tile is owned by p1
+                    be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
+                    level.setTerritory(new Territory(p1, tile), coords);
+                } else {
+                    // Add the tile is owned by p2
+                    be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
+                    level.setTerritory(new Territory(p2, tile), coords);
+                }
+            */
+
 
         level.mergeTerritories();
 

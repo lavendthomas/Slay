@@ -3,6 +3,11 @@ package be.ac.umons.slay.g02.players;
 
 public abstract class Player {
     String name;
+    Colors color;
+
+    public Colors getColor() {
+        return this.color;
+    }
 
     public String getName() {
         return name;

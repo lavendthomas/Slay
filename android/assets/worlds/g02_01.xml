@@ -2,22 +2,22 @@
 <world name = "g02_01">
 	<items>
 		<item
-			type="capital" coins="20" x="4" y="4"/>
+			type="capital" coins="20" x="3" y="6"/>
 		<item
-			type="capital" coins="20" x="16" y="6"/>
+			type="capital" coins="20" x="15" y="4"/>
 		<item
-			type="tree" x="3" y="7"/>
+			type="tree" x="2" y="3"/>
 		<item
-			type="tree" x="6" y="6"/>
+			type="tree" x="5" y="4"/>
 		<item
-			type="tree" x="9" y="4"/>
+			type="tree" x="8" y="4"/>
 		<item
-			type="tree" x="9" y="6"/>
+			type="tree" x="8" y="6"/>
+		<item
+			type="tree" x="11" y="4"/>
 		<item
 			type="tree" x="12" y="6"/>
 		<item
-			type="tree" x="13" y="4"/>
-		<item
-			type="tree" x="14" y="4"/>
+			type="tree" x="13" y="6"/>
 	</items>
 </world>

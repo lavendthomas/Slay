@@ -139,24 +139,16 @@ public class GameScreen implements Screen, InputProcessor {
 
         //récupère position clic gauche de souris
 
-        Coordinate coord1;
-        Coordinate coord2;
+        Coordinate coord;
 
         if (Gdx.input.justTouched()) {
-            int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/size * errorOffset);
+            int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / size * errorOffset);
             Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
-            coord1 = HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
-            if (Gdx.input.justTouched()) {
-                Vector3 vect2 = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
-                vect.set((int) (vect2.x - (tileW / 2)), (int) (vect2.y - (tileH / 2)), 0);
-                coord2 = HexManagement.pixelToHex((int) vect2.x, (int) vect2.y, size);
-                level.move(coord1, coord2);
-
-                Gdx.app.debug("slay","1x " + coord1.getX() + " 1y " + coord1.getY());
-                Gdx.app.debug("slay","2x " + coord2.getX() + " 2y " + coord2.getY());
-            }
+            coord = HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
+            Gdx.app.debug("slay", "1x " + coord.getX() + " 1y " + coord.getY());
         }
+
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             camera.zoom -= 0.02;
         }
@@ -175,10 +167,10 @@ public class GameScreen implements Screen, InputProcessor {
                     TiledMapTile image = tileMap.get(tile.getEntity().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);
                 }
-                /*if (tile.getTerritory() != null) {
-                    TiledMapTile image = tileMap.get(tile.getTerritory());
+                if (tile.getTerritory() != null) {
+                    TiledMapTile image = tileMap.get("hex_" + tile.getTerritory().getOwner().getColor().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, territories);
-                }*/
+                }
 
             }
         }
