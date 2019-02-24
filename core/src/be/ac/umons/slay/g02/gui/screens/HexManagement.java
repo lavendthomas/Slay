@@ -9,8 +9,20 @@ import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
+
+/**
+ * Class to handle calculations related to hexes
+ */
+
 public class HexManagement {
 
+    /**
+     * Method to draw a tile on a layer with given coordinates
+     *
+     * @param coord Coordinate of the tile to change
+     * @param tile TiledMapTile
+     * @param layer TiledMapTileLayer
+     */
     public static void drawTile (Coordinate coord, TiledMapTile tile, TiledMapTileLayer layer) {
         if (coord.getX() >= 0 && coord.getX() < layer.getWidth() && coord.getY() >= 0 && coord.getY() < layer.getTileHeight()) {
             if (layer.getCell(coord.getX(), coord.getY()) == null) {
@@ -20,23 +32,47 @@ public class HexManagement {
             } else {
                 layer.getCell(coord.getX(), coord.getY()).setTile(tile);
             }
-        }
+        } //TODO Ajouter une exception si on sort du cadre ???
     }
+
+    /**
+     * Method to convert the coordinates given in pixels into coordinates in the table of hexagons
+     *
+     * @param xp Integer x axis in pixel
+     * @param yp Integer y axis in pixel
+     * @param size Integer size of hexagon
+     * @return Coordinates of hexagon in the table
+     */
 
     public static Coordinate pixelToHex (int xp, int yp, int size) {
         double x = (2/3f * xp)/size;
         double y = (-xp/3f + sqrt(3)/3f*yp) / size;
-        return cube_to_oddq(cube_round(x, -x-y, y));
+        return cubeToOddq(cubeRound(x, -x-y, y));
     }
 
+    /**
+     * Method to convert the cube coordinates into table coordinates
+     *
+     * @param cube Cube coordinate
+     * @return Table coordinate
+     */
 
-    private static Coordinate cube_to_oddq (Cube cube) {
+    private static Coordinate cubeToOddq (Cube cube) {
         int x = cube.x;
         int y = cube.z + (cube.x + (cube.x&1)) / 2;
         return new Coordinate(x, y);
     }
 
-    private static Cube cube_round (double x, double y, double z) {
+    /**
+     * Method to round to the nearest hexagon
+     *
+     * @param x Double representing the cubic x coordinate
+     * @param y Double representing the cubic y coordinate
+     * @param z Double representing the cubic z coordinate
+     * @return Cube coordinate of the nearest hexagon
+     */
+
+    private static Cube cubeRound (double x, double y, double z) {
         int rx = (int) round(x);
         int ry = (int) round(y);
         int rz = (int) round(z);
@@ -57,10 +93,21 @@ public class HexManagement {
         return new Cube(rx, ry, rz);
     }
 
+    /**
+     * Inner class representing a hexagon in cubic coordinates
+     */
     private static class Cube {
         int x;
         int y;
         int z;
+
+        /**
+         * Constructor of the class
+         *
+         * @param x Integer representing the cubic x coordinate
+         * @param y Integer representing the cubic y coordinate
+         * @param z Integer representing the cubic z coordinate
+         */
 
         private Cube (int x, int y, int z) {
             this.x = x;
