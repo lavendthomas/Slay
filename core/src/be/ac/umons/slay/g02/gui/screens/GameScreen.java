@@ -247,10 +247,8 @@ public class GameScreen implements Screen, InputProcessor {
         table.row();
         buttonYes.setWidth(SCREEN_WIDTH / 3 * 20 / 100);
         buttonNo.setWidth(SCREEN_WIDTH / 3 * 20 / 100);
-
-        table.add(buttonYes).padRight(windowQuit.getWidth() * 8 / 100).fill();
-
-        table.add(buttonNo).fill();
+        table.add(buttonYes).padRight(windowQuit.getWidth() * 8 / 100).width(Value.percentWidth(1f));
+        table.add(buttonNo).width(Value.percentWidth(1f));
 
         stage.addActor(windowQuit);
     }
