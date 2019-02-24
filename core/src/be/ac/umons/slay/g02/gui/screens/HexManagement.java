@@ -2,13 +2,10 @@ package be.ac.umons.slay.g02.gui.screens;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-
 import be.ac.umons.slay.g02.level.Coordinate;
-
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
-
 
 /**
  * Class to handle calculations related to hexes

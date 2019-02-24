@@ -37,6 +37,10 @@ public class Level implements Playable {
         height = y;
     }
 
+    public Tile[][] getTileMap () {
+        return this.tileMap;
+    }
+
     /**
      * Places the tile in parameter in the mentioned coordinates
      *

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
@@ -21,10 +22,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.HashMap;
+
 import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
+import be.ac.umons.slay.g02.level.Tile;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -56,6 +61,7 @@ public class GameScreen implements Screen, InputProcessor {
     private TiledMapTileLayer territories;
     private TiledMapTileLayer entities;
     private TiledMapTileSet set;
+    private HashMap<String, TiledMapTile> tileMap;
 
     GameScreen(Game aGame) {
         game = aGame;
@@ -68,13 +74,14 @@ public class GameScreen implements Screen, InputProcessor {
             level = lvlLoader.getLevel();
             map = lvlLoader.getMap();
 
-
             // Chargement des couches et du tileset
             background = (TiledMapTileLayer) map.getLayers().get("Background");
             territories = (TiledMapTileLayer) map.getLayers().get("Territories");
             entities = (TiledMapTileLayer) map.getLayers().get("Entities");
             set = map.getTileSets().getTileSet("tileset");
 
+            tileMap = chargeTileMap(set);
+            //chargeLevel(level);
 
             // Chargement de la carte dans le renderer
             renderer = new HexagonalTiledMapRenderer(map);
@@ -112,8 +119,6 @@ public class GameScreen implements Screen, InputProcessor {
         });
         stage.addActor(buttonBack);
 
-
-
     }
 
     @Override
@@ -132,16 +137,55 @@ public class GameScreen implements Screen, InputProcessor {
         stage.act();
 
         //récupère position clic gauche de souris
+
+        Coordinate coord1;
+        Coordinate coord2;
+
         if (Gdx.input.justTouched()) {
             int shift = (int)((SCREEN_HEIGHT - Gdx.input.getY())/size * errorOffset);
             Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
             vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
-            Coordinate coord = HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
-            Gdx.app.debug("slay","x " + coord.getX() + " y " + coord.getY());
-            HexManagement.drawTile(coord, set.getTile(8), entities);
+            coord1 = HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
+            if (Gdx.input.justTouched()) {
+                Vector3 vect2 = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
+                vect.set((int) (vect2.x - (tileW / 2)), (int) (vect2.y - (tileH / 2)), 0);
+                coord2 = HexManagement.pixelToHex((int) vect2.x, (int) vect2.y, size);
+                level.move(coord1, coord2);
+
+                Gdx.app.debug("slay","1x " + coord1.getX() + " 1y " + coord1.getY());
+                Gdx.app.debug("slay","2x " + coord2.getX() + " 2y " + coord2.getY());
+            }
 
         }
+        chargeLevel(level);
         renderer.render();
+    }
+
+    public void chargeLevel (Level level) {
+        for (int i = 0; i < level.getTileMap().length; i++) {
+            for (int j = 0; j < level.getTileMap()[i].length; j++) {
+                Tile tile =  level.getTileMap()[i][j];
+                if (tile.getEntity() != null) {
+                    TiledMapTile image = tileMap.get(tile.getEntity().getName());
+                    HexManagement.drawTile(new Coordinate(i, j), image, entities);
+                }
+                /*if (tile.getTerritory() != null) {
+                    TiledMapTile image = tileMap.get(tile.getTerritory());
+                    HexManagement.drawTile(new Coordinate(i, j), image, territories);
+                }*/
+
+            }
+        }
+    }
+
+    // méthode ptr à améliorer
+    public HashMap<String, TiledMapTile> chargeTileMap (TiledMapTileSet set) {
+        String [] nameList = {"hex_green", "hex_red", "hex_darkgreen", "hex_pink", "hex_yellow", "hex_darkred", "hex_neutral", "hex_darkblue", "hex_water", "grave", "capital", "tree", "L0", "L1", "L2", "L3"};
+        HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile> ();
+        for (int i = 0; i < nameList.length; i ++) {
+            tileMap.put(nameList[i], set.getTile(i+1));
+        }
+        return tileMap;
     }
 
     @Override

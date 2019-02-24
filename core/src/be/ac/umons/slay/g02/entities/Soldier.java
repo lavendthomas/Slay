@@ -26,6 +26,10 @@ public class Soldier implements Entity {
         return soldierLevel.getCost();
     }
 
+    public String getName() {
+        return soldierLevel.getName();
+    }
+
     boolean getMoved () {
         return this.moved;
     }

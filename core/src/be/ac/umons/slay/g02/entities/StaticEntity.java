@@ -23,6 +23,10 @@ public enum StaticEntity implements Entity {
         return this.cost;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     /**
      * Returns the StaticEntity corresponding to the name in parameter
      *
