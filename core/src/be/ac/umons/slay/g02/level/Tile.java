@@ -25,13 +25,8 @@ public class Tile {
         return this.entity == null;
     }
 
-    public boolean setEntity(Entity entity) {
-        if (this.entity == null) {
-            this.entity = entity;
-            return true;
-        } else {
-            return false;
-        } //Possibilité d'améliorer en utilisant les erreurs au lieu de retourner un boolean
+    public void setEntity(Entity entity) {
+        this.entity = entity;
     }
 
     public boolean hasSameOwner(Tile other) {

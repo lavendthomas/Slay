@@ -17,6 +17,10 @@ public class Coordinate {
         return this.y;
     }
 
+    public void setX (int x) {
+        this.x = x;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

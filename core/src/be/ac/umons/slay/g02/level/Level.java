@@ -96,6 +96,13 @@ public class Level implements Playable {
     public boolean move(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
         Tile from = this.tileMap[oldCoord.getX()][oldCoord.getY()];
         Tile to = this.tileMap[newCoord.getX()][newCoord.getY()];
+        if (from.getEntity() instanceof StaticEntity) { // TEMPORAIRE POUR TEST
+            if (to.isEmpty()) {
+                moveEntity(oldCoord, newCoord);
+                return true;
+            }
+        }
+
         if (from.getEntity() instanceof Soldier) {
             if (from.isEmpty()) {
                 // TODO Erreur car rien à déplacer

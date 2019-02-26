@@ -80,8 +80,15 @@ public class GameScreen implements Screen, InputProcessor {
     private TiledMapTileSet set;
     private HashMap<String, TiledMapTile> tileMap;
 
+    private Coordinate coord1;
+    private Coordinate coord2;
+    private final int UNREAL = -1;
+
     GameScreen(Game aGame) {
         game = aGame;
+
+        coord1 = new Coordinate(UNREAL, UNREAL);
+        coord2 = new Coordinate(UNREAL, UNREAL);
 
         Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO remove
 
@@ -157,7 +164,7 @@ public class GameScreen implements Screen, InputProcessor {
         }
     }
 
-    public void showPauseWindow() {
+    private void showPauseWindow() {
 //      il faudra desactiver tout le background ici et le reactiver dans le bouton Resume
         disableButton(buttonPause, buttonNext);
 
@@ -205,7 +212,7 @@ public class GameScreen implements Screen, InputProcessor {
         stage.addActor(windowPause);
     }
 
-    public void showWindowQuit() {
+    private void showWindowQuit() {
         disableButton(buttonResume, buttonQuit);
 
         final Window windowQuit = new Window("Quit Game", skinSgx);
@@ -268,16 +275,29 @@ public class GameScreen implements Screen, InputProcessor {
         stage.draw();
         stage.act();
 
-        //récupère position clic gauche de souris
-
-        Coordinate coord;
+        if (touchDown(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)) {
+            touchUp(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
+        }
+        Vector3 vect1;
 
         if (Gdx.input.justTouched()) {
             int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / size * errorOffset);
-            Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
-            vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
-            coord = HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
-            Gdx.app.debug("slay", "1x " + coord.getX() + " 1y " + coord.getY());
+            vect1 = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
+            vect1.set((int) (vect1.x - (tileW / 2)), (int) (vect1.y - (tileH / 2)), 0);
+
+            if (coord1.getX() >= 0 && coord2.getX() >= 0) {
+                coord1.setX(UNREAL);
+                coord2.setX(UNREAL);
+            }
+            if (coord2.getX() < 0 && coord1.getX() >= 0) {
+                coord2 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
+                Gdx.app.debug("slay", "2x " + coord2.getX() + " 2y " + coord2.getY());
+                level.move(coord1, coord2);
+            }
+            if (coord1.getX() < 0 && coord2.getX() < 0) {
+                coord1 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
+                Gdx.app.debug("slay", "1x " + coord1.getX() + " 1y " + coord1.getY());
+            }
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
@@ -286,29 +306,36 @@ public class GameScreen implements Screen, InputProcessor {
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             camera.zoom += 0.02;
         }
-        chargeLevel(level);
+        loadLevel(level);
         renderer.render();
     }
 
-    public void chargeLevel(Level level) {
+    private void loadLevel(Level level) {
         for (int i = 0; i < level.getTileMap().length; i++) {
             for (int j = 0; j < level.getTileMap()[i].length; j++) {
                 Tile tile = level.getTileMap()[i][j];
                 if (tile.getEntity() != null) {
                     TiledMapTile image = tileMap.get(tile.getEntity().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);
+                } else {
+                    if (entities.getCell(i, j) != null) {
+                        entities.setCell(i, j, new TiledMapTileLayer.Cell());
+                    }
                 }
                 if (tile.getTerritory() != null) {
                     TiledMapTile image = tileMap.get("hex_" + tile.getTerritory().getOwner().getColor().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, territories);
+                } else {
+                    if (territories.getCell(i, j) != null) {
+                        territories.setCell(i, j, new TiledMapTileLayer.Cell());
+                    }
                 }
-
             }
         }
     }
 
     // méthode ptr à améliorer
-    public HashMap<String, TiledMapTile> chargeTileMap(TiledMapTileSet set) {
+    private HashMap<String, TiledMapTile> chargeTileMap(TiledMapTileSet set) {
         String[] nameList = {"hex_green", "hex_red", "hex_darkgreen", "hex_pink", "hex_yellow", "hex_darkred", "hex_neutral", "hex_darkblue", "hex_water", "grave", "capital", "tree", "L0", "L1", "L2", "L3"};
         HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile>();
         for (int i = 0; i < nameList.length; i++) {

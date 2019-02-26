@@ -6,7 +6,7 @@ public abstract class Player {
     Colors color;
 
     public Colors getColor() {
-        return this.color;
+        return color;
     }
 
     public String getName() {
