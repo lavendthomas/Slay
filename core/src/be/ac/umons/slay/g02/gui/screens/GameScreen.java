@@ -299,7 +299,9 @@ public class GameScreen implements Screen, InputProcessor {
             if (coord1.getX() < 0 && coord2.getX() < 0) {
                 coord1 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
                 Gdx.app.debug("slay", "1x " + coord1.getX() + " 1y " + coord1.getY());
+
             }
+            Gdx.app.debug("slay", "Coordinates: " + coord1 + " Tile: " + level.get(coord1) );
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {

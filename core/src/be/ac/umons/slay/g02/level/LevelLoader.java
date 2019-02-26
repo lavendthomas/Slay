@@ -8,6 +8,8 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.FileHandler;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -35,7 +37,6 @@ public class LevelLoader {
     public static Map load(String levelname) throws FileFormatException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         String name;
-        int players;
         int width = 0;
         int height = 0;
 
@@ -62,8 +63,12 @@ public class LevelLoader {
         }
 
         // A améliorer pour plus d'abstraction pour que les couleurs puissent être modifier par exemple
-        Player p1 = new HumanPlayer("p1", Colors.C2);
-        Player p2 = new HumanPlayer("p2", Colors.C4);
+        //Player p1 = new HumanPlayer("p1", null);
+        //Player p2 = new HumanPlayer("p2", null);
+
+        List<Player> players = new ArrayList<Player>();
+        List<Integer> colors = new ArrayList<Integer>();
+
 
         // Add territories
 
@@ -74,42 +79,22 @@ public class LevelLoader {
                 // Creates a new territory for each tile then merges them.
                 Coordinate coords = new Coordinate(i, j);
                 Colors color;
+
                 if (terr.getCell(i, j) != null) {
-                    color = Colors.fromId(terr.getCell(i, j).getTile().getId());
-                    be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
-                    if (color.equals(p1.getColor())) {
-                        level.getTileMap()[i][j].setTerritory(new Territory(p1, tile));
-                    } else {
-                        level.getTileMap()[i][j].setTerritory(new Territory(p2, tile));
+                    int colorId = terr.getCell(i, j).getTile().getId();
+
+                    int index = colors.indexOf(colorId);
+                    if (index == -1) {
+                        // Add a new player for this color
+                        players.add(new HumanPlayer("p" + players.size(), Colors.fromId(colorId)));
+                        colors.add(colorId);
+                        index = colors.indexOf(colorId);
                     }
+
+                    level.getTileMap()[i][j].setTerritory(new Territory(players.get(index), level.get(coords)));
                 }
             }
         }
-
-/*
-                // Creates a new territory for each tile then merges them.
-                Coordinate coords = new Coordinate(i, j);
-                int id;
-                if (terr.getCell(i, j) == null) {
-                    // No cell if the id is 0
-                    id = 0;
-                } else {
-                    id = terr.getCell(i, j).getTile().getId();
-                }
-                if (p1nb == 0) {
-                    p1nb = id;
-                }
-                if (id == p1nb) {
-                    // The tile is owned by p1
-                    be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
-                    level.setTerritory(new Territory(p1, tile), coords);
-                } else {
-                    // Add the tile is owned by p2
-                    be.ac.umons.slay.g02.level.Tile tile = level.get(coords);
-                    level.setTerritory(new Territory(p2, tile), coords);
-                }
-            */
-
 
         level.mergeTerritories();
 
@@ -128,7 +113,8 @@ public class LevelLoader {
                 if (n.getNodeName() == "players") {
                     // handle players
                     Element plys = (Element) n;
-                    players = Integer.parseInt(plys.getAttribute("number"));
+                    int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
+                    //TODO nbplayers == players.size()
 
                 } else if (n.getNodeName() == "items") {
                     // handle items
