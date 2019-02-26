@@ -12,7 +12,7 @@
         <activity
             android:name="be.ac.umons.slay.g02.AndroidLauncher"
             android:label="@string/app_name" 
-            android:screenOrientation="landscape"
+            android:screenOrientation="user"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

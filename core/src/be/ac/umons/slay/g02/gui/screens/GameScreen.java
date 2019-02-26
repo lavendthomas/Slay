@@ -10,12 +10,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -28,7 +30,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -106,6 +107,7 @@ public class GameScreen implements Screen, InputProcessor {
             set = map.getTileSets().getTileSet("tileset");
 
             tileMap = loadTileMap(set);
+            //chargeLevel(level);
 
             // Chargement de la carte dans le renderer
             renderer = new HexagonalTiledMapRenderer(map);
@@ -262,7 +264,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(new GestureDetector(new LevelGestureListener(camera)));
     }
 
     @Override
@@ -307,6 +309,7 @@ public class GameScreen implements Screen, InputProcessor {
                     Gdx.app.debug("Déplacements possibles ", "x : " + cur.getX() + " y : " + cur.getY());
                 }
             }
+            Gdx.app.debug("slay", "Coordinates: " + coord1 + " Tile: " + level.get(coord1) );
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
