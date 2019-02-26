@@ -21,6 +21,10 @@ public class Tile {
         return entity;
     }
 
+    public TileType getType() {
+        return type;
+    }
+
     public boolean isEmpty() {
         return this.entity == null;
     }

@@ -21,6 +21,17 @@ public class Coordinate {
         this.x = x;
     }
 
+    public void setY (int y) {
+        this.y = y;
+    }
+
+    public Coordinate[] getNeighbors () {
+        Coordinate[] res = {new Coordinate(x,y-1),new Coordinate(x+1, y),
+                new Coordinate(x+1, y+1), new Coordinate(x, y+1),
+                new Coordinate(x-1, y+1), new Coordinate(x-1, y)};
+        return res;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

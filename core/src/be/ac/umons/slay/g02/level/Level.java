@@ -2,6 +2,7 @@ package be.ac.umons.slay.g02.level;
 
 import com.badlogic.gdx.Gdx;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -81,6 +82,47 @@ public class Level implements Playable {
 
     }
 
+    /**
+     * Method that initialise variable for recursive method
+     *
+     * @param coord Coordinate to research
+     * @return List of coordinates you can move
+     */
+
+    public ArrayList<Coordinate> getMovePoss (Coordinate coord) {
+        ArrayList<Coordinate> res = new ArrayList<Coordinate>();
+        int n = 0;
+        getMove(res, coord, n);
+        res.remove(coord);
+        return res;
+    }
+
+    /**
+     * Recursive method to add coordinate where can move
+     *
+     * @param list  List of coordinates
+     * @param coord Actual coordinate
+     * @param n     Number of movement
+     */
+
+    private void getMove (ArrayList<Coordinate> list, Coordinate coord, int n) {
+        Coordinate[] neighbors = coord.getNeighbors();
+        Tile origin = tileMap[coord.getX()][coord.getY()];
+        for (Coordinate curr : neighbors) {
+            Tile current = tileMap[curr.getX()][curr.getY()];
+            if (current.getType().equals(TileType.NEUTRAL) &&  !list.contains(curr)) {
+                if (current.getTerritory() == null) {
+                    list.add(curr);
+                }
+                //TODO A tester plus tard si fonctionne dans un même territoire plus grand que 4 tuiles
+                if (current.getTerritory() != null && current.getTerritory().hasSameOwner(origin.getTerritory()) && n <= 4) {
+                    list.add(curr);
+                    getMove(list, curr, n + 1);
+                }
+            }
+        }
+    }
+
     public Entity getEntity() {
         return null;
     }
@@ -96,68 +138,77 @@ public class Level implements Playable {
     public boolean move(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
         Tile from = this.tileMap[oldCoord.getX()][oldCoord.getY()];
         Tile to = this.tileMap[newCoord.getX()][newCoord.getY()];
-        if (from.getEntity() instanceof StaticEntity) { // TEMPORAIRE POUR TEST
-            if (to.isEmpty()) {
-                moveEntity(oldCoord, newCoord);
-                return true;
+        if (to.getType().equals(TileType.NEUTRAL)) {
+            if (from.getEntity() instanceof StaticEntity) { // TEMPORAIRE POUR TEST
+                if (to.isEmpty()) {
+                    moveEntity(oldCoord, newCoord);
+                    return true;
+                }
             }
-        }
 
-        if (from.getEntity() instanceof Soldier) {
-            if (from.isEmpty()) {
-                // TODO Erreur car rien à déplacer
-            }
-            if (to.isEmpty()) { // juste déplacer l'entité vers les nouvelles coordonnées
-                moveEntity(oldCoord, newCoord);
-                return true;
-            } else {
-                if (to.getEntity() instanceof be.ac.umons.slay.g02.entities.StaticEntity) {
-                    if (to.getEntity() == StaticEntity.TREE) { //c'est un arbre séparation du cas où l'arbre appartient au territoire ou non pour les pièces gagnées
-                        if (from.getTerritory().hasSameOwner(to.getTerritory())) {
-                            moveEntity(oldCoord, newCoord);
-                            to.getTerritory().addCoins(3);
-                            to.getTerritory().incrIncome();
-                        } else {
-                            moveEntity(oldCoord, newCoord);
-                        }
-                        return true;
-                    } else if (to.getEntity() == StaticEntity.GRAVE) {
-                        moveEntity(oldCoord, newCoord);
-                        return true;
-                    } else if (to.getEntity() == StaticEntity.CAPITAL) {
-                        if (((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 1) {
+            if (from.getEntity() instanceof Soldier) {
+                if (from.isEmpty()) {
+                    // TODO Erreur car rien à déplacer
+                }
+                if (to.isEmpty()) { // juste déplacer l'entité vers les nouvelles coordonnées
+                    moveEntity(oldCoord, newCoord);
+                    return true;
+                } else {
+                    if (to.getEntity() instanceof be.ac.umons.slay.g02.entities.StaticEntity) {
+                        if (to.getEntity() == StaticEntity.TREE) { //c'est un arbre séparation du cas où l'arbre appartient au territoire ou non pour les pièces gagnées
+                            if (from.getTerritory().hasSameOwner(to.getTerritory())) {
+                                moveEntity(oldCoord, newCoord);
+                                to.getTerritory().addCoins(3);
+                                to.getTerritory().incrIncome();
+                            } else {
+                                moveEntity(oldCoord, newCoord);
+                            }
+                            return true;
+                        } else if (to.getEntity() == StaticEntity.GRAVE) {
                             moveEntity(oldCoord, newCoord);
                             return true;
-                        }
-                        return false;
-                    }
-                } else if (to.getEntity() instanceof Soldier) {
-                    //TODO soldat du même territoire les fusionner
-                    if (to.getTerritory().hasSameOwner(from.getTerritory())) {
-                        int fromSold = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
-                        int toSold = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                        if (fromSold == 3 || toSold == 3 || (fromSold + toSold) >= 3) {
+                        } else if (to.getEntity() == StaticEntity.CAPITAL) {
+                            if (((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 1) {
+                                moveEntity(oldCoord, newCoord);
+                                return true;
+                            }
                             return false;
-                        } else {
-                            to.setEntity(new Soldier(SoldierLevel.fromLevel(fromSold + toSold)));
-                            from.setEntity(null);
-                            return true;
                         }
-                    }
+                    } else if (to.getEntity() instanceof Soldier) {
+                        //TODO soldat du même territoire les fusionner
+                        if (to.getTerritory().hasSameOwner(from.getTerritory())) {
+                            int fromSold = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
+                            int toSold = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
+                            if (fromSold == 3 || toSold == 3 || (fromSold + toSold) >= 3) {
+                                return false;
+                            } else {
+                                to.setEntity(new Soldier(SoldierLevel.fromLevel(fromSold + toSold)));
+                                from.setEntity(null);
+                                return true;
+                            }
+                        }
 
-                    if (((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity())) {
-                        moveEntity(oldCoord, newCoord);
-                        return true;
-                    } else {
-                        from.setEntity(null);
-                        return false;
-                        /*utile dans le cas L3 contre L3 pour tuer celui qui se déplace si perdu le combat */
+                        if (((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity())) {
+                            moveEntity(oldCoord, newCoord);
+                            return true;
+                        } else {
+                            from.setEntity(null);
+                            return false;
+                            /*utile dans le cas L3 contre L3 pour tuer celui qui se déplace si perdu le combat */
+                        }
                     }
                 }
             }
         }
         return false;
     }
+
+    /**
+     * Move entity from old coordinate to new coordinate
+     *
+     * @param oldCoord old coordinates
+     * @param newCoord new coordinates
+     */
 
     private void moveEntity(Coordinate oldCoord, Coordinate newCoord) {
         this.tileMap[newCoord.getX()][newCoord.getY()].setEntity(this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity());

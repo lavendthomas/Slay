@@ -29,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import be.ac.umons.slay.g02.level.Coordinate;
@@ -104,8 +105,7 @@ public class GameScreen implements Screen, InputProcessor {
             entities = (TiledMapTileLayer) map.getLayers().get("Entities");
             set = map.getTileSets().getTileSet("tileset");
 
-            tileMap = chargeTileMap(set);
-            //chargeLevel(level);
+            tileMap = loadTileMap(set);
 
             // Chargement de la carte dans le renderer
             renderer = new HexagonalTiledMapRenderer(map);
@@ -285,18 +285,27 @@ public class GameScreen implements Screen, InputProcessor {
             vect1 = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
             vect1.set((int) (vect1.x - (tileW / 2)), (int) (vect1.y - (tileH / 2)), 0);
 
+            //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
             if (coord1.getX() >= 0 && coord2.getX() >= 0) {
                 coord1.setX(UNREAL);
                 coord2.setX(UNREAL);
             }
+
+            //Si 1ere variable a été utilisé, stocké dans la seconde
             if (coord2.getX() < 0 && coord1.getX() >= 0) {
                 coord2 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
-                Gdx.app.debug("slay", "2x " + coord2.getX() + " 2y " + coord2.getY());
+                Gdx.app.debug("Click 2 ", "x : " + coord2.getX() + " y : " + coord2.getY());
                 level.move(coord1, coord2);
             }
+
+            //Si 1ere variable non encore utilisée, stocker dedans
             if (coord1.getX() < 0 && coord2.getX() < 0) {
                 coord1 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
-                Gdx.app.debug("slay", "1x " + coord1.getX() + " 1y " + coord1.getY());
+                Gdx.app.debug("Click 1 ", "x : " + coord1.getX() + " y : " + coord1.getY());
+                ArrayList<Coordinate> list = level.getMovePoss(coord1);
+                for (Coordinate cur : list) {
+                    Gdx.app.debug("Déplacements possibles ", "x : " + cur.getX() + " y : " + cur.getY());
+                }
             }
         }
 
@@ -335,7 +344,7 @@ public class GameScreen implements Screen, InputProcessor {
     }
 
     // méthode ptr à améliorer
-    private HashMap<String, TiledMapTile> chargeTileMap(TiledMapTileSet set) {
+    private HashMap<String, TiledMapTile> loadTileMap(TiledMapTileSet set) {
         String[] nameList = {"hex_green", "hex_red", "hex_darkgreen", "hex_pink", "hex_yellow", "hex_darkred", "hex_neutral", "hex_darkblue", "hex_water", "grave", "capital", "tree", "L0", "L1", "L2", "L3"};
         HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile>();
         for (int i = 0; i < nameList.length; i++) {
