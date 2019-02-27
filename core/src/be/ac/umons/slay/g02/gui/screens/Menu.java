@@ -25,7 +25,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 
 import java.util.ArrayList;
 
@@ -74,20 +73,20 @@ public class Menu implements Screen {
     public static boolean isPlayer2Logged = true;
     public static int playerRank = 4;
     public static int totalNumberPlayers = 11;
-    public int buttonCenterWidth;
 
-    // juste le temps des tests, a enlever
     TextButton boutonNiveau;
+
+    // doivent etre declares ici
     private Game game;
     private SpriteBatch batch;
     private Sprite sprite;
 
-    // doivent etre declares ici
     private TextButton buttonPlay;
     private TextButton buttonHall;
     private TextButton buttonSettings;
     private TextButton buttonExit;
     private Button switchRegistration;
+    private Button switchFullscreen;
     private ImageButton buttonProfileLeft;
     private ImageButton buttonProfileRight;
     private ImageButton buttonAvatar;
@@ -98,10 +97,24 @@ public class Menu implements Screen {
     private TextButton buttonSettingsBack;
     private TextButton buttonEditSave;
     private TextButton buttonEditCancel;
+    public int buttonCenterWidth;
     private int buttonProfileHeight;
     private int windowSettingsWidth;
-    private int windowProfileWidth;
     private String playerName;
+
+    public static Window windowExit = new Window("Exit", skinSgx);
+    public static Window windowSettings = new Window("Settings", skinSgx);
+    public static Window windowAlert = new Window("Disable Registration", skinSgx);
+    public static Window windowLoggin = new Window("Log In", skinSgx);
+    public static Window windowProfile = new Window("Profile", skinSgx);
+    public static Window windowEdit = new Window("Edit", skinSgx);
+    public static Window windowAvatarSelection = new Window("Choose an avatar", skinSgx);
+    public static Window windowLogOut = new Window("Log Out", skinSgx);
+    public static Window windowDelete = new Window("Delete Account", skinSgx);
+
+    // pour savoir dans quel bouton le joueur s'identifie
+    public boolean isProfileLeft = false;
+    public boolean isProfileRight = false;
 
 
     public Menu(Game aGame) {
@@ -113,7 +126,6 @@ public class Menu implements Screen {
         int labelProfileWidth = buttonCenterWidth * 35 / 100;
         int tableCenterPositionX = SCREEN_WIDTH / 2;
         int tableCenterPositionY = SCREEN_HEIGHT / 3;
-        windowProfileWidth = SCREEN_WIDTH / 2 - SCREEN_WIDTH / 2 * 10 / 100;
         buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
         windowSettingsWidth = buttonCenterWidth * 3 / 4;
 
@@ -175,7 +187,7 @@ public class Menu implements Screen {
                 }
             });
 
-            Label labelProfileLeft = new Label("Not Logged", skinSgx, "title");
+            final Label labelProfileLeft = new Label("Not Logged", skinSgx, "title");
             Label labelProfileRight = new Label("Not Logged", skinSgx, "title");
             labelProfileLeft.setFontScale(0.45f);
             labelProfileRight.setFontScale(0.45f);
@@ -196,9 +208,10 @@ public class Menu implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     soundButton1.play(0.2f);
-                    if (!isPlayer1Logged)
+                    if (!isPlayer1Logged) {
                         showLogginWindow();
-                    else if (isPlayer1Logged)
+                        isProfileLeft = true;
+                    } else if (isPlayer1Logged)
                         showProfile(1);
                 }
             });
@@ -373,11 +386,10 @@ public class Menu implements Screen {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
-        Window windowSettings = new Window("Settings", skinSgx);
+        windowSettings.clear();
         windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
         windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 - windowSettings.getHeight() / 2);
         windowSettings.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowSettings.getTitleTable().padLeft(windowSettings.getWidth() / 2 - windowSettings.getTitleLabel().getWidth() / 2);
 
@@ -387,10 +399,10 @@ public class Menu implements Screen {
         windowSettings.addActor(tableBack);
         table.setFillParent(true);
         tableBack.setFillParent(true);
-        table.top().padTop(windowSettings.getHeight() * 1 / 4);
+        table.top().padTop(windowSettings.getHeight() * 16 / 100);
 
         Label labelVolume = new Label("Volume", skinSgx, "white");
-        labelVolume.setHeight(SCREEN_HEIGHT * 9 / 100);
+        labelVolume.setHeight(SCREEN_HEIGHT * 13 / 200);
         final Slider sliderVolume = new Slider(windowSettings.getWidth() / 3, windowSettings.getWidth() / 3, 1, false, skinSgx);
 
         // ne marche pas pour l'instant
@@ -407,7 +419,32 @@ public class Menu implements Screen {
         table.add(sliderVolume).height(Value.percentHeight(1f)).width(windowSettings.getWidth() / 3);
         table.row();
 
+        Label labelFullscreen = new Label("Fullscreen", skinSgx, "white");
+        labelFullscreen.setHeight(SCREEN_HEIGHT * 13 / 200);
+
+        switchFullscreen = new Button(skinSgx, "switch");
+
+        if (!Gdx.graphics.isFullscreen())
+            switchFullscreen.setChecked(false);
+
+        switchFullscreen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!Gdx.graphics.isFullscreen()) {
+                    soundButton2.play(0.2f);
+                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                } else {
+                    soundButton2.play(0.2f);
+                    Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
+                }
+            }
+        });
+
+        table.add(labelFullscreen).height(Value.percentHeight(1f)).padRight(windowSettingsWidth * 8 / 100);
+        table.add(switchFullscreen);
+        table.row();
         Label labelRegistration = new Label("Registration", skinSgx, "white");
+        labelRegistration.setHeight(SCREEN_HEIGHT * 13 / 200);
 
         switchRegistration = new Button(skinSgx, "switch");
 
@@ -425,7 +462,7 @@ public class Menu implements Screen {
             }
         });
 
-        table.add(labelRegistration);
+        table.add(labelRegistration).height(Value.percentHeight(1f)).padRight(windowSettingsWidth * 7 / 200);
         table.add(switchRegistration);
         table.row();
 
@@ -448,19 +485,18 @@ public class Menu implements Screen {
             }
         });
 
-        tableBack.add(buttonSettingsBack).fill().width(windowSettings.getWidth() / 3).padBottom(windowSettings.getHeight() * 1 / 7);
+        tableBack.add(buttonSettingsBack).fill().width(windowSettings.getWidth() / 3).padBottom(windowSettings.getHeight() * 14 / 100).height(Value.percentHeight(1f));
         tableBack.bottom();
 
         stage.addActor(windowSettings);
     }
 
     public void showAlertSettings() {
-        disableButton(buttonSettingsBack, switchRegistration);
-        final Window windowAlert = new Window("Disable Registration", skinSgx);
+        disableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
+        windowAlert.clear();
         windowAlert.setSize(windowSettingsWidth, windowSettingsWidth);
         windowAlert.setPosition(SCREEN_WIDTH / 2 - windowSettingsWidth / 2, SCREEN_HEIGHT / 2 - windowSettingsWidth / 2);
         windowAlert.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowAlert.getTitleTable().padLeft(windowAlert.getWidth() / 2 - windowAlert.getTitleLabel().getWidth() / 2);
 
@@ -483,7 +519,7 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(0.2f);
-                enableButton(buttonSettingsBack, switchRegistration);
+                enableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
                 windowAlert.remove();
             }
         });
@@ -495,7 +531,7 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(0.2f);
                 switchRegistration.setChecked(true);
-                enableButton(buttonSettingsBack, switchRegistration);
+                enableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
                 windowAlert.remove();
             }
         });
@@ -508,11 +544,10 @@ public class Menu implements Screen {
     }
 
     public void showLogginWindow() {
-        Window windowLoggin = new Window("Log In", skinSgx);
+        windowLoggin.clear();
         windowLoggin.setSize(windowLoggin.getWidth(), windowLoggin.getHeight());
         windowLoggin.setPosition(SCREEN_WIDTH / 2 - windowLoggin.getWidth() / 2, SCREEN_HEIGHT / 2 - windowLoggin.getHeight() / 2);
         windowLoggin.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowLoggin.getTitleTable().padLeft(windowLoggin.getWidth() / 2 - windowLoggin.getTitleLabel().getWidth() / 2);
 
@@ -530,8 +565,8 @@ public class Menu implements Screen {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
-        final Window windowProfile = new Window("Profile", skinSgx);
-        windowProfile.setSize(windowProfileWidth, SCREEN_WIDTH / 2 - SCREEN_WIDTH / 2 * 10 / 100);
+        windowProfile.clear();
+        windowProfile.setSize(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100);
         windowProfile.setPosition(SCREEN_WIDTH / 2 - windowProfile.getWidth() / 2, SCREEN_HEIGHT / 2 - windowProfile.getHeight() / 2);
         windowProfile.setMovable(false);
 
@@ -566,7 +601,6 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 imageSelected = new ImageButton(imageAnonymous);
-                //            System.out.print("ok-anonym");
                 showAvatarSelectionWindow();
             }
         });
@@ -625,40 +659,31 @@ public class Menu implements Screen {
             }
         });
 
-        buttonEdit.setPosition(SCREEN_WIDTH / 2 - windowProfile.getWidth() * 16 / 100, windowProfile.getHeight() / 2 + windowProfile.getHeight() * 8 / 100);
-        buttonEdit.setWidth(windowProfile.getWidth() * 32 / 100);
+        buttonEdit.setWidth(windowProfile.getWidth() * 38 / 100);
         windowProfile.center();
-        buttonLogOut.setPosition(SCREEN_WIDTH / 2 - windowProfile.getWidth() * 16 / 100, windowProfile.getHeight() / 2 - windowProfile.getHeight() * 5 / 100);
+        buttonLogOut.setWidth(windowProfile.getWidth() * 38 / 100);
+        buttonDelete.setWidth(windowProfile.getWidth() * 38 / 100);
+        buttonBack.setWidth(windowProfile.getWidth() * 38 / 100);
 
-        buttonLogOut.setWidth(windowProfile.getWidth() * 32 / 100);
+        table.add(buttonEdit).padTop(SCREEN_HEIGHT * 2 / 100).width(Value.percentWidth(1f));
+        table.row().padTop(windowProfile.getWidth() / 50);
 
-        buttonDelete.setPosition(SCREEN_WIDTH / 2 - windowProfile.getWidth() * 16 / 100, windowProfile.getHeight() / 2 - windowProfile.getHeight() * 18 / 100);
-        buttonDelete.setWidth(windowProfile.getWidth() * 32 / 100);
-
-        buttonBack.setPosition(SCREEN_WIDTH / 2 - windowProfile.getWidth() * 16 / 100, windowProfile.getHeight() / 2 - windowProfile.getHeight() * 31 / 100);
-        buttonBack.setWidth(windowProfile.getWidth() * 32 / 100);
-/*
-        table.add(buttonEdit).padTop(SCREEN_HEIGHT*10/100);
+        table.add(buttonLogOut).padTop(SCREEN_HEIGHT * 4 / 100).width(Value.percentWidth(1f));
         table.row();
 
-        table.add(buttonLogOut).padTop(SCREEN_HEIGHT*2/100);
+        table.add(buttonDelete).padTop(SCREEN_HEIGHT * 4 / 100).width(Value.percentWidth(1f));
         table.row();
 
-        table.add(buttonDelete).padTop(SCREEN_HEIGHT*2/100);
-        table.row();
-
-        table.add(buttonBack).padTop(SCREEN_HEIGHT*2/100);
-*/
-        addToStage(windowProfile, buttonEdit, buttonLogOut, buttonDelete, buttonBack);
+        table.add(buttonBack).padTop(SCREEN_HEIGHT * 4 / 100).width(Value.percentWidth(1f));
+        stage.addActor(windowProfile);
     }
 
     public void showEdit() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
-        final Window windowEdit = new Window("Edit", skinSgx);
-        windowEdit.setSize(SCREEN_WIDTH / 2 - SCREEN_WIDTH / 2 * 10 / 100, SCREEN_WIDTH / 2 - SCREEN_WIDTH / 2 * 10 / 100);
-        windowEdit.setPosition(SCREEN_WIDTH / 2 - windowProfileWidth / 2, SCREEN_HEIGHT / 2 - windowProfileWidth / 2);
+        windowEdit.clear();
+        windowEdit.setSize(windowProfile.getWidth(), windowProfile.getHeight());
+        windowEdit.setPosition(SCREEN_WIDTH / 2 - windowEdit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowEdit.getHeight() / 2);
         windowEdit.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowEdit.getTitleTable().padLeft(windowEdit.getWidth() / 2 - windowEdit.getTitleLabel().getWidth() / 2);
 
@@ -667,14 +692,14 @@ public class Menu implements Screen {
         windowEdit.addActor(table);
         table.setFillParent(true);
 
-        table.top().left();
-        table.setSize(windowProfileWidth, windowProfileWidth);
+        table.top().left().padTop(windowEdit.getHeight() * 4 / 100);
+        table.setSize(windowProfile.getWidth(), windowProfile.getWidth());
 
-        buttonAvatar = new ImageButton(imageAnonymous);
-        buttonAvatar.setSize(buttonProfileHeight, buttonProfileHeight);
+        //  buttonAvatar = new ImageButton(imageSelected);
+        imageSelected.setSize(buttonProfileHeight, buttonProfileHeight);
 
 
-        buttonAvatar.addListener(new ClickListener() {
+        imageSelected.addListener(new ClickListener() {
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 //             afficher message
             }
@@ -687,7 +712,6 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
 
                 imageSelected = new ImageButton(imageAnonymous);
-                //           System.out.print("ok ano edit");
                 showAvatarSelectionWindow();
             }
         });
@@ -712,12 +736,12 @@ public class Menu implements Screen {
             }
         });
 
-        Label labelCurrentPassword = new Label("Current Password", skinSgx, "title-white");
+        Label labelCurrentPassword = new Label("Current Password", skinSgx, "white");
 
         labelCurrentPassword.setHeight(SCREEN_HEIGHT * 10 / 100);
-        labelCurrentPassword.setAlignment(0);
-        Label labelNewPassword1 = new Label("New Password", skinSgx, "title-white");
-        Label labelNewPassword2 = new Label("Re-enter New Password", skinSgx, "title-white");
+
+        Label labelNewPassword1 = new Label("New Password", skinSgx, "white");
+        Label labelNewPassword2 = new Label("Re-enter New Password", skinSgx, "white");
 
         TextField fieldCurrentPassword = new TextField("", skinSgx);
         fieldCurrentPassword.setTextFieldListener(new TextField.TextFieldListener() {
@@ -749,35 +773,33 @@ public class Menu implements Screen {
             }
         });
 
-        Label messageError = new Label("*incorrect password", skinSgx, "title-white");
+        Label messageError = new Label("*incorrect password", skinSgx, "white");
         messageError.setColor(Color.RED);
-        table.add(buttonAvatar).colspan(2).height(Value.percentHeight(1f)).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 5 / 100).padTop(SCREEN_HEIGHT * 5 / 100);
-        table.row();
-        table.add(labelCurrentPassword).left().colspan(2);
-        table.row();
-        table.add(fieldCurrentPassword).fill().colspan(2);
-        table.row();
-        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 5 / 100).colspan(2);
-        table.row();
-        table.add(labelNewPassword1).left().colspan(2);
 
-        table.row();
-        table.add(fieldNewPassword1).left().fill().colspan(2);
-        table.row();
-        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 5 / 100).colspan(2);
-        table.row();
-        table.add(labelNewPassword2).left().width(Value.percentWidth(1f)).fill().colspan(2);
-
-        table.row();
-        table.add(fieldNewPassword2).fill().left().colspan(2);
-        table.row();
-        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 5 / 100).colspan(2);
+        table.add(imageSelected).height(Value.percentHeight(1f)).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 10 / 100).padTop(SCREEN_HEIGHT * 9 / 100).colspan(2);
         table.row();
 
-        buttonEditCancel.setWidth(table.getWidth() * 19 / 100);
-        buttonEditSave.setWidth(table.getWidth() * 19 / 100);
-        table.add(buttonEditCancel).padRight(table.getWidth() * 15 / 100).width(Value.percentWidth(1f));
-        table.add(buttonEditSave).width(Value.percentWidth(1f));
+        labelCurrentPassword.setAlignment(1);
+        table.add(labelCurrentPassword).fill();
+        table.add(fieldCurrentPassword).fill().fill().width(Value.percentWidth(1.5f));
+        table.row();
+        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 4 / 100).colspan(2);
+        table.row();
+        table.add(labelNewPassword1);
+        table.add(fieldNewPassword1).left().fill();
+        table.row();
+        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 4 / 100).colspan(2);
+        table.row();
+        table.add(labelNewPassword2).left().width(Value.percentWidth(1f)).fill().padRight(SCREEN_WIDTH * 2 / 100);
+        table.add(fieldNewPassword2).fill().left();
+        table.row();
+        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 4 / 100).colspan(2);
+        table.row().padTop(windowEdit.getHeight() * 4 / 100);
+        buttonEditCancel.setWidth(windowEdit.getWidth() * 21 / 100);
+        buttonEditSave.setWidth(buttonEditCancel.getWidth());
+
+        table.add(buttonEditCancel).width(Value.percentWidth(1f));
+        table.add(buttonEditSave).left().width(Value.percentWidth(1f));
 
         windowEdit.add(table);
 
@@ -785,17 +807,15 @@ public class Menu implements Screen {
     }
 
     public void showAvatarSelectionWindow() {
-        disableButton(buttonAvatar, buttonEditSave, buttonEditCancel);
-        final Window windowAvatarSelection = new Window("Choose an avatar", skinSgx);
-        windowAvatarSelection.setSize(SCREEN_WIDTH / 2, SCREEN_WIDTH / 2);
+        disableButton(imageSelected, buttonEditSave, buttonEditCancel);
+        windowAvatarSelection.clear();
+        windowAvatarSelection.setSize(windowEdit.getWidth(), windowEdit.getHeight());
         windowAvatarSelection.setPosition(SCREEN_WIDTH / 2 - windowAvatarSelection.getWidth() / 2, SCREEN_HEIGHT / 2 - windowAvatarSelection.getHeight() / 2);
         windowAvatarSelection.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowAvatarSelection.getTitleTable().padLeft(windowAvatarSelection.getWidth() / 2 - windowAvatarSelection.getTitleLabel().getWidth() / 2);
 
         Table table = new Table();
-        table.setDebug(true);
         windowAvatarSelection.addActor(table);
         table.setFillParent(true);
         table.top().padTop(SCREEN_WIDTH * 1 / 15);
@@ -821,6 +841,7 @@ public class Menu implements Screen {
                 windowAvatarSelection.remove();
 
                 showEdit();
+                enableButton(imageSelected, buttonEditSave, buttonEditCancel);
             }
         });
         TextButton buttonCancel = new TextButton("Cancel", skinSgx, "big");
@@ -829,14 +850,10 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(0.1f);
 
-                //   windowAvatarSelection.clearListeners();
-                //       windowAvatarSelection.getChildren().clear();
-                //    windowAvatarSelection.remove();
-
                 windowAvatarSelection.remove();
-                enableButton(buttonAvatar, buttonEditSave, buttonEditCancel);
+                enableButton(imageSelected, buttonEditSave, buttonEditCancel);
 
-                //          showEdit();
+                showEdit();
             }
         });
 
@@ -844,17 +861,8 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(0.2f);
-                //           System.out.print("ok-panda");
                 // remplacer l'image de l'avatar actuel par celle contenue dans ce bouton (ici image)
                 imageSelected = new ImageButton(imagePanda);
-                //   imageSelected.setBackground(imagePanda) ;
-                // windowAvatarSelection.clearListeners();
-                // windowAvatarSelection.getChildren().clear();
-                // stage.getActors().removeValue(windowAvatarSelection, true);
-                //    windowAvatarSelection.remove();
-                pandaButton.setDisabled(true);
-                windowAvatarSelection.setClip(false);
-                windowAvatarSelection.setTransform(true);
                 showAvatarSelectionWindow();
             }
         });
@@ -862,15 +870,9 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(0.2f);
-                //            System.out.print("ok-panda");
                 // remplacer l'image de l'avatar actuel par celle contenue dans ce bouton (ici image)
-                imageSelected = new ImageButton(imagePanda);
-                //   imageSelected.setBackground(imagePanda) ;
-                // windowAvatarSelection.clearListeners();
-                // windowAvatarSelection.getChildren().clear();
-                // stage.getActors().removeValue(windowAvatarSelection, true);
-                windowAvatarSelection.remove();
-
+                imageSelected = new ImageButton(imageYeti);
+                // windowAvatarSelection.remove();
                 showAvatarSelectionWindow();
             }
         });
@@ -880,7 +882,7 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(0.2f);
                 imageSelected = new ImageButton(imageWorm);
-                windowAvatarSelection.remove();
+                //  windowAvatarSelection.remove();
                 showAvatarSelectionWindow();
             }
         });
@@ -889,8 +891,8 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(0.2f);
                 imageSelected = new ImageButton(imageMustache);
-                windowAvatarSelection.remove();
-                //showAvatarSelectionWindow();
+                //  windowAvatarSelection.remove();
+                showAvatarSelectionWindow();
             }
         });
         bunnyButton.addListener(new ClickListener() {
@@ -902,6 +904,51 @@ public class Menu implements Screen {
                 showAvatarSelectionWindow();
             }
         });
+        girlButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(0.2f);
+                imageSelected = new ImageButton(imageGirl);
+                //  windowAvatarSelection.remove();
+                showAvatarSelectionWindow();
+            }
+        });
+        robotButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(0.2f);
+                imageSelected = new ImageButton(imageRobot);
+                //  windowAvatarSelection.remove();
+                showAvatarSelectionWindow();
+            }
+        });
+        penguinButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(0.2f);
+                imageSelected = new ImageButton(imagePenguin);
+                //  windowAvatarSelection.remove();
+                showAvatarSelectionWindow();
+            }
+        });
+        birdButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(0.2f);
+                imageSelected = new ImageButton(imageBird);
+                //  windowAvatarSelection.remove();
+                showAvatarSelectionWindow();
+            }
+        });
+        squidButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(0.2f);
+                imageSelected = new ImageButton(imageSquid);
+                //  windowAvatarSelection.remove();
+                showAvatarSelectionWindow();
+            }
+        });
 
         float widthImage = windowAvatarSelection.getWidth() * 2 / 15;
         float heightImage = windowAvatarSelection.getWidth() * 2 / 10;
@@ -910,57 +957,33 @@ public class Menu implements Screen {
         table.add(yetiButton).width(widthImage).height(heightImage);
         table.add(wormButton).width(widthImage).height(heightImage);
         table.add(mustacheButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
-        ;
         table.add(bunnyButton).width(widthImage).height(heightImage);
-
         table.row();
-
-
-        ImageButton girlButton = new ImageButton(imageGirl);
-        girlButton.setSize(50f, 50f);
         table.add(girlButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
-        ;
         table.add(robotButton).width(widthImage).height(heightImage);
         table.add(penguinButton).width(widthImage).height(heightImage);
         table.add(birdButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
-        ;
         table.add(squidButton).width(widthImage).height(heightImage);
         table.row().padTop(SCREEN_WIDTH / 50);
-
+        buttonImport.setWidth(windowAvatarSelection.getWidth() * 23 / 100);
         table.add(buttonImport).colspan(2).width(Value.percentWidth(1f));
         table.add(imageSelected).width(heightImage).height(heightImage);
-        buttonSave.setWidth(100);
+        buttonSave.setWidth(buttonImport.getWidth());
         table.add(buttonSave).colspan(2).width(Value.percentWidth(1f));
-
-        table.row().padTop(20);
-
-        table.add(buttonCancel).colspan(5);
+        table.row().padTop(windowAvatarSelection.getHeight() * 5 / 100);
+        buttonCancel.setWidth(buttonImport.getWidth());
+        table.add(buttonCancel).colspan(5).width(Value.percentWidth(1f));
         table.row();
 
         stage.addActor(windowAvatarSelection);
     }
 
-    public ImageButton createImageButton(TextureRegionDrawable image) {
-        ImageButton imageButton = new ImageButton(image);
-        imageButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
-                //        System.out.print("ok");
-            }
-        });
-
-        return imageButton;
-    }
-
     private void showLogOut() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
-
-        final Window windowLogOut = new Window("Log Out", skinSgx);
+        windowLogOut.clear();
         windowLogOut.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowLogOut.setPosition(SCREEN_WIDTH / 2 - windowLogOut.getWidth() / 2, SCREEN_HEIGHT / 2 - windowLogOut.getHeight() / 2);
         windowLogOut.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowLogOut.getTitleTable().padLeft(windowLogOut.getWidth() / 2 - windowLogOut.getTitleLabel().getWidth() / 2);
 
@@ -1008,12 +1031,10 @@ public class Menu implements Screen {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
-
-        final Window windowExit = new Window("Exit", skinSgx);
+        windowExit.clear();
         windowExit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowExit.setPosition(SCREEN_WIDTH / 2 - windowExit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowExit.getHeight() / 2);
         windowExit.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowExit.getTitleTable().padLeft(windowExit.getWidth() / 2 - windowExit.getTitleLabel().getWidth() / 2);
 
@@ -1029,7 +1050,6 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
-                //  System.exit(0);
             }
         });
 
@@ -1057,11 +1077,10 @@ public class Menu implements Screen {
 
     private void showDelete() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
-        final Window windowDelete = new Window("Delete Account", skinSgx);
-        windowDelete.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT * 2 / 5);
+        windowDelete.clear();
+        windowDelete.setSize(windowProfile.getWidth(), SCREEN_HEIGHT * 2 / 5);
         windowDelete.setPosition(SCREEN_WIDTH / 2 - windowDelete.getWidth() / 2, SCREEN_HEIGHT / 2 - windowDelete.getHeight() / 2);
         windowDelete.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowDelete.getTitleTable().padLeft(windowDelete.getWidth() / 2 - windowDelete.getTitleLabel().getWidth() / 2);
 
@@ -1069,10 +1088,11 @@ public class Menu implements Screen {
         windowDelete.addActor(table);
         table.setFillParent(true);
 
-
         Label labelWarning1 = new Label("All your data will be erased", skinSgx, "white");
         Label labelWarning2 = new Label("including your achievements in the Hall Of Fame", skinSgx, "white");
         Label labelPassword = new Label("Enter your password", skinSgx, "white");
+        Label incorrectPassword = new Label("*Incorrect password", skinSgx, "white");
+        incorrectPassword.setColor(Color.RED);
         TextField fieldPassword = new TextField("", skinSgx);
         fieldPassword.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
@@ -1082,7 +1102,6 @@ public class Menu implements Screen {
                 }
             }
         });
-
 
         TextButton buttonConfirm = new TextButton("Confirm", skinSgx, "big");
         buttonConfirm.addListener(new ClickListener() {
@@ -1113,18 +1132,19 @@ public class Menu implements Screen {
             }
         });
 
-
-        table.add(labelWarning1);
+        table.padTop(windowDelete.getWidth() / 20);
+        table.add(labelWarning1).colspan(2);
         table.row();
-        table.add(labelWarning2);
-        table.row();
+        table.add(labelWarning2).colspan(2);
+        table.row().padTop(windowDelete.getHeight() * 11 / 100);
         table.add(labelPassword);
-        table.add(fieldPassword);
+        labelPassword.setAlignment(1);
+        table.add(fieldPassword).fill().width(Value.percentWidth(1.5f));
         table.row();
-        table.add(buttonConfirm);
-        table.row();
-        table.add(buttonCancel);
-
+        table.add(incorrectPassword).colspan(2).fill();
+        table.row().padTop(windowDelete.getHeight() * 6 / 100);
+        table.add(buttonConfirm).padRight(SCREEN_WIDTH * 2 / 100).fill().width(windowDelete.getWidth() / 4);
+        table.add(buttonCancel).padLeft(SCREEN_WIDTH * 2 / 100).fill().width(windowDelete.getWidth() / 4);
 
         stage.addActor(windowDelete);
     }

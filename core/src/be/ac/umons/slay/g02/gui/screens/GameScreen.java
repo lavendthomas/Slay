@@ -17,7 +17,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -66,6 +65,9 @@ public class GameScreen implements Screen, InputProcessor {
     private ImageButton buttonNext;
     private TextButton buttonResume;
     private TextButton buttonQuit;
+
+    public static Window windowPause = new Window("Pause", skinSgx);
+    public static Window windowQuit = new Window("Quit Game", skinSgx);
 
     private int nbreW;
     private int nbreH;
@@ -173,12 +175,10 @@ public class GameScreen implements Screen, InputProcessor {
     private void showPauseWindow() {
 //      il faudra desactiver tout le background ici et le reactiver dans le bouton Resume
         disableButton(buttonPause, buttonNext);
-
-        final Window windowPause = new Window("Pause", skinSgx);
+        windowPause.clear();
         windowPause.setSize(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3);
         windowPause.setPosition(SCREEN_WIDTH / 2 - windowPause.getWidth() / 2, SCREEN_HEIGHT / 2 - windowPause.getHeight() / 2);
         windowPause.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowPause.getTitleTable().padLeft(windowPause.getWidth() / 2 - windowPause.getTitleLabel().getWidth() / 2);
 
@@ -220,12 +220,10 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void showWindowQuit() {
         disableButton(buttonResume, buttonQuit);
-
-        final Window windowQuit = new Window("Quit Game", skinSgx);
+        windowQuit.clear();
         windowQuit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowQuit.setPosition(SCREEN_WIDTH / 2 - windowQuit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowQuit.getHeight() / 2);
         windowQuit.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowQuit.getTitleTable().padLeft(windowQuit.getWidth() / 2 - windowQuit.getTitleLabel().getWidth() / 2);
 

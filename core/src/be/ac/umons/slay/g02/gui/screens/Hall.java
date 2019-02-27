@@ -30,7 +30,6 @@ import static be.ac.umons.slay.g02.gui.Main.cursor;
 import static be.ac.umons.slay.g02.gui.Main.pm;
 import static be.ac.umons.slay.g02.gui.Main.skinSgxTable;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
-import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.gui.Main.camera;
@@ -80,9 +79,9 @@ public class Hall implements Screen {
         cell = new TextButton("Player", skinSgxTable);
         cell.getLabel().setColor(Color.BLACK);
         cell.getLabel().setFontScale(0.8f);
-        cell.setWidth(SCREEN_WIDTH * 32 / 100);
-        cell.setHeight(SCREEN_HEIGHT * 6 / 100);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).colspan(2).center().fill();
+        cell.setWidth(SCREEN_WIDTH * 36 / 100);
+        cell.setHeight(cellHeight);
+        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).colspan(2).center().fill();
 
         cell = new TextButton("Wins", skinSgxTable);
         cell.getLabel().setColor(Color.BLACK);
@@ -114,7 +113,7 @@ public class Hall implements Screen {
 
         cell = new TextButton("Cut trees", skinSgxTable);
         cell.getLabel().setColor(Color.BLACK);
-        cell.setWidth(SCREEN_WIDTH * 9 / 100);
+        cell.setWidth(SCREEN_WIDTH * 7 / 100);
         cell.setHeight(cellHeight);
         cell.getLabel().setFontScale(0.8f);
         tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
@@ -128,7 +127,7 @@ public class Hall implements Screen {
 
         cell = new TextButton("Full army\nvalue", skinSgxTable);
         cell.getLabel().setColor(Color.BLACK);
-        cell.setWidth(SCREEN_WIDTH * 9 / 100);
+        cell.setWidth(SCREEN_WIDTH * 7 / 100);
         cell.setHeight(cellHeight);
         cell.getLabel().setFontScale(0.8f);
         tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
@@ -171,24 +170,25 @@ public class Hall implements Screen {
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.getLabel().setFontScale(0.8f);
-            tableHall.add(cell).height(Value.percentHeight(1.17f)).width(Value.percentWidth(1.19f)).fill();
+            cell.setWidth(SCREEN_WIDTH * 5 / 100);
+            cell.setHeight(cellHeight);
+            tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f)).fill();
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.getLabel().setFontScale(0.8f);
 
             imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(stats.getAvatar()))));
             avatarButton = new ImageButton(imageAvatar);
-            avatarButton.setSize(cell.getWidth() - 5, cell.getHeight() - 5);
+            avatarButton.setSize(cellHeight, cell.getHeight() * 95 / 100);
             cell.setColor(currentColor);
             cell.getLabel().setFontScale(0.8f);
-            tableHall.add(avatarButton).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1.2f)).fill();
-            cell.getLabel().setFontScale(0.8f);
+            tableHall.add(avatarButton).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1.3f)).fill();
             cell = new TextButton(String.valueOf(stats.getName()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
-
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).width(SCREEN_WIDTH * 32 / 100 - (SCREEN_HEIGHT * 4 / 100)).fill();
+            cell.setWidth(SCREEN_WIDTH * 35 / 100 - cellHeight);
+            tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f));
             cell.getLabel().setFontScale(0.8f);
             cell = new TextButton(String.valueOf(stats.getWins()), skinSgxTable);
             cell.setColor(currentColor);
