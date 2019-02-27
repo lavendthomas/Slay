@@ -36,6 +36,7 @@ import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Tile;
+import be.ac.umons.slay.g02.level.TileType;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -302,8 +303,10 @@ public class GameScreen implements Screen, InputProcessor {
                 Gdx.app.debug("Click 2 ", "x : " + coord2.getX() + " y : " + coord2.getY());
                 level.move(coord1, coord2);
                 list = level.getMovePoss(coord1);
-                for (Coordinate cur : list) {
-                    HexManagement.eraseTile(cur, effects);
+                for (int i = 0; i < effects.getWidth(); i++) {
+                    for (int j = 0; j < effects.getHeight(); j++) {
+                        HexManagement.eraseTile(new Coordinate(i, j), effects);
+                    }
                 }
             }
 
@@ -312,6 +315,14 @@ public class GameScreen implements Screen, InputProcessor {
                 coord1 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
                 Gdx.app.debug("Click 1 ", "x : " + coord1.getX() + " y : " + coord1.getY());
                 list = level.getMovePoss(coord1);
+                for (int i = 0; i < effects.getWidth(); i++) {
+                    for (int j = 0; j < effects.getHeight(); j++) {
+                        Coordinate coordinate = new Coordinate(i,j);
+                        if (level.getTileMap()[i][j].getType().equals(TileType.NEUTRAL)) {
+                            HexManagement.drawTile(new Coordinate(i, j), set.getTile(18), effects);
+                        }
+                    }
+                }
                 for (Coordinate cur : list) {
                     // Gdx.app.debug("Déplacements possibles ", "x : " + cur.getX() + " y : " + cur.getY());
                     HexManagement.drawTile(cur, set.getTile(17), effects);
