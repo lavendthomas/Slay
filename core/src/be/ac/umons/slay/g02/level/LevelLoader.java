@@ -31,9 +31,18 @@ import be.ac.umons.slay.g02.players.Player;
 public class LevelLoader {
 
     public static final String LEVELS_PATH = "worlds";
-    public static final int WATER = 9;
-    public static final int TERRITORY = 7;
 
+    /**
+     * Returns a Map object from the the following files :
+     *  - assets/world/filename.tmx
+     *  - assets/world/filename.xml
+     *
+     *  Loads the world using the pattern mentioned in the requirements.
+     *
+     * @param levelname the name of the level (filename without extension)
+     * @return a Map object consisting of a Slay Level and a libGDX TiledMap for the GUI.
+     * @throws FileFormatException If the file don't use the correct format
+     */
     public static Map load(String levelname) throws FileFormatException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         String name;
@@ -61,7 +70,7 @@ public class LevelLoader {
                 level.set(new be.ac.umons.slay.g02.level.Tile(type), coords);
             }
         }
-        // Add territories
+        // Add territories and players
 
         List<Player> players = new ArrayList<Player>();
         List<Integer> colors = new ArrayList<Integer>();
@@ -163,6 +172,9 @@ public class LevelLoader {
         return new Map(level, map);
     }
 
+    /**
+     * Return object for loading the world. Consists of a Level object and a libGDX TiledMap.
+     */
     public static class Map {
         private Level lvl;
         private TiledMap map;
@@ -182,6 +194,9 @@ public class LevelLoader {
 
     }
 
+    /**
+     * Table matching the id written in the TMX file to a TileType
+     */
     public enum Tile {
 
         TERRITORY(7, TileType.NEUTRAL),
@@ -195,6 +210,11 @@ public class LevelLoader {
             this.type = type;
         }
 
+
+        /**
+         * Returns the id of this TileType
+         * @return
+         */
         public int getId() {
             return id;
         }
@@ -203,6 +223,12 @@ public class LevelLoader {
             return type;
         }
 
+        /**
+         * Returns the TileType matching the id
+         * @param id the id for which we want the id
+         * @return A tileType object
+         * @throws FileFormatException If the id does not match any TileType
+         */
         public static Tile fromId(int id) throws FileFormatException {
             for (Tile tile : LevelLoader.Tile.values()) {
                 if (tile.id == id) {
