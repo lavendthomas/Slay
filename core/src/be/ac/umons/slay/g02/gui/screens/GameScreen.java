@@ -79,6 +79,7 @@ public class GameScreen implements Screen, InputProcessor {
     private TiledMapTileLayer background;
     private TiledMapTileLayer territories;
     private TiledMapTileLayer entities;
+    private TiledMapTileLayer effects;
     private TiledMapTileSet set;
     private HashMap<String, TiledMapTile> tileMap;
 
@@ -104,6 +105,9 @@ public class GameScreen implements Screen, InputProcessor {
             background = (TiledMapTileLayer) map.getLayers().get("Background");
             territories = (TiledMapTileLayer) map.getLayers().get("Territories");
             entities = (TiledMapTileLayer) map.getLayers().get("Entities");
+
+            effects = (TiledMapTileLayer) map.getLayers().get("Effects");
+
             set = map.getTileSets().getTileSet("tileset");
 
             tileMap = loadTileMap(set);
@@ -286,6 +290,7 @@ public class GameScreen implements Screen, InputProcessor {
             int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / size * errorOffset);
             vect1 = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
             vect1.set((int) (vect1.x - (tileW / 2)), (int) (vect1.y - (tileH / 2)), 0);
+            ArrayList<Coordinate> list = new ArrayList<Coordinate>();
 
             //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
             if (coord1.getX() >= 0 && coord2.getX() >= 0) {
@@ -298,15 +303,20 @@ public class GameScreen implements Screen, InputProcessor {
                 coord2 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
                 Gdx.app.debug("Click 2 ", "x : " + coord2.getX() + " y : " + coord2.getY());
                 level.move(coord1, coord2);
+                list = level.getMovePoss(coord1);
+                for (Coordinate cur : list) {
+                    HexManagement.eraseTile(cur, effects);
+                }
             }
 
             //Si 1ere variable non encore utilisée, stocker dedans
             if (coord1.getX() < 0 && coord2.getX() < 0) {
                 coord1 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
                 Gdx.app.debug("Click 1 ", "x : " + coord1.getX() + " y : " + coord1.getY());
-                ArrayList<Coordinate> list = level.getMovePoss(coord1);
+                list = level.getMovePoss(coord1);
                 for (Coordinate cur : list) {
-                    Gdx.app.debug("Déplacements possibles ", "x : " + cur.getX() + " y : " + cur.getY());
+                    // Gdx.app.debug("Déplacements possibles ", "x : " + cur.getX() + " y : " + cur.getY());
+                    HexManagement.drawTile(cur, set.getTile(17), effects);
                 }
             }
             Gdx.app.debug("slay", "Coordinates: " + coord1 + " Tile: " + level.get(coord1) );

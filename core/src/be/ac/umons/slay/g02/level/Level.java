@@ -3,6 +3,7 @@ package be.ac.umons.slay.g02.level;
 import com.badlogic.gdx.Gdx;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,6 +11,7 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.gui.screens.HexManagement;
 
 
 public class Level implements Playable {
@@ -91,9 +93,12 @@ public class Level implements Playable {
 
     public ArrayList<Coordinate> getMovePoss (Coordinate coord) {
         ArrayList<Coordinate> res = new ArrayList<Coordinate>();
-        int n = 0;
-        getMove(res, coord, n);
-        res.remove(coord);
+        if (tileMap[coord.getX()][coord.getY()].getTerritory()!= null) {
+            int n = 0; //mettre la position de départ
+            getMove(res, coord, coord);
+            Gdx.app.log("slay", Arrays.toString(coord.getNeighbors()));
+            return res;
+        }
         return res;
     }
 
@@ -102,26 +107,34 @@ public class Level implements Playable {
      *
      * @param list  List of coordinates
      * @param coord Actual coordinate
-     * @param n     Number of movement
      */
 
-    private void getMove (ArrayList<Coordinate> list, Coordinate coord, int n) {
+    private void getMove(ArrayList<Coordinate> list, Coordinate coord, Coordinate initial) {
         Coordinate[] neighbors = coord.getNeighbors();
-        Tile origin = tileMap[coord.getX()][coord.getY()];
+        Tile initTile = tileMap[initial.getX()][initial.getY()];
+
+        if (!list.contains(coord)) {
+            list.add(coord);
+        }
+
         for (Coordinate curr : neighbors) {
             Tile current = tileMap[curr.getX()][curr.getY()];
+
             if (current.getType().equals(TileType.NEUTRAL) &&  !list.contains(curr)) {
-                if (current.getTerritory() == null) {
+                int distance = HexManagement.distance(curr, initial);
+                if (current.getTerritory() == null && distance <= 4) { //ajouter terr ennemie
                     list.add(curr);
-                }
-                //TODO A tester plus tard si fonctionne dans un même territoire plus grand que 4 tuiles
-                if (current.getTerritory() != null && current.getTerritory().hasSameOwner(origin.getTerritory()) && n <= 4) {
-                    list.add(curr);
-                    getMove(list, curr, n + 1);
+                } else  {
+                    Gdx.app.debug("slay", "Current: " + curr + "distance: " + distance);
+                    if (current.getTerritory() != null && current.getTerritory().hasSameOwner(initTile.getTerritory()) && distance <= 4) {
+                        getMove(list, curr, initial);
+                    }
                 }
             }
         }
     }
+
+
 
     public Entity getEntity() {
         return null;

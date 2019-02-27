@@ -61,16 +61,10 @@ public class LevelLoader {
                 level.set(new be.ac.umons.slay.g02.level.Tile(type), coords);
             }
         }
-
-        // A améliorer pour plus d'abstraction pour que les couleurs puissent être modifier par exemple
-        //Player p1 = new HumanPlayer("p1", null);
-        //Player p2 = new HumanPlayer("p2", null);
+        // Add territories
 
         List<Player> players = new ArrayList<Player>();
         List<Integer> colors = new ArrayList<Integer>();
-
-
-        // Add territories
 
         TiledMapTileLayer terr = (TiledMapTileLayer) map.getLayers().get("Territories");
         //int p1nb = 0;

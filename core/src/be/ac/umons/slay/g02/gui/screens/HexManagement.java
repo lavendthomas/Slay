@@ -20,7 +20,7 @@ public class HexManagement {
      * @param tile TiledMapTile
      * @param layer TiledMapTileLayer
      */
-    public static void drawTile (Coordinate coord, TiledMapTile tile, TiledMapTileLayer layer) {
+    static void drawTile (Coordinate coord, TiledMapTile tile, TiledMapTileLayer layer) {
         if (coord.getX() >= 0 && coord.getX() < layer.getWidth() && coord.getY() >= 0 && coord.getY() < layer.getTileHeight()) {
             if (layer.getCell(coord.getX(), coord.getY()) == null) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
@@ -30,6 +30,19 @@ public class HexManagement {
                 layer.getCell(coord.getX(), coord.getY()).setTile(tile);
             }
         } //TODO Ajouter une exception si on sort du cadre ???
+    }
+
+    /**
+     * Method to erase a tile on a layer with given coordinates
+     *
+     * @param coord Coordinate of the tile to erase
+     * @param layer TiledMapTileLayer
+     */
+
+    static void eraseTile (Coordinate coord, TiledMapTileLayer layer) {
+        if (coord.getX() >= 0 && coord.getX() < layer.getWidth() && coord.getY() >= 0 && coord.getY() < layer.getTileHeight()) {
+            layer.setCell(coord.getX(), coord.getY(), new TiledMapTileLayer.Cell());
+        }
     }
 
     /**
@@ -58,6 +71,13 @@ public class HexManagement {
         int x = cube.x;
         int y = cube.z + (cube.x + (cube.x&1)) / 2;
         return new Coordinate(x, y);
+    }
+
+    private static Cube oddq_to_cube(Coordinate coord) {
+        int x = coord.getX();
+        int z = coord.getY() - (coord.getX() - (coord.getX() & 1)) / 2;
+        int y = -x - z;
+        return new Cube(x, y, z);
     }
 
     /**
@@ -111,6 +131,14 @@ public class HexManagement {
             this.y = y;
             this.z = z;
         }
+    }
+
+
+    public static int distance(Coordinate p1, Coordinate p2) {
+        Cube c1= oddq_to_cube(p1);
+        Cube c2= oddq_to_cube(p2);
+        return Math.max(Math.abs(c1.x - c2.x),
+                Math.max(Math.abs(c1.y - c2.y), Math.abs(c1.z - c2.z)));
     }
 
 }
