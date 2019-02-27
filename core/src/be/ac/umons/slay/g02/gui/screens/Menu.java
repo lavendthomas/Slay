@@ -386,10 +386,10 @@ public class Menu implements Screen {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+        windowSettings.clear();
         windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
         windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 - windowSettings.getHeight() / 2);
         windowSettings.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowSettings.getTitleTable().padLeft(windowSettings.getWidth() / 2 - windowSettings.getTitleLabel().getWidth() / 2);
 
@@ -493,10 +493,10 @@ public class Menu implements Screen {
 
     public void showAlertSettings() {
         disableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
+        windowAlert.clear();
         windowAlert.setSize(windowSettingsWidth, windowSettingsWidth);
         windowAlert.setPosition(SCREEN_WIDTH / 2 - windowSettingsWidth / 2, SCREEN_HEIGHT / 2 - windowSettingsWidth / 2);
         windowAlert.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowAlert.getTitleTable().padLeft(windowAlert.getWidth() / 2 - windowAlert.getTitleLabel().getWidth() / 2);
 
@@ -544,10 +544,10 @@ public class Menu implements Screen {
     }
 
     public void showLogginWindow() {
+        windowLoggin.clear();
         windowLoggin.setSize(windowLoggin.getWidth(), windowLoggin.getHeight());
         windowLoggin.setPosition(SCREEN_WIDTH / 2 - windowLoggin.getWidth() / 2, SCREEN_HEIGHT / 2 - windowLoggin.getHeight() / 2);
         windowLoggin.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowLoggin.getTitleTable().padLeft(windowLoggin.getWidth() / 2 - windowLoggin.getTitleLabel().getWidth() / 2);
 
@@ -565,6 +565,7 @@ public class Menu implements Screen {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+        windowProfile.clear();
         windowProfile.setSize(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100);
         windowProfile.setPosition(SCREEN_WIDTH / 2 - windowProfile.getWidth() / 2, SCREEN_HEIGHT / 2 - windowProfile.getHeight() / 2);
         windowProfile.setMovable(false);
@@ -655,7 +656,6 @@ public class Menu implements Screen {
                 enableButton(buttonPlay, buttonSettings, buttonExit);
                 if (isAccountEnabled)
                     enableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
-                windowProfile.clear();
             }
         });
 
@@ -684,7 +684,6 @@ public class Menu implements Screen {
         windowEdit.setSize(windowProfile.getWidth(), windowProfile.getHeight());
         windowEdit.setPosition(SCREEN_WIDTH / 2 - windowEdit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowEdit.getHeight() / 2);
         windowEdit.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowEdit.getTitleTable().padLeft(windowEdit.getWidth() / 2 - windowEdit.getTitleLabel().getWidth() / 2);
 
@@ -813,7 +812,6 @@ public class Menu implements Screen {
         windowAvatarSelection.setSize(windowEdit.getWidth(), windowEdit.getHeight());
         windowAvatarSelection.setPosition(SCREEN_WIDTH / 2 - windowAvatarSelection.getWidth() / 2, SCREEN_HEIGHT / 2 - windowAvatarSelection.getHeight() / 2);
         windowAvatarSelection.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowAvatarSelection.getTitleTable().padLeft(windowAvatarSelection.getWidth() / 2 - windowAvatarSelection.getTitleLabel().getWidth() / 2);
 
@@ -961,21 +959,17 @@ public class Menu implements Screen {
         table.add(mustacheButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
         table.add(bunnyButton).width(widthImage).height(heightImage);
         table.row();
-
-        //  girlButton.setSize(50f, 50f);
         table.add(girlButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
         table.add(robotButton).width(widthImage).height(heightImage);
         table.add(penguinButton).width(widthImage).height(heightImage);
         table.add(birdButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
         table.add(squidButton).width(widthImage).height(heightImage);
         table.row().padTop(SCREEN_WIDTH / 50);
-
         buttonImport.setWidth(windowAvatarSelection.getWidth() * 23 / 100);
         table.add(buttonImport).colspan(2).width(Value.percentWidth(1f));
         table.add(imageSelected).width(heightImage).height(heightImage);
         buttonSave.setWidth(buttonImport.getWidth());
         table.add(buttonSave).colspan(2).width(Value.percentWidth(1f));
-
         table.row().padTop(windowAvatarSelection.getHeight() * 5 / 100);
         buttonCancel.setWidth(buttonImport.getWidth());
         table.add(buttonCancel).colspan(5).width(Value.percentWidth(1f));
@@ -984,24 +978,12 @@ public class Menu implements Screen {
         stage.addActor(windowAvatarSelection);
     }
 
-    public ImageButton createImageButton(TextureRegionDrawable image) {
-        ImageButton imageButton = new ImageButton(image);
-        imageButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
-            }
-        });
-
-        return imageButton;
-    }
-
     private void showLogOut() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
+        windowLogOut.clear();
         windowLogOut.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowLogOut.setPosition(SCREEN_WIDTH / 2 - windowLogOut.getWidth() / 2, SCREEN_HEIGHT / 2 - windowLogOut.getHeight() / 2);
         windowLogOut.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowLogOut.getTitleTable().padLeft(windowLogOut.getWidth() / 2 - windowLogOut.getTitleLabel().getWidth() / 2);
 
@@ -1049,10 +1031,10 @@ public class Menu implements Screen {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+        windowExit.clear();
         windowExit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowExit.setPosition(SCREEN_WIDTH / 2 - windowExit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowExit.getHeight() / 2);
         windowExit.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowExit.getTitleTable().padLeft(windowExit.getWidth() / 2 - windowExit.getTitleLabel().getWidth() / 2);
 
@@ -1095,10 +1077,10 @@ public class Menu implements Screen {
 
     private void showDelete() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
+        windowDelete.clear();
         windowDelete.setSize(windowProfile.getWidth(), SCREEN_HEIGHT * 2 / 5);
         windowDelete.setPosition(SCREEN_WIDTH / 2 - windowDelete.getWidth() / 2, SCREEN_HEIGHT / 2 - windowDelete.getHeight() / 2);
         windowDelete.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowDelete.getTitleTable().padLeft(windowDelete.getWidth() / 2 - windowDelete.getTitleLabel().getWidth() / 2);
 

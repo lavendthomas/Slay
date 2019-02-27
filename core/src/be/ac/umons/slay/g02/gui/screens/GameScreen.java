@@ -171,11 +171,10 @@ public class GameScreen implements Screen, InputProcessor {
     private void showPauseWindow() {
 //      il faudra desactiver tout le background ici et le reactiver dans le bouton Resume
         disableButton(buttonPause, buttonNext);
-
+        windowPause.clear();
         windowPause.setSize(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3);
         windowPause.setPosition(SCREEN_WIDTH / 2 - windowPause.getWidth() / 2, SCREEN_HEIGHT / 2 - windowPause.getHeight() / 2);
         windowPause.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowPause.getTitleTable().padLeft(windowPause.getWidth() / 2 - windowPause.getTitleLabel().getWidth() / 2);
 
@@ -217,11 +216,10 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void showWindowQuit() {
         disableButton(buttonResume, buttonQuit);
-
+        windowQuit.clear();
         windowQuit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowQuit.setPosition(SCREEN_WIDTH / 2 - windowQuit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowQuit.getHeight() / 2);
         windowQuit.setMovable(false);
-
         // place le titre de la fenetre au milieu
         windowQuit.getTitleTable().padLeft(windowQuit.getWidth() / 2 - windowQuit.getTitleLabel().getWidth() / 2);
 
