@@ -40,7 +40,7 @@ public class Level implements Playable {
         height = y;
     }
 
-    public Tile[][] getTileMap () {
+    public Tile[][] getTileMap() {
         return this.tileMap;
     }
 
@@ -91,9 +91,9 @@ public class Level implements Playable {
      * @return List of coordinates you can move
      */
 
-    public ArrayList<Coordinate> getMovePoss (Coordinate coord) {
+    public ArrayList<Coordinate> getMovePoss(Coordinate coord) {
         ArrayList<Coordinate> res = new ArrayList<Coordinate>();
-        if (tileMap[coord.getX()][coord.getY()].getTerritory()!= null) {
+        if (tileMap[coord.getX()][coord.getY()].getTerritory() != null) {
             int n = 0; //mettre la position de départ
             getMove(res, coord, coord);
             Gdx.app.log("slay", Arrays.toString(coord.getNeighbors()));
@@ -120,11 +120,11 @@ public class Level implements Playable {
         for (Coordinate curr : neighbors) {
             Tile current = tileMap[curr.getX()][curr.getY()];
 
-            if (current.getType().equals(TileType.NEUTRAL) &&  !list.contains(curr)) {
+            if (current.getType().equals(TileType.NEUTRAL) && !list.contains(curr)) {
                 int distance = HexManagement.distance(curr, initial);
                 if (current.getTerritory() == null && distance <= 4) { //ajouter terr ennemie
                     list.add(curr);
-                } else  {
+                } else {
                     Gdx.app.debug("slay", "Current: " + curr + "distance: " + distance);
                     if (current.getTerritory() != null && current.getTerritory().hasSameOwner(initTile.getTerritory()) && distance <= 4) {
                         getMove(list, curr, initial);
@@ -133,7 +133,6 @@ public class Level implements Playable {
             }
         }
     }
-
 
 
     public Entity getEntity() {
@@ -224,8 +223,9 @@ public class Level implements Playable {
      */
 
     private void moveEntity(Coordinate oldCoord, Coordinate newCoord) {
-        this.tileMap[newCoord.getX()][newCoord.getY()].setEntity(this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity());
-        this.tileMap[oldCoord.getX()][oldCoord.getY()].setEntity(null);
+        tileMap[newCoord.getX()][newCoord.getY()].setEntity(tileMap[oldCoord.getX()][oldCoord.getY()].getEntity());
+        tileMap[oldCoord.getX()][oldCoord.getY()].setEntity(null);
+        tileMap[newCoord.getX()][newCoord.getY()].setTerritory(tileMap[oldCoord.getX()][oldCoord.getY()].getTerritory());
     }
 
 
@@ -350,14 +350,14 @@ public class Level implements Playable {
 
 
     private List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
-        List<Coordinate> neighbors = new LinkedList<Coordinate>();
+        List<Coordinate> neighbours = new LinkedList<Coordinate>();
         Tile cell = tileMap[pos.getX()][pos.getY()];
 
         if (cell.getTerritory() == null) {
-            return neighbors;
+            return neighbours;
         } else {
-            neighbourTilesInSameTerritory(pos, cell.getTerritory(), neighbors);
-            return neighbors;
+            neighbourTilesInSameTerritory(pos, cell.getTerritory(), neighbours);
+            return neighbours;
         }
     }
 
