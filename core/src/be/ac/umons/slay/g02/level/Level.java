@@ -361,7 +361,7 @@ public class Level implements Playable {
     }
 
 
-    private List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
+    public List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
         List<Coordinate> neighbours = new LinkedList<Coordinate>();
         Tile cell = tileMap[pos.getX()][pos.getY()];
 
