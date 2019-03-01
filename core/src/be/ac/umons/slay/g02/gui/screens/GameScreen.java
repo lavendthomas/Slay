@@ -28,10 +28,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
@@ -283,54 +285,11 @@ public class GameScreen implements Screen, InputProcessor {
         if (touchDown(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)) {
             touchUp(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
         }
-        Vector3 vect1;
 
         if (Gdx.input.justTouched()) {
-            int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / size * errorOffset);
-            vect1 = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
-            vect1.set((int) (vect1.x - (tileW / 2)), (int) (vect1.y - (tileH / 2)), 0);
-            ArrayList<Coordinate> list = new ArrayList<Coordinate>();
+            loadClick();
 
-            //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
-            if (coord1.getX() >= 0 && coord2.getX() >= 0) {
-                coord1.setX(UNREAL);
-                coord2.setX(UNREAL);
-            }
-
-            //Si 1ere variable a été utilisé, stocké dans la seconde
-            if (coord2.getX() < 0 && coord1.getX() >= 0) {
-                coord2 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
-                Gdx.app.debug("Click 2 ", "x : " + coord2.getX() + " y : " + coord2.getY());
-                level.move(coord1, coord2);
-                list = level.getMovePoss(coord1);
-                for (int i = 0; i < effects.getWidth(); i++) {
-                    for (int j = 0; j < effects.getHeight(); j++) {
-                        HexManagement.eraseTile(new Coordinate(i, j), effects);
-                    }
-                }
-            }
-
-            //Si 1ere variable non encore utilisée, stocker dedans
-            if (coord1.getX() < 0 && coord2.getX() < 0) {
-                coord1 = HexManagement.pixelToHex((int) vect1.x, (int) vect1.y, size);
-                Gdx.app.debug("Click 1 ", "x : " + coord1.getX() + " y : " + coord1.getY());
-                list = level.getMovePoss(coord1);
-                for (int i = 0; i < effects.getWidth(); i++) {
-                    for (int j = 0; j < effects.getHeight(); j++) {
-                        Coordinate coordinate = new Coordinate(i,j);
-                        if (level.getTileMap()[i][j].getType().equals(TileType.NEUTRAL)) {
-                            HexManagement.drawTile(new Coordinate(i, j), set.getTile(18), effects);
-                        }
-                    }
-                }
-                for (Coordinate cur : list) {
-                    // Gdx.app.debug("Déplacements possibles ", "x : " + cur.getX() + " y : " + cur.getY());
-                    HexManagement.drawTile(cur, set.getTile(17), effects);
-                }
-            }
-            Gdx.app.debug("slay", "Coordinates: " + coord1 + " Tile: " + level.get(coord1) );
         }
-
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             camera.zoom -= 0.02;
         }
@@ -341,30 +300,102 @@ public class GameScreen implements Screen, InputProcessor {
         renderer.render();
     }
 
+    private Coordinate rectifyCoord() {
+        Vector3 vect;
+        int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / size * errorOffset);
+        vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
+        vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
+        return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
+    }
+
+    private void loadClick() { // Pas encore tester, car il faut des soldats sur la carte
+
+        //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
+        if (coord1.getX() >= 0 && coord2.getX() >= 0) {
+            coord1.setX(UNREAL);
+            coord2.setX(UNREAL);
+        }
+
+        Coordinate temp = rectifyCoord();
+        Tile current = level.getTileMap()[temp.getX()][temp.getY()];
+
+        if (coord1.getX() >= 0 && coord2.getX() < 0) {
+            coord2 = temp;
+            Gdx.app.debug("Click 2 ", "x : " + coord2.getX() + " y : " + coord2.getY());
+            if (level.move(coord1, coord2));
+            eraseEffects();
+        }
+
+        if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Vérifier que c'est le premier clic d'une série de 2 et sur un soldat
+            ArrayList<Coordinate> listMove = level.getMovePoss(temp); // Récupère la liste des mouvements possibles à partir de la coordonée donnée
+            shadowMap();
+            highlightCells(listMove, set.getTile(17));
+            coord1 = temp;
+            coord2.setX(UNREAL);
+            Gdx.app.debug("Click 1 ", "x : " + coord1.getX() + " y : " + coord1.getY());
+            //TODO Ajouter affichage donneés du territoire
+        }
+
+
+
+        if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) {
+            // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
+            // TODO Ajouter l'affichage des données du territoire
+        }
+
+    }
+
+
+    private void eraseEffects () {
+        for (int i = 0; i < effects.getWidth(); i++) {
+            for (int j = 0; j < effects.getHeight(); j++) {
+                HexManagement.eraseTile(new Coordinate(i, j), effects);
+            }
+        }
+    }
+
+    // Méthode pour surligner certaines cellules
+    private void highlightCells (ArrayList<Coordinate> list, TiledMapTile tile) {
+        for (Coordinate cur : list) {
+            HexManagement.drawTile(cur, tile, effects); //Surligne les tuiles de la liste
+        }
+    }
+
+    // Méthode pour obscurcir la map
+    private void shadowMap() {
+        for (int i = 0; i < effects.getWidth(); i++) {
+            for (int j = 0; j < effects.getHeight(); j++) {
+                if (level.getTileMap()[i][j].getType().equals(TileType.NEUTRAL)) {
+                    HexManagement.drawTile(new Coordinate(i, j), set.getTile(18), effects);
+                }
+            }
+        }
+    }
+
+
     private void loadLevel(Level level) {
         for (int i = 0; i < level.getTileMap().length; i++) {
-            for (int j = 0; j < level.getTileMap()[i].length; j++) {
+            for (int j = 0; j < level.getTileMap()[i].length; j++) { // Parcours de chaque case du tableau de la partie logique
                 Tile tile = level.getTileMap()[i][j];
-                if (tile.getEntity() != null) {
+                if (tile.getEntity() != null) { // Si la case contient une entité, la rajouter à l'interface grafique
                     TiledMapTile image = tileMap.get(tile.getEntity().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);
-                } else {
-                    if (entities.getCell(i, j) != null) {
+                } else { // Il n'y a pas ou plus d'entité présente dans la case
+                    if (entities.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
                         entities.setCell(i, j, new TiledMapTileLayer.Cell());
                     }
                 }
-                if (tile.getTerritory() != null) {
+                if (tile.getTerritory() != null) { // Si la case appartient à un territoire, le rajouter à l'interface graphique
                     TiledMapTile image = tileMap.get("hex_" + tile.getTerritory().getOwner().getColor().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, territories);
-                } else {
-                    if (territories.getCell(i, j) != null) {
+                } else { // Il n'y a pas ou plus de territoire présent sur la case
+                    if (territories.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
                         territories.setCell(i, j, new TiledMapTileLayer.Cell());
                     }
                 }
             }
         }
     }
-
     // méthode ptr à améliorer
     private HashMap<String, TiledMapTile> loadTileMap(TiledMapTileSet set) {
         String[] nameList = {"hex_green", "hex_red", "hex_darkgreen", "hex_pink", "hex_yellow", "hex_darkred", "hex_neutral", "hex_darkblue", "hex_water", "grave", "capital", "tree", "L0", "L1", "L2", "L3"};
