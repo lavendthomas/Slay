@@ -148,15 +148,15 @@ public class Level implements Playable {
      * @param newCoord
      */
     public boolean move(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
+
+        if (oldCoord.equals(newCoord)) {
+            // We don't move to the same cell
+            return false;
+        }
+
         Tile from = this.tileMap[oldCoord.getX()][oldCoord.getY()];
         Tile to = this.tileMap[newCoord.getX()][newCoord.getY()];
         if (to.getType().equals(TileType.NEUTRAL)) {
-            if (from.getEntity() instanceof StaticEntity) { // TEMPORAIRE POUR TEST
-                if (to.isEmpty()) {
-                    moveEntity(oldCoord, newCoord);
-                    return true;
-                }
-            }
 
             if (from.getEntity() instanceof Soldier) {
                 if (from.isEmpty()) {
