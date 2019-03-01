@@ -125,7 +125,7 @@ public class Level implements Playable {
                 if (current.getTerritory() == null && distance <= 4) { //ajouter terr ennemie
                     list.add(curr);
                 } else {
-                    Gdx.app.debug("slay", "Current: " + curr + "distance: " + distance);
+                    // Gdx.app.debug("slay", "Current: " + curr + "distance: " + distance);
                     if (current.getTerritory() != null && current.getTerritory().hasSameOwner(initTile.getTerritory()) && distance <= 4) {
                         getMove(list, curr, initial);
                     }
@@ -170,8 +170,6 @@ public class Level implements Playable {
                         if (to.getEntity() == StaticEntity.TREE) { //c'est un arbre séparation du cas où l'arbre appartient au territoire ou non pour les pièces gagnées
                             if (from.getTerritory().hasSameOwner(to.getTerritory())) {
                                 moveEntity(oldCoord, newCoord);
-                                to.getTerritory().addCoins(3);
-                                to.getTerritory().incrIncome();
                             } else {
                                 moveEntity(oldCoord, newCoord);
                             }
@@ -223,9 +221,19 @@ public class Level implements Playable {
      */
 
     private void moveEntity(Coordinate oldCoord, Coordinate newCoord) {
-        tileMap[newCoord.getX()][newCoord.getY()].setEntity(tileMap[oldCoord.getX()][oldCoord.getY()].getEntity());
-        tileMap[oldCoord.getX()][oldCoord.getY()].setEntity(null);
-        tileMap[newCoord.getX()][newCoord.getY()].setTerritory(tileMap[oldCoord.getX()][oldCoord.getY()].getTerritory());
+        Tile newTile = tileMap[newCoord.getX()][newCoord.getY()];
+        Tile oldTile = tileMap[oldCoord.getX()][oldCoord.getY()];
+
+        // Move the Entity
+        newTile.setEntity(oldTile.getEntity());
+        oldTile.setEntity(null);
+        newTile.setTerritory(oldTile.getTerritory());
+
+        // The soldier left the old tile so we add +1 to the income
+        newTile.getTerritory().changeIncome(1);
+
+        splitTerritories(); //TODO find a better approach
+
     }
 
 
@@ -336,8 +344,12 @@ public class Level implements Playable {
                         // Remove all the cells that are not in the neighborhood
                         // and create a new territory for them
                         Territory newTerr = new Territory(cell.getTerritory().getOwner());
-                        for (Tile t : cell.getTerritory().getCells()) {
+                        List<Tile> tilesInTerritory = cell.getTerritory().getCells();
+                        Tile[] tilesArray = new Tile[tilesInTerritory.size()];
+                        tilesInTerritory.toArray(tilesArray);
+                        for (Tile t : tilesArray) {
                             if (!tiles.contains(t)) {
+                                t.getTerritory().remove(t);
                                 t.setTerritory(newTerr);
                             }
                         }
@@ -380,6 +392,8 @@ public class Level implements Playable {
             return;
         }
         known.add(pos);
+
+        // Change if on odd and even column
         neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY()), territory, known);
         neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY() - 1), territory, known);
         neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() - 1), territory, known);

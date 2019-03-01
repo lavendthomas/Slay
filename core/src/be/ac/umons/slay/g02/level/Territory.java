@@ -3,6 +3,7 @@ package be.ac.umons.slay.g02.level;
 import java.util.ArrayList;
 import java.util.List;
 
+import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.players.Player;
 
 public class Territory {
@@ -18,7 +19,6 @@ public class Territory {
     private int income;
     private int outgoings;
     private int tileCount;
-    private int treeCount;
 
     public Territory(Player owner, Tile... cells) {
         this.owner = owner;
@@ -30,14 +30,27 @@ public class Territory {
     }
 
     public void add(Tile cell) {
-        income += 1;        // TODO always ? Tree,...
-        tileCount += 1;
+        if (cell.getEntity() == null) {
+            // Never happends because a new cell is always occupied by a soldier
+            income += 1;
+        }
         cells.add(cell);
     }
 
+    /**
+     * Removes a cell
+     * @param cell
+     * @return
+     */
     public boolean remove(Tile cell) {
-        income -= 1;        // TODO always ? Tree,...
-        tileCount -= 1;
+        if (cell.getEntity() == null) {
+            income -= 1;
+        } else if (cell.getEntity() instanceof StaticEntity) {
+            StaticEntity st = (StaticEntity) cell.getEntity();
+            if (st == StaticEntity.TREE) {
+                coins += 3;
+            }
+        }
         return this.cells.remove(cell);
     }
 
@@ -46,23 +59,6 @@ public class Territory {
             return false;
         }
         return owner.equals(other.owner);
-    }
-
-    /**
-     * Splits a territory in multiple territories if part of their cells are not linked
-     */
-    public void split() {
-        /*
-        Idea: We start from one cell and we keep in this territory all the cells that are
-        adjacent to this one and in the same territory. All the others are separated in another
-        territory and continue to split until all the cells in the territory are adjacent.
-         */
-        if (cells.size() == 0) {
-            return;
-        }
-        Tile startCell = cells.get(0);
-
-
     }
 
     List<Tile> getCells() {
@@ -75,12 +71,25 @@ public class Territory {
     }
 
     public void addCoins(int n) {
-        this.coins += n;
+        coins += n;
     }
 
-    public void incrIncome() {
-        this.income += 1;
+    /**
+     * changes the income of the territory
+     * @param delta the amount of income to add (in coins per turn)
+     */
+    public void changeIncome(int delta) {
+        income += delta;
     }
+
+    /**
+     * Chenages the outgoings of the territory
+     * @param delta the amout of outgoings to add (in coins per turn)
+     */
+    public void changeOutgoings(int delta) {
+        outgoings += delta;
+    }
+
 
     @Override
     public String toString() {
