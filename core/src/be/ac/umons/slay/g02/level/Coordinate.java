@@ -41,7 +41,7 @@ public class Coordinate {
             Coordinate[] res = {
                     new Coordinate(x, y - 1),
                     new Coordinate(x + 1, y),
-                    new Coordinate(x + 1, y + 1),
+                    new Coordinate(x + 1, y - 1),
                     new Coordinate(x, y + 1),
                     new Coordinate(x - 1, y - 1),
                     new Coordinate(x - 1, y)

@@ -323,13 +323,6 @@ public class GameScreen implements Screen, InputProcessor {
 
         Tile current = level.getTileMap()[temp.getX()][temp.getY()];
 
-        if (current.getType().equals(TileType.WATER)) {
-            Coordinate[] neigh = temp.getNeighbors();
-            for (Coordinate coord : neigh) {
-                HexManagement.drawTile(coord, set.getTile(10), effects);
-            }
-        } // Temporaire
-
         if (listMove.contains(temp)) {
             if (coord1.getX() >= 0 && coord2.getX() < 0) {
                 coord2 = temp;
