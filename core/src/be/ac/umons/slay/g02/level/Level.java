@@ -40,9 +40,23 @@ public class Level implements Playable {
         height = y;
     }
 
-    public Tile[][] getTileMap() {
-        return this.tileMap;
+    /**
+     * Gives the maximum width of the level
+     *
+     * @return
+     */
+    public int width() {
+        return width;
     }
+
+    /**
+     * Gives the maximum height of the level
+     * @return
+     */
+    public int height() {
+        return height;
+    }
+
 
     /**
      * Places the tile in parameter in the mentioned coordinates
@@ -56,6 +70,16 @@ public class Level implements Playable {
 
     void set(Entity entity, Coordinate coords) {
         tileMap[coords.getX()][coords.getY()].setEntity(entity);
+    }
+
+    /**
+     * Return the tile at the mentioned coordinates
+     * @param x
+     * @param y
+     * @return
+     */
+    public Tile get(int x, int y) {
+        return tileMap[x][y];
     }
 
     /**
@@ -96,7 +120,6 @@ public class Level implements Playable {
         if (tileMap[coord.getX()][coord.getY()].getTerritory() != null) {
             int n = 0; //mettre la position de départ
             getMove(res, coord, coord);
-            Gdx.app.log("slay", Arrays.toString(coord.getNeighbors()));
             return res;
         }
         return res;
@@ -233,6 +256,7 @@ public class Level implements Playable {
         newTile.getTerritory().changeIncome(1);
 
         splitTerritories(); //TODO find a better approach
+        mergeTerritories();
 
     }
 
@@ -269,44 +293,17 @@ public class Level implements Playable {
 
             int x = pos.getX();
             int y = pos.getY();
-            // Try to merge territory with cell on the left (upper)
-            if (x > 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x - 1][y])) {
-                    mergeTerritories(new Coordinate(x - 1, y), processed);
-                }
-            }
-            // Try to merge territory with cell on the left (lower)
-            if (x > 1 && y > 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x - 1][y - 1])) {
-                    mergeTerritories(new Coordinate(x - 1, y - 1), processed);
-                }
-            }
-            // Try to merge territory with the cell below
-            if (y > 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x][y - 1])) {
-                    mergeTerritories(new Coordinate(x, y - 1), processed);
-                }
-            }
-            // Try to merge territory with the cell on the right (lower)
-            if (x < width - 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x + 1][y])) {
-                    mergeTerritories(new Coordinate(x + 1, y), processed);
-                }
-            }
-            // Try to merge territory with the cell on the right (upper)
-            if (x < width - 1 && y < height - 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x + 1][y + 1])) {
-                    mergeTerritories(new Coordinate(x + 1, y + 1), processed);
-                }
-            }
-            // Try to merge territory with the cell above
-            if (y < height - 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x][y + 1])) {
-                    mergeTerritories(new Coordinate(x, y + 1), processed);
-                }
-            }
 
+            Coordinate[] neighbors = pos.getNeighbors();
+            //Gdx.app.log("slay", Arrays.toString(neighbors));
 
+            for (Coordinate nb : neighbors) {
+                if (isInLevel(nb)) {
+                    if (tileMap[x][y].mergeTerritories(tileMap[nb.getX()][nb.getY()])) {
+                        mergeTerritories(nb, processed);
+                    }
+                }
+            }
         }
     }
 
@@ -360,7 +357,12 @@ public class Level implements Playable {
         }
     }
 
-
+    /**
+     * Lists all the cells in a neighbourhood, which is all adjacent cells
+     * that are part of the same territory.
+     * @param pos The position of one cell of the neighbourhood
+     * @return A list of all the cells in the neighbourhood of which contains the position pos
+     */
     public List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
         List<Coordinate> neighbours = new LinkedList<Coordinate>();
         Tile cell = tileMap[pos.getX()][pos.getY()];
@@ -374,7 +376,7 @@ public class Level implements Playable {
     }
 
     /**
-     * Adds all of the neighbours in the same territory to the
+     * Adds all of the neighbours in the same territory to the known list
      *
      * @param pos       The current position
      * @param territory the territory of the neighbourhood
@@ -393,14 +395,9 @@ public class Level implements Playable {
         }
         known.add(pos);
 
-        // Change if on odd and even column
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY()), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY() - 1), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() - 1), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY()), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY() + 1), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() + 1), territory, known);
-
+        for (Coordinate nbr : pos.getNeighbors()) {
+            neighbourTilesInSameTerritory(new Coordinate(nbr.getX(), pos.getY()), territory, known);
+        }
     }
 
     public int countTerritories() {
@@ -410,12 +407,20 @@ public class Level implements Playable {
                 Tile cell = tileMap[i][j];
                 if (cell.hasTerritory()) {
                     if (!territories.contains(cell.getTerritory())) {
-                        Gdx.app.debug("slay", "x:" + i + " y:" + j + " perso: " + cell.getTerritory().getOwner().getName());
                         territories.add(cell.getTerritory());
                     }
                 }
             }
         }
         return territories.size();
+    }
+
+    /**
+     * Returns true if the position c is in the level
+     * @param c the position to check
+     * @return true if the position c is in the level
+     */
+    private boolean isInLevel(Coordinate c) {
+        return c.getX() > 0 && c.getX() < width && c.getY() > 0 && c.getY() < height;
     }
 }

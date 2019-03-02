@@ -94,7 +94,7 @@ public class LevelLoader {
                         index = colors.indexOf(colorId);
                     }
 
-                    level.getTileMap()[i][j].setTerritory(new Territory(players.get(index), level.get(coords)));
+                    level.get(i, j).setTerritory(new Territory(players.get(index), level.get(coords)));
                 }
             }
         }
