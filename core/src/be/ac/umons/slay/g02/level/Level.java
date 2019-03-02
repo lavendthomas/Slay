@@ -135,7 +135,6 @@ public class Level implements Playable {
     private void getMove(ArrayList<Coordinate> list, Coordinate coord, Coordinate initial) {
         Coordinate[] neighbors = coord.getNeighbors();
         Tile initTile = tileMap[initial.getX()][initial.getY()];
-
         if (!list.contains(coord)) {
             list.add(coord);
         }
@@ -144,22 +143,17 @@ public class Level implements Playable {
             Tile current = tileMap[curr.getX()][curr.getY()];
 
             if (current.getType().equals(TileType.NEUTRAL) && !list.contains(curr)) {
+
                 int distance = HexManagement.distance(curr, initial);
-                if (current.getTerritory() == null && distance <= 4) { //ajouter terr ennemie
+                if (((current.getTerritory()) == null || !current.getTerritory().hasSameOwner(initTile.getTerritory())) && distance <= 4) {
                     list.add(curr);
                 } else {
-                    // Gdx.app.debug("slay", "Current: " + curr + "distance: " + distance);
                     if (current.getTerritory() != null && current.getTerritory().hasSameOwner(initTile.getTerritory()) && distance <= 4) {
                         getMove(list, curr, initial);
                     }
                 }
             }
         }
-    }
-
-
-    public Entity getEntity() {
-        return null;
     }
 
     /**
