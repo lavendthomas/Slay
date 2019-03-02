@@ -33,7 +33,7 @@ public class StatsLoader {
 
             Element root = document.getDocumentElement();
 
-            for (int i = 0 ; i < root.getChildNodes().getLength() ; i++) {
+            for (int i = 0; i < root.getChildNodes().getLength(); i++) {
                 Node n = root.getChildNodes().item(i);
                 if (n.getNodeName().equals("player")) {
                     if (i != 0) {
@@ -44,7 +44,7 @@ public class StatsLoader {
                     Element plys = (Element) n;
                     statis.setRank(Integer.parseInt(plys.getAttribute("rank")));
 
-                    for (int j = 0 ; j < plys.getChildNodes().getLength() ; j++) {
+                    for (int j = 0; j < plys.getChildNodes().getLength(); j++) {
 
                         Element plys2 = (Element) plys.getChildNodes().item(j);
 

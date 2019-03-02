@@ -6,9 +6,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import be.ac.umons.slay.g02.gui.screens.Menu;
@@ -87,12 +86,6 @@ public class Main extends Game {
 
     @Override
     public void dispose() {
-        cursor.dispose();
-        pm.dispose();
-        soundButton1.dispose();
-        soundButton2.dispose();
-        skinSgx.dispose();
-        stage.dispose();
     }
 
     @Override
@@ -104,6 +97,8 @@ public class Main extends Game {
     @Override
     public void resize(int width, int height) {
         skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
+        skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
+        skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
         // fixe le probleme de decalage en fenetre reduite
         stage.getViewport().setScreenBounds(0, 0, width, height);
     }
