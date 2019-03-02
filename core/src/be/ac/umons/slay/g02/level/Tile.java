@@ -26,7 +26,7 @@ public class Tile {
     }
 
     public boolean isEmpty() {
-        return this.entity == null;
+        return entity == null;
     }
 
     public void setEntity(Entity entity) {

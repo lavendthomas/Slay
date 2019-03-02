@@ -28,7 +28,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Tile;
-import be.ac.umons.slay.g02.level.TileType;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -70,16 +68,12 @@ public class GameScreen implements Screen, InputProcessor {
     private TextButton buttonResume;
     private TextButton buttonQuit;
 
-    public static Window windowPause = new Window("Pause", skinSgx);
-    public static Window windowQuit = new Window("Quit Game", skinSgx);
+    private static Window windowPause = new Window("Pause", skinSgx);
+    private static Window windowQuit = new Window("Quit Game", skinSgx);
 
-    private int nbreW;
-    private int nbreH;
     private int tileW;
     private int tileH;
     private int size;
-    private int worldW;
-    private int worldH;
     private double errorOffset;
 
     private TiledMapTileLayer background;
@@ -92,15 +86,12 @@ public class GameScreen implements Screen, InputProcessor {
     private Coordinate coord1;
     private Coordinate coord2;
     private final int UNREAL = -1;
-    ArrayList<Coordinate> listMove = new ArrayList<Coordinate>();
+    private ArrayList<Coordinate> listMove = new ArrayList<Coordinate>();
 
     GameScreen(Game aGame) {
         game = aGame;
-
         coord1 = new Coordinate(UNREAL, UNREAL);
         coord2 = new Coordinate(UNREAL, UNREAL);
-
-        Gdx.app.setLogLevel(Application.LOG_DEBUG); //TODO remove
 
         try {
             //Chargement de la map et du Level associé
@@ -125,15 +116,15 @@ public class GameScreen implements Screen, InputProcessor {
 
             //Positionnement de la caméra selon la taille de la map
             MapProperties prop = map.getProperties();
-            nbreW = prop.get("width", Integer.class);
-            nbreH = prop.get("height", Integer.class);
+            int nbreW = prop.get("width", Integer.class);
+            int nbreH = prop.get("height", Integer.class);
             tileW = prop.get("tilewidth", Integer.class);
             tileH = prop.get("tileheight", Integer.class);
             size = prop.get("hexsidelength", Integer.class);
             errorOffset = size * sqrt(3) - round(size * sqrt(3));
 
-            worldW = nbreW / 2 * tileW + nbreW / 2 * tileW / 2;
-            worldH = nbreH * tileH + tileH / 2;
+            int worldW = nbreW / 2 * tileW + nbreW / 2 * tileW / 2;
+            int worldH = nbreH * tileH + tileH / 2;
             camera = new OrthographicCamera();
             stage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
 
@@ -155,7 +146,7 @@ public class GameScreen implements Screen, InputProcessor {
                     showPauseWindow();
                 }
             });
-            stage.addActor(buttonPause);
+
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
 
@@ -281,9 +272,6 @@ public class GameScreen implements Screen, InputProcessor {
         renderer.setView(camera);
         stage.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
-        stage.draw();
-        stage.act();
-
         if (touchDown(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)) {
             touchUp(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
         }
@@ -299,6 +287,11 @@ public class GameScreen implements Screen, InputProcessor {
             camera.zoom += 0.02;
         }
         loadLevel(level);
+
+        stage.addActor(buttonPause);
+
+        stage.draw();
+        stage.act();
         renderer.render();
     }
 
@@ -312,6 +305,7 @@ public class GameScreen implements Screen, InputProcessor {
 
     private void loadClick() { // Pas encore tester, car il faut des soldats sur la carte
         EffectsManagement.eraseCells(effects);
+        Coordinate temp = rectifyCoord();
 
         //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
         if (coord1.getX() >= 0 && coord2.getX() >= 0) {
@@ -319,39 +313,31 @@ public class GameScreen implements Screen, InputProcessor {
             coord2.setX(UNREAL);
         }
 
-        Coordinate temp = rectifyCoord();
+        Tile current = level.get(temp);
 
-        Tile current = level.getTileMap()[temp.getX()][temp.getY()];
+        if (listMove.contains(temp) && coord1.getX() >= 0 && coord2.getX() < 0) {
+            coord2 = temp;
 
-        if (listMove.contains(temp)) {
-            if (coord1.getX() >= 0 && coord2.getX() < 0) {
-                coord2 = temp;
-                Gdx.app.debug("Slay", "x " + temp.getX() + " y " + temp.getY());
-
-                Gdx.app.debug("Click 2 ", "x : " + coord2.getX() + " y : " + coord2.getY());
-                level.move(coord1, coord2);
-            }
+            level.move(coord1, coord2);
         } else {
             coord1.setX(UNREAL);
             coord2.setX(UNREAL);
         }
 
-        if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) {
-
+        if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) { // clic sur un territoire mais pas sur un soldat => afficher territoire
             listMove = new ArrayList<Coordinate>();
             List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
-            EffectsManagement.highlightCells(effects, listTerr, set.getTile(19));
-            // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
+            EffectsManagement.highlightCells(effects, listTerr, set.getTile(19)); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
             // TODO Ajouter l'affichage des données du territoire et achat soldat
         }
 
-        if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Vérifier que c'est le premier clic d'une série de 2 et sur un soldat
-            listMove = level.getMovePoss(temp); // Récupère la liste des mouvements possibles à partir de la coordonée donnée
+        if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Clic sur un soldat + Vérif premier clic d'une série de 2
+
+            listMove = level.getMoves(temp); // Récupère la liste des mouvements possibles à partir de la coordonée donnée
             EffectsManagement.shadowMap(effects, level, set);
             EffectsManagement.highlightCells(effects, listMove, set.getTile(17));
             coord1 = temp;
             coord2.setX(UNREAL);
-            Gdx.app.debug("Click 1 ", "x : " + coord1.getX() + " y : " + coord1.getY());
             //TODO Ajouter affichage donneés du territoire et achat soldat
         }
 
@@ -364,9 +350,9 @@ public class GameScreen implements Screen, InputProcessor {
 
 
     private void loadLevel(Level level) {
-        for (int i = 0; i < level.getTileMap().length; i++) {
-            for (int j = 0; j < level.getTileMap()[i].length; j++) { // Parcours de chaque case du tableau de la partie logique
-                Tile tile = level.getTileMap()[i][j];
+        for (int i = 0; i < level.width(); i++) {
+            for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique
+                Tile tile = level.get(i, j);
                 if (tile.getEntity() != null) { // Si la case contient une entité, la rajouter à l'interface grafique
                     TiledMapTile image = tileMap.get(tile.getEntity().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);

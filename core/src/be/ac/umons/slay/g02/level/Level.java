@@ -115,11 +115,11 @@ public class Level implements Playable {
      * @return List of coordinates you can move
      */
 
-    public ArrayList<Coordinate> getMovePoss(Coordinate coord) {
+    public ArrayList<Coordinate> getMoves(Coordinate coord) {
         ArrayList<Coordinate> res = new ArrayList<Coordinate>();
         if (tileMap[coord.getX()][coord.getY()].getTerritory() != null) {
-            int n = 0; //mettre la position de départ
-            getMove(res, coord, coord);
+            res.add(coord);
+            getMoves(res, coord, coord);
             return res;
         }
         return res;
@@ -132,24 +132,27 @@ public class Level implements Playable {
      * @param coord Actual coordinate
      */
 
-    private void getMove(ArrayList<Coordinate> list, Coordinate coord, Coordinate initial) {
+    private void getMoves(ArrayList<Coordinate> list, Coordinate coord, Coordinate initial) {
+        // Tester avec can move
+
         Coordinate[] neighbors = coord.getNeighbors();
         Tile initTile = tileMap[initial.getX()][initial.getY()];
-        if (!list.contains(coord)) {
+        if (!list.contains(coord) && canMove(initial, coord)) {
             list.add(coord);
         }
 
         for (Coordinate curr : neighbors) {
             Tile current = tileMap[curr.getX()][curr.getY()];
 
-            if (current.getType().equals(TileType.NEUTRAL) && !list.contains(curr)) {
+            if (current.getType().equals(TileType.NEUTRAL) && !list.contains(curr)
+                    && canMove(initial, curr)) {
 
                 int distance = HexManagement.distance(curr, initial);
                 if (((current.getTerritory()) == null || !current.getTerritory().hasSameOwner(initTile.getTerritory())) && distance <= 4) {
                     list.add(curr);
                 } else {
                     if (current.getTerritory() != null && current.getTerritory().hasSameOwner(initTile.getTerritory()) && distance <= 4) {
-                        getMove(list, curr, initial);
+                        getMoves(list, curr, initial);
                     }
                 }
             }
@@ -164,7 +167,7 @@ public class Level implements Playable {
      * @param oldCoord
      * @param newCoord
      */
-    public boolean move(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
+    private boolean canMove(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
 
         if (oldCoord.equals(newCoord)) {
             // We don't move to the same cell
@@ -173,55 +176,32 @@ public class Level implements Playable {
 
         Tile from = this.tileMap[oldCoord.getX()][oldCoord.getY()];
         Tile to = this.tileMap[newCoord.getX()][newCoord.getY()];
-        if (to.getType().equals(TileType.NEUTRAL)) {
+        if (to.getType().equals(TileType.NEUTRAL) && !from.isEmpty()) {
 
             if (from.getEntity() instanceof Soldier) {
-                if (from.isEmpty()) {
-                    // TODO Erreur car rien à déplacer
-                }
-                if (to.isEmpty()) { // juste déplacer l'entité vers les nouvelles coordonnées
-                    moveEntity(oldCoord, newCoord);
+
+                if (to.getEntity() == null || to.getTerritory() == null) { // No Problem, dplt easy
                     return true;
+                } else if (!to.getTerritory().hasSameOwner(from.getTerritory())) {
+                    // TODO empêcher d'aller sur une case surveiller par un soldat plus fort
+
                 } else {
                     if (to.getEntity() instanceof be.ac.umons.slay.g02.entities.StaticEntity) {
-                        if (to.getEntity() == StaticEntity.TREE) { //c'est un arbre séparation du cas où l'arbre appartient au territoire ou non pour les pièces gagnées
-                            if (from.getTerritory().hasSameOwner(to.getTerritory())) {
-                                moveEntity(oldCoord, newCoord);
-                            } else {
-                                moveEntity(oldCoord, newCoord);
-                            }
-                            return true;
-                        } else if (to.getEntity() == StaticEntity.GRAVE) {
-                            moveEntity(oldCoord, newCoord);
-                            return true;
-                        } else if (to.getEntity() == StaticEntity.CAPITAL) {
+                        if (to.getEntity() == StaticEntity.CAPITAL) {
                             if (((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 1) {
-                                moveEntity(oldCoord, newCoord);
-                                return true;
+                                return false;
                             }
-                            return false;
+                        } else {
+                            return true;
                         }
+
                     } else if (to.getEntity() instanceof Soldier) {
-                        //TODO soldat du même territoire les fusionner
                         if (to.getTerritory().hasSameOwner(from.getTerritory())) {
                             int fromSold = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
                             int toSold = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                            if (fromSold == 3 || toSold == 3 || (fromSold + toSold) >= 3) {
-                                return false;
-                            } else {
-                                to.setEntity(new Soldier(SoldierLevel.fromLevel(fromSold + toSold)));
-                                from.setEntity(null);
-                                return true;
-                            }
-                        }
-
-                        if (((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity())) {
-                            moveEntity(oldCoord, newCoord);
-                            return true;
-                        } else {
-                            from.setEntity(null);
-                            return false;
-                            /*utile dans le cas L3 contre L3 pour tuer celui qui se déplace si perdu le combat */
+                            return fromSold == 3 || toSold == 3 || (fromSold + toSold) >= 3;
+                        } else  {
+                            return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
                         }
                     }
                 }
@@ -237,20 +217,23 @@ public class Level implements Playable {
      * @param newCoord new coordinates
      */
 
-    private void moveEntity(Coordinate oldCoord, Coordinate newCoord) {
-        Tile newTile = tileMap[newCoord.getX()][newCoord.getY()];
-        Tile oldTile = tileMap[oldCoord.getX()][oldCoord.getY()];
+    public void move(Coordinate oldCoord, Coordinate newCoord) {
+        // Charge liste dplt poss + check new est dedans
+        ArrayList<Coordinate> listMoves = getMoves(oldCoord);
+        if (listMoves.contains(newCoord) && !oldCoord.equals(newCoord)) {
+            Tile newTile = tileMap[newCoord.getX()][newCoord.getY()];
+            Tile oldTile = tileMap[oldCoord.getX()][oldCoord.getY()];
 
-        // Move the Entity
-        newTile.setEntity(oldTile.getEntity());
-        oldTile.setEntity(null);
-        newTile.setTerritory(oldTile.getTerritory());
+            // Move the Entity
+            newTile.setEntity(oldTile.getEntity());
+            oldTile.setEntity(null);
+            newTile.setTerritory(oldTile.getTerritory());
 
-        // The soldier left the old tile so we add +1 to the income
-        newTile.getTerritory().changeIncome(1);
 
-        splitTerritories(); //TODO find a better approach
-        mergeTerritories();
+            splitTerritories(); //TODO find a better approach
+            mergeTerritories();
+
+        }
 
     }
 
@@ -390,7 +373,7 @@ public class Level implements Playable {
         known.add(pos);
 
         for (Coordinate nbr : pos.getNeighbors()) {
-            neighbourTilesInSameTerritory(new Coordinate(nbr.getX(), pos.getY()), territory, known);
+            neighbourTilesInSameTerritory(nbr, territory, known);
         }
     }
 
