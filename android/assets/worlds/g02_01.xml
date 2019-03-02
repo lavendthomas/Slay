@@ -20,4 +20,8 @@
 		<item
 			type="tree" x="13" y="6"/>
 	</items>
+	<units>
+	<unit
+			type="soldier" level="0" x="4" y="6"/>
+	</units>
 </world>

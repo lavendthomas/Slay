@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="hexagonal" renderorder="left-down" width="20" height="15" tilewidth="64" tileheight="55" infinite="0" hexsidelength="32" staggeraxis="x" staggerindex="odd" nextlayerid="4" nextobjectid="1">
- <tileset firstgid="1" name="tileset" tilewidth="64" tileheight="55" tilecount="16" columns="4">
-  <image source="tileset.png" width="256" height="256"/>
+<map version="1.2" tiledversion="1.2.2" orientation="hexagonal" renderorder="left-down" width="20" height="15" tilewidth="64" tileheight="55" infinite="0" hexsidelength="32" staggeraxis="x" staggerindex="odd" nextlayerid="5" nextobjectid="1">
+ <tileset firstgid="1" name="tileset" tilewidth="64" tileheight="55" tilecount="20" columns="4">
+  <image source="tileset.png" width="256" height="275"/>
  </tileset>
  <layer id="1" name="Background" width="20" height="15">
   <data encoding="csv">
@@ -56,6 +56,25 @@
 0,0,0,0,0,0,12,0,0,0,0,0,0,0,12,12,0,0,0,0,
 0,0,0,0,0,0,0,12,12,12,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,12,0,12,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="Effects" width="20" height="15">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>

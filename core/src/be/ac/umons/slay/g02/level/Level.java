@@ -40,9 +40,23 @@ public class Level implements Playable {
         height = y;
     }
 
-    public Tile[][] getTileMap () {
-        return this.tileMap;
+    /**
+     * Gives the maximum width of the level
+     *
+     * @return
+     */
+    public int width() {
+        return width;
     }
+
+    /**
+     * Gives the maximum height of the level
+     * @return
+     */
+    public int height() {
+        return height;
+    }
+
 
     /**
      * Places the tile in parameter in the mentioned coordinates
@@ -56,6 +70,16 @@ public class Level implements Playable {
 
     void set(Entity entity, Coordinate coords) {
         tileMap[coords.getX()][coords.getY()].setEntity(entity);
+    }
+
+    /**
+     * Return the tile at the mentioned coordinates
+     * @param x
+     * @param y
+     * @return
+     */
+    public Tile get(int x, int y) {
+        return tileMap[x][y];
     }
 
     /**
@@ -91,12 +115,11 @@ public class Level implements Playable {
      * @return List of coordinates you can move
      */
 
-    public ArrayList<Coordinate> getMovePoss (Coordinate coord) {
+    public ArrayList<Coordinate> getMoves(Coordinate coord) {
         ArrayList<Coordinate> res = new ArrayList<Coordinate>();
-        if (tileMap[coord.getX()][coord.getY()].getTerritory()!= null) {
-            int n = 0; //mettre la position de départ
-            getMove(res, coord, coord);
-            Gdx.app.log("slay", Arrays.toString(coord.getNeighbors()));
+        if (tileMap[coord.getX()][coord.getY()].getTerritory() != null) {
+            res.add(coord);
+            getMoves(res, coord, coord);
             return res;
         }
         return res;
@@ -109,35 +132,31 @@ public class Level implements Playable {
      * @param coord Actual coordinate
      */
 
-    private void getMove(ArrayList<Coordinate> list, Coordinate coord, Coordinate initial) {
+    private void getMoves(ArrayList<Coordinate> list, Coordinate coord, Coordinate initial) {
+        // Tester avec can move
+
         Coordinate[] neighbors = coord.getNeighbors();
         Tile initTile = tileMap[initial.getX()][initial.getY()];
-
-        if (!list.contains(coord)) {
+        if (!list.contains(coord) && canMove(initial, coord)) {
             list.add(coord);
         }
 
         for (Coordinate curr : neighbors) {
             Tile current = tileMap[curr.getX()][curr.getY()];
 
-            if (current.getType().equals(TileType.NEUTRAL) &&  !list.contains(curr)) {
+            if (current.getType().equals(TileType.NEUTRAL) && !list.contains(curr)
+                    && canMove(initial, curr)) {
+
                 int distance = HexManagement.distance(curr, initial);
-                if (current.getTerritory() == null && distance <= 4) { //ajouter terr ennemie
+                if (((current.getTerritory()) == null || !current.getTerritory().hasSameOwner(initTile.getTerritory())) && distance <= 4) {
                     list.add(curr);
-                } else  {
-                    Gdx.app.debug("slay", "Current: " + curr + "distance: " + distance);
+                } else {
                     if (current.getTerritory() != null && current.getTerritory().hasSameOwner(initTile.getTerritory()) && distance <= 4) {
-                        getMove(list, curr, initial);
+                        getMoves(list, curr, initial);
                     }
                 }
             }
         }
-    }
-
-
-
-    public Entity getEntity() {
-        return null;
     }
 
     /**
@@ -148,66 +167,41 @@ public class Level implements Playable {
      * @param oldCoord
      * @param newCoord
      */
-    public boolean move(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
+    private boolean canMove(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
+
+        if (oldCoord.equals(newCoord)) {
+            // We don't move to the same cell
+            return false;
+        }
+
         Tile from = this.tileMap[oldCoord.getX()][oldCoord.getY()];
         Tile to = this.tileMap[newCoord.getX()][newCoord.getY()];
-        if (to.getType().equals(TileType.NEUTRAL)) {
-            if (from.getEntity() instanceof StaticEntity) { // TEMPORAIRE POUR TEST
-                if (to.isEmpty()) {
-                    moveEntity(oldCoord, newCoord);
-                    return true;
-                }
-            }
+        if (to.getType().equals(TileType.NEUTRAL) && !from.isEmpty()) {
 
             if (from.getEntity() instanceof Soldier) {
-                if (from.isEmpty()) {
-                    // TODO Erreur car rien à déplacer
-                }
-                if (to.isEmpty()) { // juste déplacer l'entité vers les nouvelles coordonnées
-                    moveEntity(oldCoord, newCoord);
+
+                if (to.getEntity() == null || to.getTerritory() == null) { // No Problem, dplt easy
                     return true;
+                } else if (!to.getTerritory().hasSameOwner(from.getTerritory())) {
+                    // TODO empêcher d'aller sur une case surveiller par un soldat plus fort
+
                 } else {
                     if (to.getEntity() instanceof be.ac.umons.slay.g02.entities.StaticEntity) {
-                        if (to.getEntity() == StaticEntity.TREE) { //c'est un arbre séparation du cas où l'arbre appartient au territoire ou non pour les pièces gagnées
-                            if (from.getTerritory().hasSameOwner(to.getTerritory())) {
-                                moveEntity(oldCoord, newCoord);
-                                to.getTerritory().addCoins(3);
-                                to.getTerritory().incrIncome();
-                            } else {
-                                moveEntity(oldCoord, newCoord);
-                            }
-                            return true;
-                        } else if (to.getEntity() == StaticEntity.GRAVE) {
-                            moveEntity(oldCoord, newCoord);
-                            return true;
-                        } else if (to.getEntity() == StaticEntity.CAPITAL) {
+                        if (to.getEntity() == StaticEntity.CAPITAL) {
                             if (((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 1) {
-                                moveEntity(oldCoord, newCoord);
-                                return true;
+                                return false;
                             }
-                            return false;
+                        } else {
+                            return true;
                         }
+
                     } else if (to.getEntity() instanceof Soldier) {
-                        //TODO soldat du même territoire les fusionner
                         if (to.getTerritory().hasSameOwner(from.getTerritory())) {
                             int fromSold = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
                             int toSold = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                            if (fromSold == 3 || toSold == 3 || (fromSold + toSold) >= 3) {
-                                return false;
-                            } else {
-                                to.setEntity(new Soldier(SoldierLevel.fromLevel(fromSold + toSold)));
-                                from.setEntity(null);
-                                return true;
-                            }
-                        }
-
-                        if (((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity())) {
-                            moveEntity(oldCoord, newCoord);
-                            return true;
-                        } else {
-                            from.setEntity(null);
-                            return false;
-                            /*utile dans le cas L3 contre L3 pour tuer celui qui se déplace si perdu le combat */
+                            return fromSold == 3 || toSold == 3 || (fromSold + toSold) >= 3;
+                        } else  {
+                            return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
                         }
                     }
                 }
@@ -223,9 +217,24 @@ public class Level implements Playable {
      * @param newCoord new coordinates
      */
 
-    private void moveEntity(Coordinate oldCoord, Coordinate newCoord) {
-        this.tileMap[newCoord.getX()][newCoord.getY()].setEntity(this.tileMap[oldCoord.getX()][oldCoord.getY()].getEntity());
-        this.tileMap[oldCoord.getX()][oldCoord.getY()].setEntity(null);
+    public void move(Coordinate oldCoord, Coordinate newCoord) {
+        // Charge liste dplt poss + check new est dedans
+        ArrayList<Coordinate> listMoves = getMoves(oldCoord);
+        if (listMoves.contains(newCoord) && !oldCoord.equals(newCoord)) {
+            Tile newTile = tileMap[newCoord.getX()][newCoord.getY()];
+            Tile oldTile = tileMap[oldCoord.getX()][oldCoord.getY()];
+
+            // Move the Entity
+            newTile.setEntity(oldTile.getEntity());
+            oldTile.setEntity(null);
+            newTile.setTerritory(oldTile.getTerritory());
+
+
+            splitTerritories(); //TODO find a better approach
+            mergeTerritories();
+
+        }
+
     }
 
 
@@ -261,44 +270,17 @@ public class Level implements Playable {
 
             int x = pos.getX();
             int y = pos.getY();
-            // Try to merge territory with cell on the left (upper)
-            if (x > 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x - 1][y])) {
-                    mergeTerritories(new Coordinate(x - 1, y), processed);
-                }
-            }
-            // Try to merge territory with cell on the left (lower)
-            if (x > 1 && y > 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x - 1][y - 1])) {
-                    mergeTerritories(new Coordinate(x - 1, y - 1), processed);
-                }
-            }
-            // Try to merge territory with the cell below
-            if (y > 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x][y - 1])) {
-                    mergeTerritories(new Coordinate(x, y - 1), processed);
-                }
-            }
-            // Try to merge territory with the cell on the right (lower)
-            if (x < width - 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x + 1][y])) {
-                    mergeTerritories(new Coordinate(x + 1, y), processed);
-                }
-            }
-            // Try to merge territory with the cell on the right (upper)
-            if (x < width - 1 && y < height - 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x + 1][y + 1])) {
-                    mergeTerritories(new Coordinate(x + 1, y + 1), processed);
-                }
-            }
-            // Try to merge territory with the cell above
-            if (y < height - 1) {
-                if (tileMap[x][y].mergeTerritories(tileMap[x][y + 1])) {
-                    mergeTerritories(new Coordinate(x, y + 1), processed);
-                }
-            }
 
+            Coordinate[] neighbors = pos.getNeighbors();
+            //Gdx.app.log("slay", Arrays.toString(neighbors));
 
+            for (Coordinate nb : neighbors) {
+                if (isInLevel(nb)) {
+                    if (tileMap[x][y].mergeTerritories(tileMap[nb.getX()][nb.getY()])) {
+                        mergeTerritories(nb, processed);
+                    }
+                }
+            }
         }
     }
 
@@ -336,8 +318,12 @@ public class Level implements Playable {
                         // Remove all the cells that are not in the neighborhood
                         // and create a new territory for them
                         Territory newTerr = new Territory(cell.getTerritory().getOwner());
-                        for (Tile t : cell.getTerritory().getCells()) {
+                        List<Tile> tilesInTerritory = cell.getTerritory().getCells();
+                        Tile[] tilesArray = new Tile[tilesInTerritory.size()];
+                        tilesInTerritory.toArray(tilesArray);
+                        for (Tile t : tilesArray) {
                             if (!tiles.contains(t)) {
+                                t.getTerritory().remove(t);
                                 t.setTerritory(newTerr);
                             }
                         }
@@ -348,21 +334,26 @@ public class Level implements Playable {
         }
     }
 
-
-    private List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
-        List<Coordinate> neighbors = new LinkedList<Coordinate>();
+    /**
+     * Lists all the cells in a neighbourhood, which is all adjacent cells
+     * that are part of the same territory.
+     * @param pos The position of one cell of the neighbourhood
+     * @return A list of all the cells in the neighbourhood of which contains the position pos
+     */
+    public List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
+        List<Coordinate> neighbours = new LinkedList<Coordinate>();
         Tile cell = tileMap[pos.getX()][pos.getY()];
 
         if (cell.getTerritory() == null) {
-            return neighbors;
+            return neighbours;
         } else {
-            neighbourTilesInSameTerritory(pos, cell.getTerritory(), neighbors);
-            return neighbors;
+            neighbourTilesInSameTerritory(pos, cell.getTerritory(), neighbours);
+            return neighbours;
         }
     }
 
     /**
-     * Adds all of the neighbours in the same territory to the
+     * Adds all of the neighbours in the same territory to the known list
      *
      * @param pos       The current position
      * @param territory the territory of the neighbourhood
@@ -380,13 +371,10 @@ public class Level implements Playable {
             return;
         }
         known.add(pos);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY()), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() - 1, pos.getY() - 1), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() - 1), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY()), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX() + 1, pos.getY() + 1), territory, known);
-        neighbourTilesInSameTerritory(new Coordinate(pos.getX(), pos.getY() + 1), territory, known);
 
+        for (Coordinate nbr : pos.getNeighbors()) {
+            neighbourTilesInSameTerritory(nbr, territory, known);
+        }
     }
 
     public int countTerritories() {
@@ -396,12 +384,20 @@ public class Level implements Playable {
                 Tile cell = tileMap[i][j];
                 if (cell.hasTerritory()) {
                     if (!territories.contains(cell.getTerritory())) {
-                        Gdx.app.debug("slay", "x:" + i + " y:" + j + " perso: " + cell.getTerritory().getOwner().getName());
                         territories.add(cell.getTerritory());
                     }
                 }
             }
         }
         return territories.size();
+    }
+
+    /**
+     * Returns true if the position c is in the level
+     * @param c the position to check
+     * @return true if the position c is in the level
+     */
+    private boolean isInLevel(Coordinate c) {
+        return c.getX() > 0 && c.getX() < width && c.getY() > 0 && c.getY() < height;
     }
 }

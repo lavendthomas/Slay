@@ -1,7 +1,6 @@
 package be.ac.umons.slay.g02.gui.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
@@ -20,7 +19,6 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        Gdx.app.debug("slay", "top");
         return true;
     }
 
