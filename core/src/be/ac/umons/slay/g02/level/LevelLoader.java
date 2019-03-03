@@ -153,6 +153,10 @@ public class LevelLoader {
                             if (type.equals("soldier")) {
                                 int lvl = Integer.parseInt(unt.getAttribute("level"));
                                 Soldier s = new Soldier(SoldierLevel.fromLevel(lvl));
+                                if (level.get(coords).getTerritory() == null) {
+                                    // A soldier has to belong to a territory
+                                    throw new FileFormatException("A soldier has to belong to a territory");
+                                }
                                 level.set(s, coords);
                             }
                         }

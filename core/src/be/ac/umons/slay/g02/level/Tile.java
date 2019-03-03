@@ -13,7 +13,7 @@ public class Tile {
 
     public Tile(TileType type, Entity entity, Territory territory) {
         this.type = type;
-        this.entity = entity;
+        setEntity(entity);
         this.territory = territory;
     }
 
@@ -30,6 +30,10 @@ public class Tile {
     }
 
     public void setEntity(Entity entity) {
+        // Update the income of the territory
+        if (territory != null) {
+            territory.update(this.entity, entity);
+        }
         this.entity = entity;
     }
 

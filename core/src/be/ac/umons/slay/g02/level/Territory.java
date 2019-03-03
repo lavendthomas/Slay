@@ -3,6 +3,7 @@ package be.ac.umons.slay.g02.level;
 import java.util.ArrayList;
 import java.util.List;
 
+import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.players.Player;
 
@@ -14,25 +15,26 @@ public class Territory {
     private Player owner;
 
     private List<Tile> cells;
+    private Tile capital;
 
     private int coins;
     private int income;
-    private int outgoings;
-    private int tileCount;
+    private int wages;
 
     public Territory(Player owner, Tile... cells) {
         this.owner = owner;
         this.cells = new ArrayList<Tile>();
         for (Tile cell : cells) {
-            this.cells.add(cell);
+            add(cell);
         }
-        tileCount = cells.length;
     }
 
     public void add(Tile cell) {
         if (cell.getEntity() == null) {
-            // Never happends because a new cell is always occupied by a soldier
             income += 1;
+        } else {
+            // We add the wage if it is a soldier
+            wages += cell.getEntity().getCost();
         }
         cells.add(cell);
     }
@@ -45,11 +47,9 @@ public class Territory {
     public boolean remove(Tile cell) {
         if (cell.getEntity() == null) {
             income -= 1;
-        } else if (cell.getEntity() instanceof StaticEntity) {
-            StaticEntity st = (StaticEntity) cell.getEntity();
-            if (st == StaticEntity.TREE) {
-                coins += 3;
-            }
+        } else {
+            // We remove the wage if it is a soldier
+            wages -= cell.getEntity().getCost();
         }
         return this.cells.remove(cell);
     }
@@ -70,29 +70,36 @@ public class Territory {
         return owner;
     }
 
-    public void addCoins(int n) {
-        coins += n;
+    void update(Entity removed, Entity added) {
+        if (removed == null) {
+            income -= 1;
+        } else {
+            wages -= removed.getCost();
+            if (removed instanceof StaticEntity) {
+                StaticEntity se = (StaticEntity) removed;
+                if (se == StaticEntity.TREE) {
+                    coins += 3;
+                }
+            }
+        }
+        if (added == null) {
+            income += 1;
+        } else {
+            wages += added.getCost();
+        }
     }
 
-    /**
-     * changes the income of the territory
-     * @param delta the amount of income to add (in coins per turn)
-     */
-    public void changeIncome(int delta) {
-        income += delta;
+    boolean setCaptial(Tile c) {
+        if (c == capital) {
+            return false;
+        } else {
+            capital = c;
+            return true;
+        }
     }
-
-    /**
-     * Chenages the outgoings of the territory
-     * @param delta the amout of outgoings to add (in coins per turn)
-     */
-    public void changeOutgoings(int delta) {
-        outgoings += delta;
-    }
-
 
     @Override
     public String toString() {
-        return "{"+ owner + ":" + hashCode() +" $: " + coins +"}";
+        return "{"+ owner + ":" + hashCode() +" $: " + coins + " +:" + income + " -: " + wages +"}";
     }
 }
