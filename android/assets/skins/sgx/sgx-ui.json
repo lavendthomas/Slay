@@ -405,13 +405,13 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		disabled: button-small-disabled
 	}
 	number: {
-		font: small
+      font: title
 		fontColor: font
-		overFontColor: font-over
-		disabledFontColor: font-disabled
+      overFontColor: font
+      disabledFontColor: font-over
 		up: button-number
-		down: button-number-pressed
-		over: button-number-over
+      down: button-number
+      over: button-number
 		disabled: button-number-disabled
 	}
 	small: {

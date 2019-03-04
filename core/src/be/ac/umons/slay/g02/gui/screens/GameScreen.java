@@ -128,9 +128,7 @@ public class GameScreen implements Screen, InputProcessor {
             camera = new OrthographicCamera();
             stage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
 
-            stage.getViewport().setWorldSize(worldW, worldH);
-            stage.getViewport().setScreenPosition(worldW / 2, worldH / 2);
-
+            stage.getViewport().setWorldSize(worldW + tileH / 2, worldH);
 
             // boutons :
 
@@ -146,7 +144,7 @@ public class GameScreen implements Screen, InputProcessor {
                     showPauseWindow();
                 }
             });
-
+            stage.addActor(buttonPause);
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
 
@@ -156,7 +154,7 @@ public class GameScreen implements Screen, InputProcessor {
             buttonNext.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    soundButton3.play(0.2f);
+                    soundButton3.play(0.1f);
 
                     //        methode pour terminer le tour du joueur
                 }
@@ -188,7 +186,7 @@ public class GameScreen implements Screen, InputProcessor {
         buttonResume.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(0.1f);
                 windowPause.remove();
                 enableButton(buttonPause);
             }
@@ -234,7 +232,7 @@ public class GameScreen implements Screen, InputProcessor {
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(0.1f);
                 stage.clear();
                 game.setScreen(new LevelSelection(game));
             }
@@ -244,7 +242,7 @@ public class GameScreen implements Screen, InputProcessor {
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(0.1f);
                 windowQuit.remove();
                 enableButton(buttonResume, buttonQuit);
             }
@@ -270,7 +268,7 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.gl.glClearColor(103 / 255f, 173 / 255f, 244 / 255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.setView(camera);
-        stage.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
+        stage.getViewport().update(SCREEN_WIDTH + tileH * 2 / 5, SCREEN_HEIGHT, true);
 
         if (touchDown(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)) {
             touchUp(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
@@ -278,7 +276,6 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (Gdx.input.justTouched()) {
             loadClick();
-
         }
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             camera.zoom -= 0.02;
@@ -287,8 +284,6 @@ public class GameScreen implements Screen, InputProcessor {
             camera.zoom += 0.02;
         }
         loadLevel(level);
-
-        stage.addActor(buttonPause);
 
         stage.draw();
         stage.act();
@@ -403,13 +398,6 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public void dispose() {
-        cursor.dispose();
-        pm.dispose();
-        soundButton1.dispose();
-        soundButton2.dispose();
-        soundButton3.dispose();
-        skinSgx.dispose();
-        map.dispose();
         stage.dispose();
     }
 

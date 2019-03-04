@@ -6,11 +6,10 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import java.io.File;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.FileHandler;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -108,6 +107,7 @@ public class LevelLoader {
             FileHandle fileXML = Gdx.files.internal(LEVELS_PATH + "/" +  levelname + ".xml");
             fileXML.copyTo(Gdx.files.local( "currentLevel.xml"));
             Document xml = builder.parse(Gdx.files.local( "currentLevel.xml").file());
+            Gdx.files.local("currentLevel.xml").delete();
             Element root = xml.getDocumentElement();
             name = root.getAttribute("name");
 
@@ -118,6 +118,10 @@ public class LevelLoader {
                     Element plys = (Element) n;
                     int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
                     //TODO nbplayers == players.size()
+                    if (nbPlayers != players.size()) {
+                        throw new FileFormatException("The amount of player specified in the " +
+                                "level and in the description don't match");
+                    }
 
                 } else if (n.getNodeName() == "items") {
                     // handle items
@@ -134,6 +138,9 @@ public class LevelLoader {
                             StaticEntity e = StaticEntity.fromString(type);
                             level.set(e, coords);
                             // TODO read the coins if the item is a capital and add it to the territory
+                            if (e == StaticEntity.CAPITAL) {
+                                level.get(coords).getTerritory().setCapital(level.get(coords));
+                            }
                         }
                     }
 
@@ -153,6 +160,10 @@ public class LevelLoader {
                             if (type.equals("soldier")) {
                                 int lvl = Integer.parseInt(unt.getAttribute("level"));
                                 Soldier s = new Soldier(SoldierLevel.fromLevel(lvl));
+                                if (level.get(coords).getTerritory() == null) {
+                                    // A soldier has to belong to a territory
+                                    throw new FileFormatException("A soldier has to belong to a territory");
+                                }
                                 level.set(s, coords);
                             }
                         }

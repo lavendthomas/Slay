@@ -1,8 +1,12 @@
 package be.ac.umons.slay.g02.level;
 
+import com.badlogic.gdx.Gdx;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.players.Player;
 
@@ -14,43 +18,55 @@ public class Territory {
     private Player owner;
 
     private List<Tile> cells;
+    private Tile capital;
 
     private int coins;
     private int income;
-    private int outgoings;
-    private int tileCount;
+    private int wages;
 
     public Territory(Player owner, Tile... cells) {
         this.owner = owner;
         this.cells = new ArrayList<Tile>();
         for (Tile cell : cells) {
-            this.cells.add(cell);
+            add(cell);
         }
-        tileCount = cells.length;
     }
 
     public void add(Tile cell) {
         if (cell.getEntity() == null) {
-            // Never happends because a new cell is always occupied by a soldier
             income += 1;
+        } else {
+            // We add the wage if it is a soldier
+            wages += cell.getEntity().getCost();
         }
         cells.add(cell);
+        newCapital();
     }
 
     /**
      * Removes a cell
+     *
      * @param cell
      * @return
      */
     public boolean remove(Tile cell) {
         if (cell.getEntity() == null) {
             income -= 1;
-        } else if (cell.getEntity() instanceof StaticEntity) {
-            StaticEntity st = (StaticEntity) cell.getEntity();
-            if (st == StaticEntity.TREE) {
-                coins += 3;
+        } else {
+            // We remove the wage if it is a soldier
+            wages -= cell.getEntity().getCost();
+
+            if (cell.getEntity() instanceof StaticEntity) {
+                StaticEntity se = (StaticEntity) cell.getEntity();
+                if (se == StaticEntity.CAPITAL) {
+                    // If we removed a capital we have to recreate one.
+                    newCapital();
+                }
             }
         }
+
+        // TODO if less than 2 cells then delete the territory (delete the pointer to this territory from all cells0
+
         return this.cells.remove(cell);
     }
 
@@ -70,29 +86,137 @@ public class Territory {
         return owner;
     }
 
-    public void addCoins(int n) {
-        coins += n;
+    /**
+     * Updates the income and wages of the territory
+     * and makes sure there is one and only one capital on the territory
+     * @param removed
+     * @param added
+     */
+    void update(Entity removed, Entity added) {
+        if (removed == null) {
+            income -= 1;
+        } else {
+            wages -= removed.getCost();
+            if (removed instanceof StaticEntity) {
+                StaticEntity se = (StaticEntity) removed;
+                switch (se) {
+                    case TREE:
+                        coins += 3;
+                        break;
+                    case CAPITAL:
+                        // The capital was removed so we have to create a new one
+                        capital = null;
+                        newCapital();
+                        break;
+                }
+            }
+        }
+        if (added == null) {
+            income += 1;
+        } else {
+            wages += added.getCost();
+        }
     }
 
     /**
-     * changes the income of the territory
-     * @param delta the amount of income to add (in coins per turn)
+     * Places a capital in the territory if needed.
+     *
+     * @return true if a capital had to be placed
      */
-    public void changeIncome(int delta) {
-        income += delta;
+    private boolean newCapital() {
+
+        // Territory empty => No capital
+        if (cells.size() == 0) {
+            return false;
+        }
+
+        // If a capital is already there we delete don't anything
+        List<Tile> capitals = new ArrayList<Tile>();
+        for (Tile cell : cells) {
+            if (cell.contains(StaticEntity.CAPITAL)) {
+                capitals.add(cell);
+            }
+        }
+
+        if (capitals.size() == 1) {
+            // If a capital is already there we delete don't anything
+            return false;
+        } else if (capitals.size() > 1) {
+            // We have to many capitals (e.g. if merge), we remove all of them but one.
+            for (int i = 1; i < capitals.size(); i++) {
+                capitals.get(i).setEntity(null, false);
+            }
+            return false; // no new capital
+        }
+
+        // There are no capitals one has to be added.
+        List<Tile> emptyTiles = new ArrayList<Tile>();
+        for (Tile cell : cells) {
+            if (cell.getEntity() == null) {
+                emptyTiles.add(cell);
+            }
+        }
+
+        if (emptyTiles.size() != 0) {
+            // Place a capital in one of the empty cells
+
+            int nc = new Random().nextInt(emptyTiles.size());
+            Tile newCap = emptyTiles.get(nc);
+            newCap.setEntity(StaticEntity.CAPITAL, false);
+            setCapital(newCap);
+
+        } else {
+            // Try to place it on a tree, then on a random cell
+
+            List<Tile> treeTiles = new ArrayList<Tile>();
+            for (Tile cell : cells) {
+                if (cell.contains(StaticEntity.TREE)) {
+                    treeTiles.add(cell);
+                }
+            }
+            if (treeTiles.size() != 0) {
+                // Place a capital in one of the cells with a tree
+
+                int nc = new Random().nextInt(treeTiles.size());
+                Tile newCap = treeTiles.get(nc);
+                newCap.setEntity(StaticEntity.CAPITAL, false);
+                setCapital(newCap);
+            } else {
+                // Place a capital in a random cell
+
+                int nc = new Random().nextInt(cells.size());
+                Tile newCap = cells.get(nc);
+                newCap.setEntity(StaticEntity.CAPITAL, false);
+                setCapital(newCap);
+            }
+        }
+
+        return true;
     }
 
     /**
-     * Chenages the outgoings of the territory
-     * @param delta the amout of outgoings to add (in coins per turn)
+     * Sets the capital of the territory and removes all other capitals in the territory.
+     * Also sets the entity of the Tile c as a StaticEntity.CAPITAL
+     * @param c the tile to set as a capital
+     * @return true if the capital is changed
      */
-    public void changeOutgoings(int delta) {
-        outgoings += delta;
+    boolean setCapital(Tile c) {
+        if (c == capital) {
+            return false;
+        } else {
+            for (Tile cell : cells) {
+                if (cell.contains(StaticEntity.CAPITAL)) {
+                    cell.setEntity(null, false);
+                }
+            }
+            c.setEntity(StaticEntity.CAPITAL, false);
+            capital = c;
+            return true;
+        }
     }
-
 
     @Override
     public String toString() {
-        return "{"+ owner + ":" + hashCode() +" $: " + coins +"}";
+        return "{" + owner + ":" + hashCode() + " $: " + coins + " +:" + income + " -: " + wages + "}";
     }
 }
