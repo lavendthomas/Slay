@@ -135,6 +135,9 @@ public class HexManagement {
 
 
     public static int distance(Coordinate p1, Coordinate p2) {
+
+
+
         Cube c1= oddq_to_cube(p1);
         Cube c2= oddq_to_cube(p2);
         int dst = Math.max(Math.abs(c1.x - c2.x),

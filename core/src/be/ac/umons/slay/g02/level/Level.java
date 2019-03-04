@@ -144,7 +144,8 @@ public class Level implements Playable {
         for (Coordinate curr : neighbors) {
             Tile current = tileMap[curr.getX()][curr.getY()];
 
-            if (current.getType().equals(TileType.NEUTRAL) && !list.contains(curr)
+            if (current.getType().equals(TileType.NEUTRAL)
+                    && !list.contains(curr)
                     && canMove(initial, curr)) {
 
                 int distance = HexManagement.distance(curr, initial);
@@ -159,51 +160,42 @@ public class Level implements Playable {
         }
     }
 
-    /**
-     * Move entity
-     * <p>
-     * Les autres cas devront être éliminés avant de pouvoir faire appel à cette méthode (au moment de déterminer leur périmètre de déplacement)
-     *
-     * @param oldCoord
-     * @param newCoord
-     */
-    private boolean canMove(Coordinate oldCoord, Coordinate newCoord) { //TODO return true or false
-
-        if (oldCoord.equals(newCoord)) {
-            // We don't move to the same cell
+    private boolean canMove (Coordinate oldC, Coordinate newC) {
+        if (oldC.equals(newC)) { // Empêche dplt sur sa propre cellule
             return false;
         }
+        Tile from = get(oldC);
+        Tile to = get(newC);
+        if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier) { // Empêhce dplct dans eau et vérif qu'il s'agit d'un soldat à dpl
+            if (to.getTerritory() == null) { // Dplct vers une cellule n'appartenant à personne
+                return true;
 
-        Tile from = this.tileMap[oldCoord.getX()][oldCoord.getY()];
-        Tile to = this.tileMap[newCoord.getX()][newCoord.getY()];
-        if (to.getType().equals(TileType.NEUTRAL) && !from.isEmpty()) {
+            } else if (to.hasSameOwner(from)) { // Dplct dans même territoire
+                return true;
 
-            if (from.getEntity() instanceof Soldier) {
+            } else { // Dplct dans un territoire ennemie
+                if (to.getEntity() instanceof Soldier) { // Il y a un soldat sur la cellule ennemie
+                    return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
 
-                if (to.getEntity() == null || to.getTerritory() == null) { // No Problem, dplt easy
-                    return true;
-                } else if (!to.getTerritory().hasSameOwner(from.getTerritory())) {
-                    // TODO empêcher d'aller sur une case surveiller par un soldat plus fort
+                } else if (to.getEntity() == StaticEntity.CAPITAL) {
+                    return ((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 0;
 
-                } else {
-                    if (to.getEntity() instanceof be.ac.umons.slay.g02.entities.StaticEntity) {
-                        if (to.getEntity() == StaticEntity.CAPITAL) {
-                            if (((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 1) {
-                                return false;
+                } else { // Il faut vérifier s'il y a un soldat aux alentours
+                    Coordinate[] neighbors = newC.getNeighbors();
+                    Boolean bool = true;
+                    for (Coordinate coordinate : neighbors) {
+                        Tile current = get(coordinate);
+                        if (current.getType().equals(TileType.NEUTRAL) // Ca sert à rien de regarder dans l'eau
+                                && current.getEntity() != null) { // Eviter nullPointerException
+                            if (current.getEntity() instanceof Soldier // Il y a un soldat dans le coin ?
+                                    && to.hasSameOwner(current)) { // Appartient au même proprio que la cellule où on veut aller
+                                bool = ((Soldier) from.getEntity()).canAttack((Soldier) current.getEntity());
+
                             }
-                        } else {
-                            return true;
                         }
 
-                    } else if (to.getEntity() instanceof Soldier) {
-                        if (to.getTerritory().hasSameOwner(from.getTerritory())) {
-                            int fromSold = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
-                            int toSold = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                            return fromSold == 3 || toSold == 3 || (fromSold + toSold) >= 3;
-                        } else  {
-                            return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
-                        }
                     }
+                    return bool;
                 }
             }
         }
@@ -221,17 +213,29 @@ public class Level implements Playable {
         // Charge liste dplt poss + check new est dedans
         ArrayList<Coordinate> listMoves = getMoves(oldCoord);
         if (listMoves.contains(newCoord) && !oldCoord.equals(newCoord)) {
-            Tile newTile = tileMap[newCoord.getX()][newCoord.getY()];
-            Tile oldTile = tileMap[oldCoord.getX()][oldCoord.getY()];
+            Tile to = tileMap[newCoord.getX()][newCoord.getY()];
+            Tile from = tileMap[oldCoord.getX()][oldCoord.getY()];
 
-            // Move the Entity
-            newTile.setEntity(oldTile.getEntity());
-            oldTile.setEntity(null);
-            newTile.setTerritory(oldTile.getTerritory());
+            if (to.hasSameOwner(from)) {
+                if (to.getEntity() != StaticEntity.CAPITAL) { // Empêcher de bouffer sa propre capitale
+                    // Move the Entity
+                    to.setEntity(from.getEntity());
+                    from.setEntity(null);
+                    to.setTerritory(from.getTerritory());
 
+                }
+            } else {
+                // Move the Entity
+                to.setEntity(from.getEntity());
+                from.setEntity(null);
+                to.setTerritory(from.getTerritory());
+
+            }
 
             splitTerritories(); //TODO find a better approach
             mergeTerritories();
+
+
 
         }
 
