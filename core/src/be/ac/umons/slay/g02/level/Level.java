@@ -106,7 +106,16 @@ public class Level implements Playable {
 
     }
 
-    public List<Coordinate> getMoves(Coordinate start, int mvt) {
+    /**
+     * Return the list of coordinates that can be reached
+     * from the start coordinate limited to n steps
+     *
+     * @param start Starting coordinate
+     * @param n     Maximum number of steps
+     * @return      List of coordinates that can be reached
+     */
+
+    public List<Coordinate> getMoves(Coordinate start, int n) {
         ArrayList<Coordinate> visited = new ArrayList<Coordinate>();
         visited.add(start);
         List<ArrayList<Coordinate>> fringes = new ArrayList<ArrayList<Coordinate>>();
@@ -114,11 +123,13 @@ public class Level implements Playable {
         startArray.add(start);
         fringes.add(startArray);
 
-        for (int k = 1; k <= mvt; k++) {
+        for (int k = 1; k <= n; k++) {
             fringes.add(new ArrayList<Coordinate>());
             for (Coordinate c : fringes.get(k - 1)) {
                 for (Coordinate neighbour : c.getNeighbors()) {
+                    // Not already visited and can move to
                     if (!visited.contains(neighbour) && canMove(start, neighbour)) {
+                        // Not same owner so stop in this direction
                         if (!get(neighbour).hasSameOwner(get(start))) {
                             visited.add(neighbour);
                         } else {
@@ -132,36 +143,70 @@ public class Level implements Playable {
         return visited;
     }
 
+    /**
+     * Return if it's possible to go from the starting coordinates
+     * to the arrival coordinates
+     *
+     * @param fromC Starting coordinate
+     * @param toC   Arrival coordinate
+     * @return      True if it's possible, else false
+     */
+
     private boolean canMove(Coordinate fromC, Coordinate toC) {
-        if (fromC.equals(toC)) { // Empêche dplt sur sa propre cellule
+        // Prevent movement on the starting cell
+        if (fromC.equals(toC)) {
             return false;
         }
+
+        // Get the matching tiles
         Tile from = get(fromC);
         Tile to = get(toC);
-        if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier) { // Empêhce dplct dans eau et vérif qu'il s'agit d'un soldat à dpl
-            if (to.getTerritory() == null) { // Dplct vers une cellule n'appartenant à personne
-                return true;
 
-            } else if (to.hasSameOwner(from)) { // Dplct dans même territoire
-                return true;
+        //Prevent movement int the water and verify that you are trying to move a soldier
+        if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier) {
 
-            } else { // Dplct dans un territoire ennemie
-                if (to.getEntity() instanceof Soldier) { // Il y a un soldat sur la cellule ennemie
+            // Moving to a cell that doesn't belong to anyone
+            if (to.getTerritory() == null) {
+                return true;
+            }
+
+            // Moving in the same territory
+            else if (to.hasSameOwner(from)) {
+                return true;
+            }
+
+            // Moving in a other territory
+            else {
+                // The arrival cell contains a soldir so check if it can be attacked
+                if (to.getEntity() instanceof Soldier) {
                     return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
+                }
 
-                } else if (to.getEntity() == StaticEntity.CAPITAL) {
+                // The arrival cell contains a capital so check if we can attack it
+                else if (to.getEntity() == StaticEntity.CAPITAL) {
                     return ((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 0;
+                }
 
-                } else { // Il faut vérifier s'il y a un soldat aux alentours
+                // Check if a soldier is watching the arrival cell
+                else {
+                    // Get the neighbour direct from the arrival cell
                     Coordinate[] neighbors = toC.getNeighbors();
                     boolean bool = true;
+
+                    // Check all neighbours
                     for (Coordinate coordinate : neighbors) {
                         Tile current = get(coordinate);
-                        if (current.getType().equals(TileType.NEUTRAL) // Ca sert à rien de regarder dans l'eau
-                                && current.getEntity() != null) { // Eviter nullPointerException
-                            if (current.getEntity() instanceof Soldier // Il y a un soldat dans le coin ?
-                                    && to.hasSameOwner(current)) { // Appartient au même proprio que la cellule où on veut aller
-                                bool = ((Soldier) from.getEntity()).canAttack((Soldier) current.getEntity());
+
+                        // To not check in the water and avoid nullPointerException
+                        if (current.getType().equals(TileType.NEUTRAL)
+                                && current.getEntity() != null) {
+
+                            // If a soldier has been found
+                            //      and belongs to the same owner as the arrival cell
+                            if (current.getEntity() instanceof Soldier
+                                    && to.hasSameOwner(current)) {
+                                bool = ((Soldier) from.getEntity()).canAttack(
+                                        (Soldier) current.getEntity());
 
                             }
                         }
@@ -175,21 +220,26 @@ public class Level implements Playable {
     }
 
     /**
-     * Move entity from old coordinate to new coordinate
+     * Move an entity from the start coordinates to the arrival coordinates
      *
-     * @param oldCoord old coordinates
-     * @param newCoord new coordinates
+     * @param fromC Start coordinates
+     * @param toC   Arrival coordinates
      */
 
-    public void move(Coordinate oldCoord, Coordinate newCoord) {
-        // Charge liste dplt poss + check new est dedans
-        List<Coordinate> listMoves = getMoves(oldCoord, 4);
-        if (listMoves.contains(newCoord) && !oldCoord.equals(newCoord)) {
-            Tile to = tileMap[newCoord.getX()][newCoord.getY()];
-            Tile from = tileMap[oldCoord.getX()][oldCoord.getY()];
+    public void move(Coordinate fromC, Coordinate toC) {
 
+        // Load the list of possible moves
+        List<Coordinate> listMoves = getMoves(fromC, 4);
+
+        // Check that the arrival coordinates are in the list of possible moves
+        //      and check that coordinates are different
+        if (listMoves.contains(toC) && !fromC.equals(toC)) {
+            Tile to = get(toC);
+            Tile from = get(fromC);
+
+            // Prevent movement on its own capital
             if (to.hasSameOwner(from)) {
-                if (to.getEntity() != StaticEntity.CAPITAL) { // Empêcher de bouffer sa propre capitale
+                if (to.getEntity() != StaticEntity.CAPITAL) {
                     // Move the Entity
                     to.setEntity(from.getEntity());
                     from.setEntity(null);
