@@ -21,7 +21,9 @@
 			type="tree" x="13" y="6"/>
 	</items>
 	<units>
-	<unit
+		<unit
 			type="soldier" level="0" x="4" y="6"/>
+		<unit
+			type="soldier" level="0" x="16" y="4"/>
 	</units>
 </world>

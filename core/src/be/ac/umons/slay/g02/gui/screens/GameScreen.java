@@ -53,6 +53,8 @@ import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.gui.screens.Menu.disableButton;
 import static be.ac.umons.slay.g02.gui.screens.Menu.enableButton;
+import static be.ac.umons.slay.g02.level.LevelLoader.Tile.GREEN_HIGHLIGHT;
+import static be.ac.umons.slay.g02.level.LevelLoader.Tile.WHITE_HIGHLIGHT;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
@@ -327,7 +329,7 @@ public class GameScreen implements Screen {
             if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) { // clic sur un territoire mais pas sur un soldat => afficher territoire
                 listMove = new ArrayList<Coordinate>();
                 List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
-                EffectsManagement.highlightCells(effects, listTerr, set.getTile(19)); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
+                EffectsManagement.highlightCells(effects, listTerr, set.getTile(WHITE_HIGHLIGHT.getId())); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
                 // TODO Ajouter l'affichage des données du territoire et achat soldat
             }
 
@@ -335,16 +337,12 @@ public class GameScreen implements Screen {
 
                 listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
                 EffectsManagement.shadowMap(effects, level, set);
-                EffectsManagement.highlightCells(effects, listMove, set.getTile(17));
+                EffectsManagement.highlightCells(effects, listMove, set.getTile(GREEN_HIGHLIGHT.getId()));
                 coord1 = temp;
                 coord2.setX(UNREAL);
                 //TODO Ajouter affichage donneés du territoire et achat soldat
             }
-
         }
-
-
-
     }
 
 

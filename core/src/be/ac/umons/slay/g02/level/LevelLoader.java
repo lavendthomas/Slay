@@ -209,9 +209,25 @@ public class LevelLoader {
      * Table matching the id written in the TMX file to a TileType
      */
     public enum Tile {
-
+        LIGHT_GREEN(1),
+        RED(2),
+        DARK_GREEN(3),
+        PINK(4),
+        YELLOW(5),
+        DARK_RED(6),
         TERRITORY(7, TileType.NEUTRAL),
-        WATER(9, TileType.WATER);
+        BLUE(8),
+        WATER(9, TileType.WATER),
+        GRAVE(10),
+        CAPITAL(11),
+        TREE(12),
+        S0(13),
+        S1(14),
+        S2(15),
+        S3(16),
+        GREEN_HIGHLIGHT(17),
+        DARKEN_HIGHLIGHT(18),
+        WHITE_HIGHLIGHT(19);
 
         int id;
         TileType type;
@@ -219,6 +235,10 @@ public class LevelLoader {
         Tile(int id, TileType type) {
             this.id = id;
             this.type = type;
+        }
+
+        Tile(int id) {
+            this(id, null);
         }
 
 
