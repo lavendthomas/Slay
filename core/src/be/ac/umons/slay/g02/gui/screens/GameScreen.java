@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
@@ -18,6 +19,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -28,6 +30,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +57,7 @@ import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
 // classe qui affiche l'interface pendant une partie
-public class GameScreen implements Screen, InputProcessor {
+public class GameScreen implements Screen {
 
     private Stage stage;
     private Game game;
@@ -146,6 +150,7 @@ public class GameScreen implements Screen, InputProcessor {
             });
             stage.addActor(buttonPause);
 
+
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
 
             buttonNext = new ImageButton(imageNext);
@@ -160,7 +165,6 @@ public class GameScreen implements Screen, InputProcessor {
                 }
             });
             stage.addActor(buttonNext);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -268,11 +272,8 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.gl.glClearColor(103 / 255f, 173 / 255f, 244 / 255f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         renderer.setView(camera);
-        stage.getViewport().update(SCREEN_WIDTH + tileH * 2 / 5, SCREEN_HEIGHT, true);
 
-        if (touchDown(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0)) {
-            touchUp(SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0);
-        }
+        stage.getViewport().update(SCREEN_WIDTH + tileH * 2 / 5, SCREEN_HEIGHT, true);
 
         if (Gdx.input.justTouched()) {
             loadClick();
@@ -284,10 +285,12 @@ public class GameScreen implements Screen, InputProcessor {
             camera.zoom += 0.02;
         }
         loadLevel(level);
-
-        stage.draw();
-        stage.act();
         renderer.render();
+
+        stage.act();
+        stage.draw();
+
+
     }
 
     private Coordinate rectifyCoord() {
@@ -302,41 +305,43 @@ public class GameScreen implements Screen, InputProcessor {
         EffectsManagement.eraseCells(effects);
         Coordinate temp = rectifyCoord();
 
-        //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
-        if (coord1.getX() >= 0 && coord2.getX() >= 0) {
-            coord1.setX(UNREAL);
-            coord2.setX(UNREAL);
+        if (level.isInLevel(temp)) {
+
+            //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
+            if (coord1.getX() >= 0 && coord2.getX() >= 0) {
+                coord1.setX(UNREAL);
+                coord2.setX(UNREAL);
+            }
+
+            Tile current = level.get(temp);
+
+            if (listMove.contains(temp) && coord1.getX() >= 0 && coord2.getX() < 0) {
+                coord2 = temp;
+
+                level.move(coord1, coord2);
+            } else {
+                coord1.setX(UNREAL);
+                coord2.setX(UNREAL);
+            }
+
+            if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) { // clic sur un territoire mais pas sur un soldat => afficher territoire
+                listMove = new ArrayList<Coordinate>();
+                List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
+                EffectsManagement.highlightCells(effects, listTerr, set.getTile(19)); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
+                // TODO Ajouter l'affichage des données du territoire et achat soldat
+            }
+
+            if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Clic sur un soldat + Vérif premier clic d'une série de 2
+
+                listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
+                EffectsManagement.shadowMap(effects, level, set);
+                EffectsManagement.highlightCells(effects, listMove, set.getTile(17));
+                coord1 = temp;
+                coord2.setX(UNREAL);
+                //TODO Ajouter affichage donneés du territoire et achat soldat
+            }
+
         }
-
-        Tile current = level.get(temp);
-
-        if (listMove.contains(temp) && coord1.getX() >= 0 && coord2.getX() < 0) {
-            coord2 = temp;
-
-            level.move(coord1, coord2);
-        } else {
-            coord1.setX(UNREAL);
-            coord2.setX(UNREAL);
-        }
-
-        if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) { // clic sur un territoire mais pas sur un soldat => afficher territoire
-            listMove = new ArrayList<Coordinate>();
-            List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
-            EffectsManagement.highlightCells(effects, listTerr, set.getTile(19)); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
-            // TODO Ajouter l'affichage des données du territoire et achat soldat
-        }
-
-        if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Clic sur un soldat + Vérif premier clic d'une série de 2
-
-            listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
-            EffectsManagement.shadowMap(effects, level, set);
-            EffectsManagement.highlightCells(effects, listMove, set.getTile(17));
-            coord1 = temp;
-            coord2.setX(UNREAL);
-            //TODO Ajouter affichage donneés du territoire et achat soldat
-        }
-
-
 
 
 
@@ -399,46 +404,6 @@ public class GameScreen implements Screen, InputProcessor {
     @Override
     public void dispose() {
         stage.dispose();
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        return false;
-    }
-
-    @Override
-    public boolean keyTyped(char character) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        return false;
-    }
-
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {
-        return false;
-    }
-
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
     }
 }
 

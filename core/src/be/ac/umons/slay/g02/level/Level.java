@@ -98,10 +98,6 @@ public class Level implements Playable {
         tileMap[coords.getX()][coords.getY()].setTerritory(t);
     }
 
-    public void select(Coordinate coordinate) {
-
-    }
-
     public void buy(Entity entity, Coordinate coordinate) {
 
     }
@@ -109,14 +105,6 @@ public class Level implements Playable {
     public void endTurn() {
 
     }
-/*
-    public ArrayList<Coordinate> getMoves(Coordinate coord) {
-        if (tileMap[coord.getX()][coord.getY()].getTerritory() != null) {
-            getMoves(coord, 4);
-            return res;
-        }
-        return res;
-    }*/
 
     public List<Coordinate> getMoves(Coordinate start, int mvt) {
         ArrayList<Coordinate> visited = new ArrayList<Coordinate>();
@@ -386,7 +374,7 @@ public class Level implements Playable {
      * @param c the position to check
      * @return true if the position c is in the level
      */
-    private boolean isInLevel(Coordinate c) {
+    public boolean isInLevel(Coordinate c) {
         return c.getX() > 0 && c.getX() < width && c.getY() > 0 && c.getY() < height;
     }
 }
