@@ -86,7 +86,7 @@ public class GameScreen implements Screen, InputProcessor {
     private Coordinate coord1;
     private Coordinate coord2;
     private final int UNREAL = -1;
-    private ArrayList<Coordinate> listMove = new ArrayList<Coordinate>();
+    private List<Coordinate> listMove = new ArrayList<Coordinate>();
 
     GameScreen(Game aGame) {
         game = aGame;
@@ -328,7 +328,7 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Clic sur un soldat + Vérif premier clic d'une série de 2
 
-            listMove = level.getMoves(temp); // Récupère la liste des mouvements possibles à partir de la coordonée donnée
+            listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
             EffectsManagement.shadowMap(effects, level, set);
             EffectsManagement.highlightCells(effects, listMove, set.getTile(17));
             coord1 = temp;
