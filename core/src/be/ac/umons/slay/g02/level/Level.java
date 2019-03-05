@@ -51,6 +51,7 @@ public class Level implements Playable {
 
     /**
      * Gives the maximum height of the level
+     *
      * @return
      */
     public int height() {
@@ -74,6 +75,7 @@ public class Level implements Playable {
 
     /**
      * Return the tile at the mentioned coordinates
+     *
      * @param x
      * @param y
      * @return
@@ -107,65 +109,47 @@ public class Level implements Playable {
     public void endTurn() {
 
     }
-
-    /**
-     * Method that initialise variable for recursive method
-     *
-     * @param coord Coordinate to research
-     * @return List of coordinates you can move
-     */
-
+/*
     public ArrayList<Coordinate> getMoves(Coordinate coord) {
-        ArrayList<Coordinate> res = new ArrayList<Coordinate>();
         if (tileMap[coord.getX()][coord.getY()].getTerritory() != null) {
-            res.add(coord);
-            getMoves(res, coord, coord);
+            getMoves(coord, 4);
             return res;
         }
         return res;
-    }
+    }*/
 
-    /**
-     * Recursive method to add coordinate where can move
-     *
-     * @param list  List of coordinates
-     * @param coord Actual coordinate
-     */
+    public List<Coordinate> getMoves(Coordinate start, int mvt) {
+        ArrayList<Coordinate> visited = new ArrayList<Coordinate>();
+        visited.add(start);
+        List<ArrayList<Coordinate>> fringes = new ArrayList<ArrayList<Coordinate>>();
+        ArrayList<Coordinate> startArray = new ArrayList<Coordinate>(1);
+        startArray.add(start);
+        fringes.add(startArray);
 
-    private void getMoves(ArrayList<Coordinate> list, Coordinate coord, Coordinate initial) {
-        // Tester avec can move
-
-        Coordinate[] neighbors = coord.getNeighbors();
-        Tile initTile = tileMap[initial.getX()][initial.getY()];
-        if (!list.contains(coord) && canMove(initial, coord)) {
-            list.add(coord);
-        }
-
-        for (Coordinate curr : neighbors) {
-            Tile current = tileMap[curr.getX()][curr.getY()];
-
-            if (current.getType().equals(TileType.NEUTRAL)
-                    && !list.contains(curr)
-                    && canMove(initial, curr)) {
-
-                int distance = HexManagement.distance(curr, initial);
-                if (((current.getTerritory()) == null || !current.getTerritory().hasSameOwner(initTile.getTerritory())) && distance <= 4) {
-                    list.add(curr);
-                } else {
-                    if (current.getTerritory() != null && current.getTerritory().hasSameOwner(initTile.getTerritory()) && distance <= 4) {
-                        getMoves(list, curr, initial);
+        for (int k = 1; k <= mvt; k++) {
+            fringes.add(new ArrayList<Coordinate>());
+            for (Coordinate c : fringes.get(k - 1)) {
+                for (Coordinate neighbour : c.getNeighbors()) {
+                    if (!visited.contains(neighbour) && canMove(start, neighbour)) {
+                        if (!get(neighbour).hasSameOwner(get(start))) {
+                            visited.add(neighbour);
+                        } else {
+                            visited.add(neighbour);
+                            fringes.get(k).add(neighbour);
+                        }
                     }
                 }
             }
         }
+        return visited;
     }
 
-    private boolean canMove (Coordinate oldC, Coordinate newC) {
-        if (oldC.equals(newC)) { // Empêche dplt sur sa propre cellule
+    private boolean canMove(Coordinate fromC, Coordinate toC) {
+        if (fromC.equals(toC)) { // Empêche dplt sur sa propre cellule
             return false;
         }
-        Tile from = get(oldC);
-        Tile to = get(newC);
+        Tile from = get(fromC);
+        Tile to = get(toC);
         if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier) { // Empêhce dplct dans eau et vérif qu'il s'agit d'un soldat à dpl
             if (to.getTerritory() == null) { // Dplct vers une cellule n'appartenant à personne
                 return true;
@@ -181,8 +165,8 @@ public class Level implements Playable {
                     return ((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 0;
 
                 } else { // Il faut vérifier s'il y a un soldat aux alentours
-                    Coordinate[] neighbors = newC.getNeighbors();
-                    Boolean bool = true;
+                    Coordinate[] neighbors = toC.getNeighbors();
+                    boolean bool = true;
                     for (Coordinate coordinate : neighbors) {
                         Tile current = get(coordinate);
                         if (current.getType().equals(TileType.NEUTRAL) // Ca sert à rien de regarder dans l'eau
@@ -211,7 +195,7 @@ public class Level implements Playable {
 
     public void move(Coordinate oldCoord, Coordinate newCoord) {
         // Charge liste dplt poss + check new est dedans
-        ArrayList<Coordinate> listMoves = getMoves(oldCoord);
+        List<Coordinate> listMoves = getMoves(oldCoord, 4);
         if (listMoves.contains(newCoord) && !oldCoord.equals(newCoord)) {
             Tile to = tileMap[newCoord.getX()][newCoord.getY()];
             Tile from = tileMap[oldCoord.getX()][oldCoord.getY()];
@@ -234,7 +218,6 @@ public class Level implements Playable {
 
             splitTerritories(); //TODO find a better approach
             mergeTerritories();
-
 
 
         }
@@ -341,6 +324,7 @@ public class Level implements Playable {
     /**
      * Lists all the cells in a neighbourhood, which is all adjacent cells
      * that are part of the same territory.
+     *
      * @param pos The position of one cell of the neighbourhood
      * @return A list of all the cells in the neighbourhood of which contains the position pos
      */
@@ -398,6 +382,7 @@ public class Level implements Playable {
 
     /**
      * Returns true if the position c is in the level
+     *
      * @param c the position to check
      * @return true if the position c is in the level
      */
