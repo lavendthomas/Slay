@@ -4,12 +4,14 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
@@ -89,6 +91,10 @@ public class GameScreen implements Screen {
     private TiledMapTileSet set;
     private HashMap<String, TiledMapTile> tileMap;
 
+    private Stage hud;
+    private OrthographicCamera hudCam;
+    private InputMultiplexer multiplexer;
+
     private Coordinate coord1;
     private Coordinate coord2;
     private final int UNREAL = -1;
@@ -150,26 +156,43 @@ public class GameScreen implements Screen {
                     showPauseWindow();
                 }
             });
-            stage.addActor(buttonPause);
+            //stage.addActor(buttonPause);
 
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
 
             buttonNext = new ImageButton(imageNext);
             buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
-            buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+            //buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
             buttonNext.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     soundButton3.play(0.1f);
 
-                    //        methode pour terminer le tour du joueur
                 }
             });
-            stage.addActor(buttonNext);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+        hudCam = new OrthographicCamera();
+        hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
+
+        buttonNext.setBounds(buttonNext.getX(), buttonNext.getY() ,buttonNext.getWidth(), buttonNext.getHeight());
+
+        hud.addActor(buttonNext);
+
+
+        // Create multiplexer to handle input in stage and hud
+
+        multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(camera)));
+        multiplexer.addProcessor(hud);
+        multiplexer.addProcessor(stage);
+
+
     }
 
     private void showPauseWindow() {
@@ -266,7 +289,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(new GestureDetector(new LevelGestureListener(camera)));
+        Gdx.input.setInputProcessor(multiplexer);
     }
 
     @Override
@@ -290,7 +313,10 @@ public class GameScreen implements Screen {
         renderer.render();
 
         stage.act();
+        hud.act();
+
         stage.draw();
+        hud.draw();
 
 
     }
@@ -402,6 +428,7 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        hud.dispose();
     }
 }
 

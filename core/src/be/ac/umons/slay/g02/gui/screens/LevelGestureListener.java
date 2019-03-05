@@ -19,7 +19,7 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-        return true;
+        return false;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
         Gdx.app.debug("slay", "flong!");
-        return true;
+        return false;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
     public boolean zoom(float initialDistance, float distance) {
         Gdx.app.debug("slay", "I' zoomed!" +  (initialDistance - distance));
         camera.zoom += (initialDistance - distance) / 100000;
-        return true;
+        return false;
     }
 
     @Override
