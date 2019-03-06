@@ -3,12 +3,16 @@ package be.ac.umons.slay.g02.gui;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import java.util.Locale;
 
 import be.ac.umons.slay.g02.gui.screens.Menu;
 
@@ -17,6 +21,8 @@ public class Main extends Game {
     public static Skin skinSgx;
     public static Skin skinSgxTable;
     public static Stage stage;
+
+    public static I18NBundle lang;
 
     public static int SCREEN_HEIGHT;
     public static int SCREEN_WIDTH;
@@ -41,6 +47,12 @@ public class Main extends Game {
 
     @Override
     public void create() {
+        // Language support
+
+        FileHandle baseFileHandle = Gdx.files.internal("lang/Slay");
+        Locale locale = new Locale("en", "UK", "VAR1");
+        lang = I18NBundle.createBundle(baseFileHandle, locale);
+
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();
 

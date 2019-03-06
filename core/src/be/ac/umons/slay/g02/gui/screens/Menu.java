@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -29,8 +30,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.I18NBundle;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import be.ac.umons.slay.g02.players.Colors;
 import be.ac.umons.slay.g02.players.HumanPlayer;
@@ -49,9 +52,14 @@ import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.gui.Main.stage;
+import static be.ac.umons.slay.g02.gui.Main.lang;
 
-// classe qui affiche le menu principal
+/**
+ * classe qui affiche le menu principal
+ */
 public class Menu implements Screen {
+
+
     public static Drawable imagePanda = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/panda.jpg"))));
     public static Drawable imageYeti = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/yeti.jpg"))));
     public static Drawable imageWorm = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/worm.png"))));
@@ -89,14 +97,14 @@ public class Menu implements Screen {
     public static HumanPlayer player1 = new HumanPlayer("toto", Colors.C1);
     public static HumanPlayer player2 = new HumanPlayer("titi", Colors.C1);
 
-    private static Window windowExit = new Window("Exit", skinSgx);
-    private static Window windowSettings = new Window("Settings", skinSgx);
-    private static Window windowAlert = new Window("Disable Registration", skinSgx);
-    private static Window windowProfile = new Window("Profile", skinSgx);
-    private static Window windowEdit = new Window("Edit", skinSgx);
-    private static Window windowAvatarSelection = new Window("Choose an avatar", skinSgx);
-    private static Window windowLogOut = new Window("Log Out", skinSgx);
-    private static Window windowDelete = new Window("Delete Account", skinSgx);
+    private static Window windowExit = new Window(lang.get("text_exit"), skinSgx);
+    private static Window windowSettings = new Window(lang.get("text_settings"), skinSgx);
+    private static Window windowAlert = new Window(lang.get("text_disable_registration"), skinSgx);
+    private static Window windowProfile = new Window(lang.get("text_profile"), skinSgx);
+    private static Window windowEdit = new Window(lang.get("text_edit"), skinSgx);
+    private static Window windowAvatarSelection = new Window(lang.get("text_choose_an_avatar"), skinSgx);
+    private static Window windowLogOut = new Window(lang.get("text_log_out"), skinSgx);
+    private static Window windowDelete = new Window(lang.get("text_delete_account"), skinSgx);
     private static Table mainTableLogin = new Table();
     public int buttonCenterWidth;
     // pour savoir dans quel bouton le joueur s'identifie
@@ -173,7 +181,7 @@ public class Menu implements Screen {
         tableCenter.setPosition(tableCenterPositionX, tableCenterPositionY);
         stage.addActor(tableCenter);
 
-        buttonPlay = new TextButton("PLAY", skinSgx, "big");
+        buttonPlay = new TextButton(lang.get("button_play"), skinSgx, "big");
         buttonPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -182,7 +190,7 @@ public class Menu implements Screen {
                 game.setScreen(new LevelSelection(game));
             }
         });
-        buttonSettings = new TextButton("SETTINGS", skinSgx, "big");
+        buttonSettings = new TextButton(lang.get("button_settings"), skinSgx, "big");
         buttonSettings.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -190,7 +198,7 @@ public class Menu implements Screen {
                 showSettings();
             }
         });
-        buttonExit = new TextButton("EXIT", skinSgx, "big");
+        buttonExit = new TextButton(lang.get("button_exit"), skinSgx, "big");
         buttonExit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -205,7 +213,7 @@ public class Menu implements Screen {
             tableProfile.setFillParent(true);
             tableProfile.right().bottom();
 
-            buttonHall = new TextButton("HALL OF FAME", skinSgx, "big");
+            buttonHall = new TextButton(lang.get("button_hof"), skinSgx, "big");
             buttonHall.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -215,8 +223,8 @@ public class Menu implements Screen {
                 }
             });
 
-            final Label labelProfileLeft = new Label("Not Logged", skinSgx, "title");
-            Label labelProfileRight = new Label("Not Logged", skinSgx, "title");
+            final Label labelProfileLeft = new Label(lang.get("label_not_logged"), skinSgx, "title");
+            Label labelProfileRight = new Label(lang.get("label_not_logged"), skinSgx, "title");
             labelProfileLeft.setFontScale(0.45f);
             labelProfileRight.setFontScale(0.45f);
             labelProfileLeft.setAlignment(1);
@@ -476,7 +484,7 @@ public class Menu implements Screen {
         table.add(labelFullscreen).height(Value.percentHeight(1f)).padRight(windowSettingsWidth * 8 / 100);
         table.add(switchFullscreen);
         table.row();
-        Label labelRegistration = new Label("Registration", skinSgx, "white");
+        Label labelRegistration = new Label(lang.get("label_registration"), skinSgx, "white");
         labelRegistration.setHeight(SCREEN_HEIGHT * 13 / 200);
 
         switchRegistration = new Button(skinSgx, "switch");
@@ -499,7 +507,7 @@ public class Menu implements Screen {
         table.add(switchRegistration);
         table.row();
 
-        buttonSettingsBack = new TextButton("Back", skinSgx, "big");
+        buttonSettingsBack = new TextButton(lang.get("button_back"), skinSgx, "big");
         buttonSettingsBack.setWidth(buttonCenterWidth / 2);
         buttonSettingsBack.setScale(1.2f);
         buttonSettingsBack.addListener(new ClickListener() {
@@ -539,14 +547,14 @@ public class Menu implements Screen {
 
         table.top().padTop(windowSettingsWidth * 1 / 3);
 
-        Label labelAlertSettings = new Label("All logged users\nwill be disconnected", skinSgx, "white");
+        Label labelAlertSettings = new Label(lang.get("label_all_users_will_be_deconnected"), skinSgx, "white");
         labelAlertSettings.setAlignment(1);
 
         table.add(labelAlertSettings).center().colspan(2).padBottom(windowSettingsWidth * 1 / 7);
 
         table.row();
 
-        TextButton buttonContinue = new TextButton("Continue", skinSgx, "big");
+        TextButton buttonContinue = new TextButton(lang.get("button_continue"), skinSgx, "big");
         buttonContinue.setWidth(buttonCenterWidth / 2);
         buttonContinue.addListener(new ClickListener() {
             @Override
@@ -556,7 +564,7 @@ public class Menu implements Screen {
                 windowAlert.remove();
             }
         });
-        TextButton buttonCancel = new TextButton("Cancel", skinSgx, "big");
+        TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
         buttonCancel.setWidth(buttonCenterWidth / 2);
 
         buttonCancel.addListener(new ClickListener() {
@@ -584,7 +592,7 @@ public class Menu implements Screen {
         stage.addActor(mainTableLogin);
         mainTableLogin.setFillParent(true);
 
-        buttonTabLogin = new TextButton("Log In", skinSgx, "number");
+        buttonTabLogin = new TextButton(lang.get("text_log_in"), skinSgx, "number");
         buttonTabLogin.setDisabled(true);
         buttonTabLogin.addListener(new ClickListener() {
             @Override
@@ -594,7 +602,7 @@ public class Menu implements Screen {
                 buttonTabSignUp.setDisabled(false);
             }
         });
-        buttonTabSignUp = new TextButton("Sign Up", skinSgx, "number");
+        buttonTabSignUp = new TextButton(lang.get("text_sign_up"), skinSgx, "number");
         buttonTabSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -624,9 +632,9 @@ public class Menu implements Screen {
             }
         });
 
-        Label labelUserName = new Label("Username", skinSgx, "white");
-        Label labelNewPassword1 = new Label("Password", skinSgx, "white");
-        Label labelNewPassword2 = new Label("Re-enter Password", skinSgx, "white");
+        Label labelUserName = new Label(lang.get("label_username"), skinSgx, "white");
+        Label labelNewPassword1 = new Label(lang.get("label_password"), skinSgx, "white");
+        Label labelNewPassword2 = new Label(lang.get("label_password_again"), skinSgx, "white");
 
         TextField fieldUserName = new TextField("", skinSgx);
         fieldUserName.setTextFieldListener(new TextField.TextFieldListener() {
@@ -659,8 +667,8 @@ public class Menu implements Screen {
             }
         });
 
-        Label labelCurrentPasswordLogin = new Label("Username", skinSgx, "white");
-        Label labelNewPassword1Login = new Label("Password", skinSgx, "white");
+        Label labelCurrentPasswordLogin = new Label(lang.get("label_username"), skinSgx, "white");
+        Label labelNewPassword1Login = new Label(lang.get("label_password"), skinSgx, "white");
 
         TextField fieldCurrentPasswordLogin = new TextField("", skinSgx);
         fieldCurrentPasswordLogin.setTextFieldListener(new TextField.TextFieldListener() {
@@ -682,14 +690,14 @@ public class Menu implements Screen {
             }
         });
 
-        Label messageError = new Label("*incorrect password", skinSgx, "white");
+        Label messageError = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
         messageError.setColor(Color.RED);
-        Label messageErrorLoginPassword = new Label("*incorrect password", skinSgx, "white");
+        Label messageErrorLoginPassword = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
         messageErrorLoginPassword.setColor(Color.RED);
-        Label messageErrorUsername = new Label("*This username doesn't exist", skinSgx, "white");
+        Label messageErrorUsername = new Label(lang.get("label_username_inexistant"), skinSgx, "white");
         messageErrorUsername.setColor(Color.RED);
 
-        buttonLogin = new TextButton("Log In", skinSgx, "big");
+        buttonLogin = new TextButton(lang.get("text_log_in"), skinSgx, "big");
         buttonLogin.setWidth(buttonCenterWidth / 2);
         buttonLogin.setScale(1.2f);
         buttonLogin.addListener(new ClickListener() {
@@ -707,7 +715,7 @@ public class Menu implements Screen {
                 showProfile(2);
             }
         });
-        buttonSignUp = new TextButton("Sign Up", skinSgx, "big");
+        buttonSignUp = new TextButton(lang.get("text_sign_up"), skinSgx, "big");
         buttonSignUp.setWidth(buttonCenterWidth / 2);
         buttonSignUp.setScale(1.2f);
         buttonSignUp.addListener(new ClickListener() {
@@ -724,7 +732,7 @@ public class Menu implements Screen {
                 showProfile(2);
             }
         });
-        TextButton buttonLoginCancel = new TextButton("Cancel", skinSgx, "big");
+        TextButton buttonLoginCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
         buttonLoginCancel.setWidth(buttonCenterWidth / 2);
         buttonLoginCancel.setScale(1.2f);
         buttonLoginCancel.addListener(new ClickListener() {
@@ -737,7 +745,7 @@ public class Menu implements Screen {
                     enableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
             }
         });
-        buttonSignUpCancel = new TextButton("Cancel", skinSgx, "big");
+        buttonSignUpCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
         buttonSignUpCancel.setWidth(buttonCenterWidth / 2);
         buttonSignUpCancel.setScale(1.2f);
         buttonSignUpCancel.addListener(new ClickListener() {
@@ -757,7 +765,7 @@ public class Menu implements Screen {
         final Table tableSignUp = new Table();
         tableSignUp.setBackground(backgroundGrey);
 
-        Label avatarLabel = new Label("Click on the image to change it", skinSgx);
+        Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
         avatarLabel.setAlignment(1);
         tableSignUp.add(avatarLabel).colspan(2).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 2 / 100);
         tableSignUp.row();
@@ -877,13 +885,13 @@ public class Menu implements Screen {
             playerName = LevelSelection.player2Name;
 
 
-        Label labelWelcome = new Label("Welcome " + playerName + " !", skinSgx, "title-white");
+        Label labelWelcome = new Label(lang.format("label_welcome", playerName), skinSgx, "title-white");
 
         ImageButton imageAvatar = new ImageButton(imageAnonymous);
 
         disableButton(imageAvatar);
 
-        Label labelRank = new Label("Rank : " + playerRank + " / " + totalNumberPlayers, skinSgx, "white");
+        Label labelRank = new Label(lang.format("label_rank", playerRank, totalNumberPlayers), skinSgx, "white");
 
         labelWelcome.setHeight(SCREEN_HEIGHT * 10 / 100);
         table.add(labelWelcome).height(Value.percentHeight(1f));
@@ -898,7 +906,7 @@ public class Menu implements Screen {
         table.row();
         table.top();
 
-        buttonEdit = new TextButton("Edit", skinSgx, "big");
+        buttonEdit = new TextButton(lang.get("text_edit"), skinSgx, "big");
         buttonEdit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -907,7 +915,7 @@ public class Menu implements Screen {
             }
         });
 
-        buttonLogOut = new TextButton("Log Out", skinSgx, "big");
+        buttonLogOut = new TextButton(lang.get("text_log_out"), skinSgx, "big");
         buttonLogOut.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -915,7 +923,7 @@ public class Menu implements Screen {
                 showLogOut();
             }
         });
-        buttonDelete = new TextButton("Delete Account", skinSgx, "big");
+        buttonDelete = new TextButton(lang.get("text_delete_account"), skinSgx, "big");
         buttonDelete.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -923,7 +931,7 @@ public class Menu implements Screen {
                 showDelete();
             }
         });
-        buttonBack = new TextButton("Back", skinSgx, "big");
+        buttonBack = new TextButton(lang.get("button_back"), skinSgx, "big");
         buttonBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -978,7 +986,7 @@ public class Menu implements Screen {
                 showAvatarSelectionWindow();
             }
         });
-        buttonEditCancel = new TextButton("Cancel", skinSgx, "big");
+        buttonEditCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
         buttonEditCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -987,7 +995,7 @@ public class Menu implements Screen {
                 enableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
             }
         });
-        buttonEditSave = new TextButton("Save", skinSgx, "big");
+        buttonEditSave = new TextButton(lang.get("button_save"), skinSgx, "big");
         buttonEditSave.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -999,9 +1007,9 @@ public class Menu implements Screen {
             }
         });
 
-        Label labelCurrentPassword = new Label("Current Password", skinSgx, "white");
-        Label labelNewPassword1 = new Label("New Password", skinSgx, "white");
-        Label labelNewPassword2 = new Label("Re-enter New Password", skinSgx, "white");
+        Label labelCurrentPassword = new Label(lang.get("label_current_password"), skinSgx, "white");
+        Label labelNewPassword1 = new Label(lang.get("label_new_password"), skinSgx, "white");
+        Label labelNewPassword2 = new Label(lang.get("label_new_password_again"), skinSgx, "white");
 
         TextField fieldCurrentPassword = new TextField("", skinSgx);
         fieldCurrentPassword.setTextFieldListener(new TextField.TextFieldListener() {
@@ -1033,9 +1041,9 @@ public class Menu implements Screen {
             }
         });
 
-        Label messageError = new Label("*incorrect password", skinSgx, "white");
+        Label messageError = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
         messageError.setColor(Color.RED);
-        Label avatarLabel = new Label("Click on the image to change it", skinSgx);
+        Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
         avatarLabel.setAlignment(1);
         table.add(avatarLabel).colspan(2).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 2 / 100);
         table.row();
@@ -1098,7 +1106,7 @@ public class Menu implements Screen {
         table.setFillParent(true);
         table.top().padTop(windowAvatarSelection.getHeight() * 13 / 100);
 
-        TextButton buttonImport = new TextButton("Import...", skinSgx, "big");
+        TextButton buttonImport = new TextButton(lang.get("button_import"), skinSgx, "big");
         buttonImport.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1107,7 +1115,7 @@ public class Menu implements Screen {
                 // chercher une image sur le pc et remplacer l'image de l'avatar actuel par cette image
             }
         });
-        TextButton buttonSave = new TextButton("Save", skinSgx, "big");
+        TextButton buttonSave = new TextButton(lang.get("button_save"), skinSgx, "big");
         buttonSave.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1130,7 +1138,7 @@ public class Menu implements Screen {
                 }
             }
         });
-        TextButton buttonCancel = new TextButton("Cancel", skinSgx, "big");
+        TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
         buttonCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1270,9 +1278,9 @@ public class Menu implements Screen {
         table.setFillParent(true);
         table.padTop(windowLogOut.getHeight() * 17 / 100);
 
-        Label labelLogOutConfirm = new Label("Are you sure ?", skinSgx, "white");
+        Label labelLogOutConfirm = new Label(lang.get("label_are_you_sure"), skinSgx, "white");
 
-        TextButton buttonYes = new TextButton("Yes", skinSgx, "big");
+        TextButton buttonYes = new TextButton(lang.get("text_yes"), skinSgx, "big");
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1285,7 +1293,7 @@ public class Menu implements Screen {
             }
         });
 
-        TextButton buttonNo = new TextButton("No", skinSgx, "big");
+        TextButton buttonNo = new TextButton(lang.get("text_no"), skinSgx, "big");
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1321,9 +1329,9 @@ public class Menu implements Screen {
         table.setFillParent(true);
         table.padTop(windowExit.getHeight() * 17 / 100);
 
-        Label labelExitConfirm = new Label("Are you sure ?", skinSgx, "white");
+        Label labelExitConfirm = new Label(lang.get("label_are_you_sure"), skinSgx, "white");
 
-        TextButton buttonYes = new TextButton("Yes", skinSgx, "big");
+        TextButton buttonYes = new TextButton(lang.get("text_yes"), skinSgx, "big");
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1332,7 +1340,7 @@ public class Menu implements Screen {
             }
         });
 
-        TextButton buttonNo = new TextButton("No", skinSgx, "big");
+        TextButton buttonNo = new TextButton(lang.get("text_no"), skinSgx, "big");
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1367,10 +1375,10 @@ public class Menu implements Screen {
         windowDelete.addActor(table);
         table.setFillParent(true);
 
-        Label labelWarning1 = new Label("All your data will be erased", skinSgx, "white");
-        Label labelWarning2 = new Label("including your achievements in the Hall Of Fame", skinSgx, "white");
-        Label labelPassword = new Label("Enter your password", skinSgx, "white");
-        Label incorrectPassword = new Label("*Incorrect password", skinSgx, "white");
+        Label labelWarning1 = new Label(lang.get("label_all_data_will_be_erased"), skinSgx, "white");
+        Label labelWarning2 = new Label(lang.get("label_including_achievements_in_hof"), skinSgx, "white");
+        Label labelPassword = new Label(lang.get("label_password"), skinSgx, "white");
+        Label incorrectPassword = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
         incorrectPassword.setColor(Color.RED);
         TextField fieldPassword = new TextField("", skinSgx);
         fieldPassword.setTextFieldListener(new TextField.TextFieldListener() {
@@ -1382,7 +1390,7 @@ public class Menu implements Screen {
             }
         });
 
-        TextButton buttonConfirm = new TextButton("Confirm", skinSgx, "big");
+        TextButton buttonConfirm = new TextButton(lang.get("button_confirm"), skinSgx, "big");
         buttonConfirm.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1401,7 +1409,7 @@ public class Menu implements Screen {
                 new Menu(game);
             }
         });
-        TextButton buttonCancel = new TextButton("Cancel", skinSgx, "big");
+        TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
         buttonCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
