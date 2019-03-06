@@ -187,7 +187,7 @@ public class LevelLoader {
      * Return object for loading the world. Consists of a Level object and a libGDX TiledMap.
      */
     public static class Map {
-        private Level lvl;
+        private Playable lvl;
         private TiledMap map;
 
         Map(Level lvl, TiledMap map) {
@@ -195,7 +195,7 @@ public class LevelLoader {
             this.map = map;
         }
 
-        public Level getLevel() {
+        public Playable getLevel() {
             return this.lvl;
         }
 

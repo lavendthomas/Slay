@@ -8,6 +8,7 @@ import java.util.List;
 
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
+import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.TileType;
 
 import static be.ac.umons.slay.g02.level.LevelLoader.Tile.DARKEN_HIGHLIGHT;
@@ -32,7 +33,7 @@ public class EffectsManagement {
     }
 
     // Méthode pour obscurcir la map
-    static void shadowMap(TiledMapTileLayer layer, Level level, TiledMapTileSet set) {
+    static void shadowMap(TiledMapTileLayer layer, Playable level, TiledMapTileSet set) {
         for (int i = 0; i < layer.getWidth(); i++) {
             for (int j = 0; j < layer.getHeight(); j++) {
                 if (level.get(i,j).getType().equals(TileType.NEUTRAL)) {

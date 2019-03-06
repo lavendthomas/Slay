@@ -102,7 +102,7 @@ public class Level implements Playable {
 
     }
 
-    public void endTurn() {
+    public void nextTurn() {
 
     }
 

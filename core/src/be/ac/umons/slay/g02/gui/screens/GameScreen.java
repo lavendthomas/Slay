@@ -43,6 +43,7 @@ import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
+import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
@@ -67,7 +68,7 @@ public class GameScreen implements Screen {
     private Game game;
 
     private TiledMap map;
-    private Level level;
+    private Playable level;
     private HexagonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
 
@@ -373,7 +374,7 @@ public class GameScreen implements Screen {
 
 
 
-    private void loadLevel(Level level) {
+    private void loadLevel(Playable level) {
         for (int i = 0; i < level.width(); i++) {
             for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique
                 Tile tile = level.get(i, j);
