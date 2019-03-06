@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
@@ -103,7 +104,50 @@ public class Level implements Playable {
     }
 
     public void nextTurn() {
+        List<Territory> processed = new LinkedList<Territory>();
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Coordinate c = new Coordinate(i, j);
+                Tile t = get(i, j);
+                Territory terr = t.getTerritory();
+                if (terr != null && !processed.contains(terr)) {
+                    // Adds funds and kills soldier for all territories
+                    t.getTerritory().nextTurn();
+                    processed.add(terr);
+                }
 
+                // Spawn trees
+                if (canSpawnTree(c)) {
+                    t.setEntity(StaticEntity.TREE);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns true if a tree should be placed at the mentioned coordinate
+     *
+     * @param c
+     * @return true if a tree shpuld be placed
+     */
+    private boolean canSpawnTree(Coordinate c) {
+        Tile cell = get(c);
+        if (cell.getEntity() != null || cell.getType() == TileType.WATER) {
+            return false;
+        }
+        int treeCount = 0;
+        for (Coordinate nbr : c.getNeighbors()) {
+            if (isInLevel(nbr) && get(nbr).getEntity() == StaticEntity.TREE) {
+                treeCount++;
+            }
+        }
+
+        double odds = 0.01 + ((treeCount * Math.log10(treeCount + 1)) / 10);
+        double random = new Random().nextDouble();
+
+        Gdx.app.log("", "random:" + random + " odds: " + odds);
+
+        return random < odds;
     }
 
     /**
@@ -112,7 +156,7 @@ public class Level implements Playable {
      *
      * @param start Starting coordinate
      * @param n     Maximum number of steps
-     * @return      List of coordinates that can be reached
+     * @return List of coordinates that can be reached
      */
 
     public List<Coordinate> getMoves(Coordinate start, int n) {
@@ -149,7 +193,7 @@ public class Level implements Playable {
      *
      * @param fromC Starting coordinate
      * @param toC   Arrival coordinate
-     * @return      True if it's possible, else false
+     * @return True if it's possible, else false
      */
 
     private boolean canMove(Coordinate fromC, Coordinate toC) {

@@ -168,6 +168,7 @@ public class GameScreen implements Screen {
             buttonNext.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    level.nextTurn();
                     soundButton3.play(0.1f);
 
                 }

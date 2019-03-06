@@ -215,6 +215,13 @@ public class Territory {
         }
     }
 
+    /**
+     * Adds money and kills soldiers if funds are not sufficient
+     */
+    void nextTurn() {
+
+    }
+
     @Override
     public String toString() {
         return "{" + owner + ":" + hashCode() + " $: " + coins + " +:" + income + " -: " + wages + "}";
