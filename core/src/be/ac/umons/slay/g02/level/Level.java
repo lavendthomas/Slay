@@ -145,8 +145,6 @@ public class Level implements Playable {
         double odds = 0.01 + ((treeCount * Math.log10(treeCount + 1)) / 10);
         double random = new Random().nextDouble();
 
-        Gdx.app.log("", "random:" + random + " odds: " + odds);
-
         return random < odds;
     }
 

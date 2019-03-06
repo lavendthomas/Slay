@@ -219,7 +219,17 @@ public class Territory {
      * Adds money and kills soldiers if funds are not sufficient
      */
     void nextTurn() {
+        coins += income - wages;
 
+        // If not enough money we kill all soldiers (all entities that have a maintaining cost)
+        if (coins < 0) {
+            for (Tile c : cells) {
+                if (c.getEntity() != null && c.getEntity().getCost() > 0) {
+                    c.setEntity(null);
+                }
+            }
+            coins = 0;
+        }
     }
 
     @Override
