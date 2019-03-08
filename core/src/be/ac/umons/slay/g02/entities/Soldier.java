@@ -30,7 +30,7 @@ public class Soldier implements Entity {
         return soldierLevel.getName();
     }
 
-    boolean getMoved() {
+    public boolean getMoved() {
         return this.moved;
     }
 
@@ -38,19 +38,10 @@ public class Soldier implements Entity {
         if (soldierLevel.getLevel() > other.getSoldierLevel().getLevel()) {
             return true;
         } else if (soldierLevel.getLevel() == 3 && soldierLevel.getLevel() == other.getSoldierLevel().getLevel()) {
-            return Math.random() <0.7; // TODO Remove and place in move (LEVEL)
+            return Math.random() <0.7;
         } else {
             return false;
         }
     }
-
-    // a la place de canAttack
-    public boolean canMove (Soldier other) {
-        if (this.soldierLevel.getLevel() == 3 && this.soldierLevel.getLevel() == other.getSoldierLevel().getLevel())
-            return Math.random() <0.7; // 0.7 Pour plus de chances d'avoir true
-
-        return (this.soldierLevel.getLevel() > other.getSoldierLevel().getLevel());
-    }
-
 
 }

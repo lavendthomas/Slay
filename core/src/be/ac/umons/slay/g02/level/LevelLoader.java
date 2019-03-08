@@ -64,7 +64,7 @@ public class LevelLoader {
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                TileType type = Tile.fromId(background.getCell(i, j).getTile().getId()).toTileType(); //TODO crash si id = 0
+                TileType type = TileSetManagement.fromId(background.getCell(i, j).getTile().getId()).getType(); //TODO crash si id = 0
                 Coordinate coords = new Coordinate(i, j);
                 level.set(new be.ac.umons.slay.g02.level.Tile(type), coords);
             }
@@ -204,70 +204,4 @@ public class LevelLoader {
         }
 
     }
-
-    /**
-     * Table matching the id written in the TMX file to a TileType
-     */
-    public enum Tile {
-        LIGHT_GREEN(1),
-        RED(2),
-        DARK_GREEN(3),
-        PINK(4),
-        YELLOW(5),
-        DARK_RED(6),
-        TERRITORY(7, TileType.NEUTRAL),
-        BLUE(8),
-        WATER(9, TileType.WATER),
-        GRAVE(10),
-        CAPITAL(11),
-        TREE(12),
-        S0(13),
-        S1(14),
-        S2(15),
-        S3(16),
-        GREEN_HIGHLIGHT(17),
-        DARKEN_HIGHLIGHT(18),
-        WHITE_HIGHLIGHT(19);
-
-        int id;
-        TileType type;
-
-        Tile(int id, TileType type) {
-            this.id = id;
-            this.type = type;
-        }
-
-        Tile(int id) {
-            this(id, null);
-        }
-
-
-        /**
-         * Returns the id of this TileType
-         * @return
-         */
-        public int getId() {
-            return id;
-        }
-
-        public TileType toTileType() {
-            return type;
-        }
-
-        /**
-         * Returns the TileType matching the id
-         * @param id the id for which we want the id
-         * @return A tileType object
-         * @throws FileFormatException If the id does not match any TileType
-         */
-        public static Tile fromId(int id) throws FileFormatException {
-            for (Tile tile : LevelLoader.Tile.values()) {
-                if (tile.id == id) {
-                    return tile;
-                }
-            }
-            throw new FileFormatException();
-        }
-    }
-
 }

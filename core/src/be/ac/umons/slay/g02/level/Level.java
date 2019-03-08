@@ -101,9 +101,11 @@ public class Level implements Playable {
 
     public void buy(Entity entity, Coordinate coordinate) {
 
+
     }
 
     public void nextTurn() {
+        System.out.println("1");
         List<Territory> processed = new LinkedList<Territory>();
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -204,8 +206,8 @@ public class Level implements Playable {
         Tile from = get(fromC);
         Tile to = get(toC);
 
-        //Prevent movement int the water and verify that you are trying to move a soldier
-        if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier) {
+        //Prevent movement int the water, verify that you are trying to move a soldier and entity has not already moved
+        if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier && !(((Soldier) from.getEntity()).getMoved())) {
 
             // Moving to a cell that doesn't belong to anyone
             if (to.getTerritory() == null) {
@@ -219,7 +221,7 @@ public class Level implements Playable {
 
             // Moving in a other territory
             else {
-                // The arrival cell contains a soldir so check if it can be attacked
+                // The arrival cell contains a soldier so check if it can be attacked
                 if (to.getEntity() instanceof Soldier) {
                     return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
                 }
@@ -296,6 +298,7 @@ public class Level implements Playable {
 
             }
 
+            //TODO modifier attribut moved de l'entité
             splitTerritories(); //TODO find a better approach
             mergeTerritories();
 

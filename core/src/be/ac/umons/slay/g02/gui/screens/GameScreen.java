@@ -45,6 +45,7 @@ import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
+import be.ac.umons.slay.g02.level.TileSetManagement;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -56,8 +57,7 @@ import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.gui.screens.Menu.disableButton;
 import static be.ac.umons.slay.g02.gui.screens.Menu.enableButton;
-import static be.ac.umons.slay.g02.level.LevelLoader.Tile.GREEN_HIGHLIGHT;
-import static be.ac.umons.slay.g02.level.LevelLoader.Tile.WHITE_HIGHLIGHT;
+import static be.ac.umons.slay.g02.level.TileSetManagement.WHITE_HIGHLIGHT;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
@@ -121,7 +121,7 @@ public class GameScreen implements Screen {
 
             set = map.getTileSets().getTileSet("tileset");
 
-            tileMap = loadTileMap(set);
+            tileMap = loadTileHashMap(set);
             //chargeLevel(level);
 
             // Chargement de la carte dans le renderer
@@ -164,7 +164,7 @@ public class GameScreen implements Screen {
 
             buttonNext = new ImageButton(imageNext);
             buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
-            //buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+            buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
             buttonNext.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -357,7 +357,7 @@ public class GameScreen implements Screen {
             if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) { // clic sur un territoire mais pas sur un soldat => afficher territoire
                 listMove = new ArrayList<Coordinate>();
                 List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
-                EffectsManagement.highlightCells(effects, listTerr, set.getTile(WHITE_HIGHLIGHT.getId())); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
+                EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT")); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
                 // TODO Ajouter l'affichage des données du territoire et achat soldat
             }
 
@@ -365,7 +365,7 @@ public class GameScreen implements Screen {
 
                 listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
                 EffectsManagement.shadowMap(effects, level, set);
-                EffectsManagement.highlightCells(effects, listMove, set.getTile(GREEN_HIGHLIGHT.getId()));
+                EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
                 coord1 = temp;
                 coord2.setX(UNREAL);
                 //TODO Ajouter affichage donneés du territoire et achat soldat
@@ -379,32 +379,37 @@ public class GameScreen implements Screen {
         for (int i = 0; i < level.width(); i++) {
             for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique
                 Tile tile = level.get(i, j);
-                if (tile.getEntity() != null) { // Si la case contient une entité, la rajouter à l'interface grafique
+                if (tile.getEntity() != null) { // Si la case contient une entité, la rajouter à l'interface graphique
                     TiledMapTile image = tileMap.get(tile.getEntity().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);
+
                 } else { // Il n'y a pas ou plus d'entité présente dans la case
                     if (entities.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
                         entities.setCell(i, j, new TiledMapTileLayer.Cell());
+
                     }
                 }
                 if (tile.getTerritory() != null) { // Si la case appartient à un territoire, le rajouter à l'interface graphique
-                    TiledMapTile image = tileMap.get("hex_" + tile.getTerritory().getOwner().getColor().getName());
+                    TiledMapTile image = tileMap.get(tile.getTerritory().getOwner().getColor().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, territories);
+
                 } else { // Il n'y a pas ou plus de territoire présent sur la case
                     if (territories.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
                         territories.setCell(i, j, new TiledMapTileLayer.Cell());
+
                     }
                 }
             }
         }
     }
     // méthode ptr à améliorer
-    private HashMap<String, TiledMapTile> loadTileMap(TiledMapTileSet set) {
-        String[] nameList = {"hex_green", "hex_red", "hex_darkgreen", "hex_pink", "hex_yellow", "hex_darkred", "hex_neutral", "hex_darkblue", "hex_water", "grave", "capital", "tree", "L0", "L1", "L2", "L3"};
+    private HashMap<String, TiledMapTile> loadTileHashMap(TiledMapTileSet set) {
+        List<String> namesList = TileSetManagement.getNames();
         HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile>();
-        for (int i = 0; i < nameList.length; i++) {
-            tileMap.put(nameList[i], set.getTile(i + 1));
+        for(String name : namesList) {
+            tileMap.put(name, set.getTile(TileSetManagement.fromName(name)));
         }
+
         return tileMap;
     }
 

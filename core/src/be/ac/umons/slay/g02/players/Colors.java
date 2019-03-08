@@ -1,13 +1,13 @@
 package be.ac.umons.slay.g02.players;
 
 public enum Colors {
-    C1("green", 1),
-    C2("red", 2),
-    C3("darkgreen", 3),
-    C4("pink", 4),
-    C5("yellow", 5),
-    C6("darkred", 6),
-    C7("darkblue", 8);
+    C1("LIGHT_GREEN", 1),
+    C2("RED", 2),
+    C3("DARK_GREEN", 3),
+    C4("PINK", 4),
+    C5("YELLOW", 5),
+    C6("DARK_RED", 6),
+    C7("BLUE", 8);
 
     private String name;
     private int id;
