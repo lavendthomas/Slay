@@ -13,6 +13,7 @@ import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.HexManagement;
+import be.ac.umons.slay.g02.players.Player;
 
 
 public class Level implements Playable {
@@ -30,6 +31,21 @@ public class Level implements Playable {
     private int height;
 
     /**
+     * List of players in this level
+     */
+    private List<Player> players;
+
+    /**
+     * Current turn
+     */
+    private int turn = 0;
+
+    /**
+     * Current player
+     */
+    private Player currentPlayer;
+
+    /**
      * Creates an empty level
      *
      * @param x the width of the level
@@ -39,6 +55,17 @@ public class Level implements Playable {
         tileMap = new Tile[x][y];
         width = x;
         height = y;
+    }
+
+    void setPlayers(List<Player> players) {
+        this.players = players;
+        turn = 0;
+        currentPlayer = players.get(turn);
+
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     /**
@@ -105,13 +132,18 @@ public class Level implements Playable {
     }
 
     public void nextTurn() {
-        System.out.println("1");
         List<Territory> processed = new LinkedList<Territory>();
+
+        turn = (turn + 1) % players.size();
+        currentPlayer = players.get(turn);
+
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Coordinate c = new Coordinate(i, j);
                 Tile t = get(i, j);
                 Territory terr = t.getTerritory();
+
+
                 if (terr != null && !processed.contains(terr)) {
                     // Adds funds and kills soldier for all territories
                     t.getTerritory().nextTurn();
@@ -121,6 +153,14 @@ public class Level implements Playable {
                 // Spawn trees
                 if (canSpawnTree(c)) {
                     t.setEntity(StaticEntity.TREE);
+                }
+
+
+
+                if (t.getTerritory() != null && t.getTerritory().getOwner().equals(currentPlayer)) {
+                    if (t.getEntity() != null && t.getEntity() instanceof Soldier) {
+                        ((Soldier) t.getEntity()).setMoved(false);
+                    }
                 }
             }
         }
@@ -198,7 +238,7 @@ public class Level implements Playable {
 
     private boolean canMove(Coordinate fromC, Coordinate toC) {
         // Prevent movement on the starting cell
-        if (fromC.equals(toC)) {
+        if (fromC.equals(toC) || !get(fromC).getTerritory().getOwner().equals(currentPlayer)) {
             return false;
         }
 
@@ -288,6 +328,8 @@ public class Level implements Playable {
                     to.setEntity(from.getEntity());
                     from.setEntity(null);
                     to.setTerritory(from.getTerritory());
+                    ((Soldier) to.getEntity()).setMoved(true);
+
 
                 }
             } else {
@@ -295,6 +337,7 @@ public class Level implements Playable {
                 to.setEntity(from.getEntity());
                 from.setEntity(null);
                 to.setTerritory(from.getTerritory());
+                ((Soldier) to.getEntity()).setMoved(true);
 
             }
 

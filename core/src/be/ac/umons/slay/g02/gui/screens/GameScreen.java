@@ -35,9 +35,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.level.Coordinate;
@@ -90,7 +92,7 @@ public class GameScreen implements Screen {
     private TiledMapTileLayer entities;
     private TiledMapTileLayer effects;
     private TiledMapTileSet set;
-    private HashMap<String, TiledMapTile> tileMap;
+    private Map<String, TiledMapTile> tileMap;
 
     private Stage hud;
     private OrthographicCamera hudCam;
@@ -121,7 +123,7 @@ public class GameScreen implements Screen {
 
             set = map.getTileSets().getTileSet("tileset");
 
-            tileMap = loadTileHashMap(set);
+            tileMap = loadTileHashMap();
             //chargeLevel(level);
 
             // Chargement de la carte dans le renderer
@@ -165,6 +167,7 @@ public class GameScreen implements Screen {
             buttonNext = new ImageButton(imageNext);
             buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
             buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+
             buttonNext.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -182,7 +185,7 @@ public class GameScreen implements Screen {
         hudCam = new OrthographicCamera();
         hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
 
-        buttonNext.setBounds(buttonNext.getX(), buttonNext.getY() ,buttonNext.getWidth(), buttonNext.getHeight());
+        //buttonNext.setBounds(buttonNext.getX(), buttonNext.getY() ,buttonNext.getWidth(), buttonNext.getHeight());
 
         hud.addActor(buttonNext);
 
@@ -301,6 +304,8 @@ public class GameScreen implements Screen {
         renderer.setView(camera);
 
         stage.getViewport().update(SCREEN_WIDTH + tileH * 2 / 5, SCREEN_HEIGHT, true);
+        hud.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
+
 
         if (Gdx.input.justTouched()) {
             loadClick();
@@ -311,7 +316,7 @@ public class GameScreen implements Screen {
         if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             camera.zoom += 0.02;
         }
-        loadLevel(level);
+        loadLevel();
         renderer.render();
 
         stage.act();
@@ -345,8 +350,10 @@ public class GameScreen implements Screen {
 
             Tile current = level.get(temp);
 
+
             if (listMove.contains(temp) && coord1.getX() >= 0 && coord2.getX() < 0) {
                 coord2 = temp;
+                System.out.println(1);
 
                 level.move(coord1, coord2);
             } else {
@@ -355,32 +362,40 @@ public class GameScreen implements Screen {
             }
 
             if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) { // clic sur un territoire mais pas sur un soldat => afficher territoire
-                listMove = new ArrayList<Coordinate>();
-                List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
-                EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT")); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
-                // TODO Ajouter l'affichage des données du territoire et achat soldat
+
+                listMove = new ArrayList<Coordinate>(); // Vide liste des mouvement
+                if (current.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
+                    List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
+                    EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT")); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
+                    // TODO Ajouter l'affichage des données du territoire et achat soldat
+                }
             }
 
             if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Clic sur un soldat + Vérif premier clic d'une série de 2
-
-                listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
-                EffectsManagement.shadowMap(effects, level, set);
-                EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
-                coord1 = temp;
-                coord2.setX(UNREAL);
-                //TODO Ajouter affichage donneés du territoire et achat soldat
+                if (current.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
+                    listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
+                    EffectsManagement.shadowMap(effects, level, set);
+                    EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
+                    coord1 = temp;
+                    coord2.setX(UNREAL);
+                    //TODO Ajouter affichage donneés du territoire et achat soldat
+                }
             }
         }
+
     }
 
+    /**
+     * Reload the visual of the level according to the changes made in the logic
+     */
 
 
-    private void loadLevel(Playable level) {
+    private void loadLevel() {
         for (int i = 0; i < level.width(); i++) {
             for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique
                 Tile tile = level.get(i, j);
                 if (tile.getEntity() != null) { // Si la case contient une entité, la rajouter à l'interface graphique
-                    TiledMapTile image = tileMap.get(tile.getEntity().getName());
+                    TiledMapTile image = tileMap.get(tile.getEntity().getName().toUpperCase());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);
 
                 } else { // Il n'y a pas ou plus d'entité présente dans la case
@@ -402,11 +417,17 @@ public class GameScreen implements Screen {
             }
         }
     }
-    // méthode ptr à améliorer
-    private HashMap<String, TiledMapTile> loadTileHashMap(TiledMapTileSet set) {
+
+    /**
+     * Load image of tile linked to their names
+     *
+     * @return Map of tile names and tile
+     */
+
+    private Map<String, TiledMapTile> loadTileHashMap() {
         List<String> namesList = TileSetManagement.getNames();
         HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile>();
-        for(String name : namesList) {
+        for (String name : namesList) {
             tileMap.put(name, set.getTile(TileSetManagement.fromName(name)));
         }
 

@@ -29,7 +29,8 @@ import be.ac.umons.slay.g02.players.Player;
 
 public class LevelLoader {
 
-    public static final String LEVELS_PATH = "worlds";
+    private static final String LEVELS_PATH = "worlds";
+    private static List<Player> players;
 
     /**
      * Returns a Map object from the the following files :
@@ -71,7 +72,7 @@ public class LevelLoader {
         }
         // Add territories and players
 
-        List<Player> players = new ArrayList<Player>();
+        players = new ArrayList<Player>();
         List<Integer> colors = new ArrayList<Integer>();
 
         TiledMapTileLayer terr = (TiledMapTileLayer) map.getLayers().get("Territories");
@@ -98,6 +99,7 @@ public class LevelLoader {
             }
         }
 
+        level.setPlayers(players);
         level.mergeTerritories();
 
         // Add entities
@@ -123,7 +125,7 @@ public class LevelLoader {
                                 "level and in the description don't match");
                     }
 
-                } else if (n.getNodeName() == "items") {
+                } else if (n.getNodeName().equals("items")) {
                     // handle items
                     for (int j = 0; j < n.getChildNodes().getLength(); j++) {
                         // add each item to the map
@@ -144,7 +146,7 @@ public class LevelLoader {
                         }
                     }
 
-                } else if (n.getNodeName() == "units") {
+                } else if (n.getNodeName().equals("units")) {
                     // handle units
                     for (int j = 0; j < n.getChildNodes().getLength(); j++) {
                         // add each item to the map
@@ -159,7 +161,7 @@ public class LevelLoader {
 
                             if (type.equals("soldier")) {
                                 int lvl = Integer.parseInt(unt.getAttribute("level"));
-                                Soldier s = new Soldier(SoldierLevel.fromLevel(lvl));
+                                Soldier s = new Soldier(SoldierLevel.fromLevel(lvl), false);
                                 if (level.get(coords).getTerritory() == null) {
                                     // A soldier has to belong to a territory
                                     throw new FileFormatException("A soldier has to belong to a territory");

@@ -3,6 +3,7 @@ package be.ac.umons.slay.g02.level;
 import java.util.List;
 
 import be.ac.umons.slay.g02.entities.Entity;
+import be.ac.umons.slay.g02.players.Player;
 
 public interface Playable {
     int width();
@@ -24,4 +25,6 @@ public interface Playable {
     void buy(Entity entity, Coordinate coordinate);
 
     void nextTurn();
+
+    Player getCurrentPlayer();
 }
