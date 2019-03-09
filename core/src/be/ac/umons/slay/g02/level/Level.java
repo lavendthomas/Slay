@@ -187,7 +187,7 @@ public class Level implements Playable {
         double odds = 0.01 + ((treeCount * Math.log10(treeCount + 1)) / 10);
         double random = new Random().nextDouble();
 
-        return random < odds;
+        return random < odds && turn == 0;
     }
 
     /**
