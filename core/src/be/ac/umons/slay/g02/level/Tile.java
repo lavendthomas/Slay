@@ -1,5 +1,7 @@
 package be.ac.umons.slay.g02.level;
 
+import com.badlogic.gdx.Gdx;
+
 import be.ac.umons.slay.g02.entities.Entity;
 
 public class Tile {
@@ -35,6 +37,7 @@ public class Tile {
      * @param rec If you should check for changes in income/wages and capitals or not.
      */
     public void setEntity(Entity entity, boolean rec) {
+        Gdx.app.log("moves", "setEntity called on " + entity);
         // Update the income of the territory
         if (territory != null & rec) {
             territory.update(this.entity, entity);
@@ -77,12 +80,28 @@ public class Tile {
         return this.territory;
     }
 
-    void setTerritory(Territory t) {
-        if (territory != null) {
+
+    /**
+     * Changes the territory of the tile
+     * @param t the new territory
+     * @param update if the olf territory should be notified
+     */
+    void setTerritory(Territory t, boolean update) {
+        if (territory != null && update) {
             territory.remove(this);
         }
         territory = t;
-        t.add(this);
+        if (territory != null) {
+            t.add(this);
+        }
+    }
+
+    /**
+     * Changes the territory of the tile and notifies the old territory
+     * @param t the new territory
+     */
+    void setTerritory(Territory t) {
+        setTerritory(t, true);
     }
 
     boolean hasTerritory() {

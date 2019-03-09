@@ -40,7 +40,8 @@ public class Territory {
             wages += cell.getEntity().getCost();
         }
         cells.add(cell);
-        newCapital();
+        Gdx.app.debug("moves", "Calling newCapital in cell from " + cell);
+        // newCapital(); //TODO useful ?
     }
 
     /**
@@ -60,12 +61,29 @@ public class Territory {
                 StaticEntity se = (StaticEntity) cell.getEntity();
                 if (se == StaticEntity.CAPITAL) {
                     // If we removed a capital we have to recreate one.
+                    Gdx.app.debug("moves", "calling newCapital in remove from " + cell);
                     newCapital();
                 }
             }
         }
 
-        // TODO if less than 2 cells then delete the territory (delete the pointer to this territory from all cells0
+        // if less than 2 cells then delete the territory (delete the pointer to this territory from all cells
+
+        if (cells.size() < 2) {
+            for (Tile c : cells) {
+
+                // We remove the Entity if it is a soldier or a capital
+                if (c.getEntity() != null && c.getEntity().getCost() > 0) {
+                    c.setEntity(null);
+                } else if (c.getEntity() != null && c.getEntity() == StaticEntity.CAPITAL) {
+                    c.setEntity(null);
+                }
+
+                // We remove the territory from all cells
+                c.setTerritory(null, false);
+
+            }
+        }
 
         return this.cells.remove(cell);
     }
@@ -89,6 +107,7 @@ public class Territory {
     /**
      * Updates the income and wages of the territory
      * and makes sure there is one and only one capital on the territory
+     *
      * @param removed
      * @param added
      */
@@ -106,6 +125,7 @@ public class Territory {
                     case CAPITAL:
                         // The capital was removed so we have to create a new one
                         capital = null;
+                        Gdx.app.debug("moves", "Calling newCapital in update from " + removed + " and " + added);
                         newCapital();
                         break;
                 }
@@ -137,6 +157,7 @@ public class Territory {
                 capitals.add(cell);
             }
         }
+        Gdx.app.log("moves", owner.getName() + capitals.toString() );
 
         if (capitals.size() == 1) {
             // If a capital is already there we delete don't anything
@@ -197,22 +218,19 @@ public class Territory {
     /**
      * Sets the capital of the territory and removes all other capitals in the territory.
      * Also sets the entity of the Tile c as a StaticEntity.CAPITAL
+     *
      * @param c the tile to set as a capital
      * @return true if the capital is changed
      */
     boolean setCapital(Tile c) {
-        if (c == capital) {
-            return false;
-        } else {
-            for (Tile cell : cells) {
-                if (cell.contains(StaticEntity.CAPITAL)) {
-                    cell.setEntity(null, false);
-                }
+        for (Tile cell : cells) {
+            if (cell.contains(StaticEntity.CAPITAL)) {
+                cell.setEntity(null, false);
             }
-            c.setEntity(StaticEntity.CAPITAL, false);
-            capital = c;
-            return true;
         }
+        c.setEntity(StaticEntity.CAPITAL, false);
+        capital = c;
+        return true;
     }
 
     /**
