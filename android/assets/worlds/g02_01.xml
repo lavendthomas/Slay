@@ -24,6 +24,8 @@
 		<unit
 			type="soldier" level="0" x="4" y="6"/>
 		<unit
+			type="soldier" level="0" x="5" y="6"/>
+		<unit
 			type="soldier" level="0" x="16" y="4"/>
 	</units>
 </world>

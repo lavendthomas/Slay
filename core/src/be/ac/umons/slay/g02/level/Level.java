@@ -256,6 +256,18 @@ public class Level implements Playable {
 
             // Moving in the same territory
             else if (to.hasSameOwner(from)) {
+
+                // Moving on other soldier
+                if (to.getEntity() != null && to.getEntity() instanceof Soldier) {
+                    int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
+                    int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
+                    // Soldiers can fusion
+                    if (toLvl + fromLvl < 3) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
                 return true;
             }
 
@@ -324,12 +336,27 @@ public class Level implements Playable {
             // Prevent movement on its own capital
             if (to.hasSameOwner(from)) {
                 if (to.getEntity() != StaticEntity.CAPITAL) {
-                    // Move the Entity
-                    to.setEntity(from.getEntity());
-                    from.setEntity(null);
-                    to.setTerritory(from.getTerritory());
-                    ((Soldier) to.getEntity()).setMoved(true);
+                    if (to.getEntity() instanceof Soldier) {
+                        // Soldier fusion
+                        int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
+                        int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
+                        int newLvl = toLvl + fromLvl + 1;
+                        if (((Soldier) to.getEntity()).getMoved()) {
+                            // If to soldier has already moved (no need to check each other because it can move)
+                            to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), true));
+                        } else {
+                            to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), false));
+                        }
+                        from.setEntity(null);
+                        System.out.println(((Soldier) to.getEntity()).getSoldierLevel().getLevel());
 
+                    } else {
+                        // Just move the Entity
+                        to.setEntity(from.getEntity());
+                        from.setEntity(null);
+                        to.setTerritory(from.getTerritory());
+                        ((Soldier) to.getEntity()).setMoved(true);
+                    }
 
                 }
             } else {
@@ -341,7 +368,6 @@ public class Level implements Playable {
 
             }
 
-            //TODO modifier attribut moved de l'entité
             splitTerritories(); //TODO find a better approach
             mergeTerritories();
 

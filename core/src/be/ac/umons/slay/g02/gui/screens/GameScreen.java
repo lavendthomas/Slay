@@ -336,7 +336,7 @@ public class GameScreen implements Screen {
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
-    private void loadClick() { // Pas encore tester, car il faut des soldats sur la carte
+    private void loadClick() {
         EffectsManagement.eraseCells(effects);
         Coordinate temp = rectifyCoord();
 
@@ -348,22 +348,22 @@ public class GameScreen implements Screen {
                 coord2.setX(UNREAL);
             }
 
+            // Récupère la tile concernée par le clic
             Tile current = level.get(temp);
 
 
             if (listMove.contains(temp) && coord1.getX() >= 0 && coord2.getX() < 0) {
                 coord2 = temp;
-                System.out.println(1);
-
                 level.move(coord1, coord2);
             } else {
                 coord1.setX(UNREAL);
                 coord2.setX(UNREAL);
             }
 
-            if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) { // clic sur un territoire mais pas sur un soldat => afficher territoire
-
-                listMove = new ArrayList<Coordinate>(); // Vide liste des mouvement
+            // clic sur un territoire mais pas sur un soldat => afficher le territoire
+            if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) {
+                // Empty list of movements
+                listMove = new ArrayList<Coordinate>();
                 if (current.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
                     List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
                     EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT")); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
