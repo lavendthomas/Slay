@@ -22,7 +22,7 @@ public interface Playable {
 
     void move(Coordinate from, Coordinate to);
 
-    void buy(Entity entity, Coordinate coordinate);
+    boolean buy(Entity entity, Coordinate coordinate);
 
     void nextTurn();
 

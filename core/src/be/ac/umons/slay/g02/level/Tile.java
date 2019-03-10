@@ -32,6 +32,23 @@ public class Tile {
     }
 
     /**
+     * Buys a new Entity on this tile
+     * @param e The new entity to place
+     * @return
+     */
+    boolean buy(Entity e) {
+        //TODO do something if an Entity is already on the territory
+        if (territory == null) {
+            return false;
+        } else if (territory.buy(e)) {
+            setEntity(e);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      *
      * @param entity
      * @param rec If you should check for changes in income/wages and capitals or not.

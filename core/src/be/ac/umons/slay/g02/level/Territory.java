@@ -151,13 +151,8 @@ public class Territory {
         }
 
         // If a capital is already there we delete don't anything
-        List<Tile> capitals = new ArrayList<Tile>();
-        for (Tile cell : cells) {
-            if (cell.contains(StaticEntity.CAPITAL)) {
-                capitals.add(cell);
-            }
-        }
-        Gdx.app.log("moves", owner.getName() + capitals.toString() );
+        List<Tile> capitals = getCapitals();
+        Gdx.app.log("moves", owner.getName() + capitals.toString());
 
         if (capitals.size() == 1) {
             // If a capital is already there we delete don't anything
@@ -248,6 +243,41 @@ public class Territory {
             }
             coins = 0;
         }
+    }
+
+    /**
+     * Returns true if the territory has the necessary funds to buy the entity
+     *
+     * @param e The entity we want to buy
+     * @return true if the territory has the necessary funds
+     */
+    boolean canBuy(Entity e) {
+        return coins >= e.getPrice();
+    }
+
+    /**
+     * Removes the funds necessary to buy the entity if they are sufficient
+     * @param e The entity to buy
+     * @return true if the entity was bought successfully
+     */
+    boolean buy(Entity e) {
+        if (canBuy(e)) {
+            coins -= e.getPrice();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    private List<Tile> getCapitals() {
+        List<Tile> capitals = new ArrayList<Tile>();
+        for (Tile cell : cells) {
+            if (cell.contains(StaticEntity.CAPITAL)) {
+                capitals.add(cell);
+            }
+        }
+        return capitals;
     }
 
     @Override

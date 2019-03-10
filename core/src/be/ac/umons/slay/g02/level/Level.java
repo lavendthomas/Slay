@@ -126,9 +126,8 @@ public class Level implements Playable {
         tileMap[coords.getX()][coords.getY()].setTerritory(t);
     }
 
-    public void buy(Entity entity, Coordinate coordinate) {
-
-
+    public boolean buy(Entity entity, Coordinate coordinate) {
+        return get(coordinate).buy(entity);
     }
 
     public void nextTurn() {
