@@ -93,16 +93,17 @@ public class Level implements Playable {
      * @param tile   The tile to place
      * @param coords The coordiantes to place the tile to
      */
-    void set(Tile tile, Coordinate coords) {
+    public void set(Tile tile, Coordinate coords) {
         tileMap[coords.getX()][coords.getY()] = tile;
     }
 
-    void set(Entity entity, Coordinate coords) {
-        tileMap[coords.getX()][coords.getY()].setEntity(entity, false);
-    }
-
-    void set(Territory territory, Coordinate coords) {
-        tileMap[coords.getX()][coords.getY()].setTerritory(territory);
+    /**
+     * Changes the entity of the tile at the mentioned coordinates
+     * @param entity the entity to place
+     * @param coords the coordinates of the tile to place the entity on.
+     */
+    public void set(Entity entity, Coordinate coords) {
+        tileMap[coords.getX()][coords.getY()].setEntity(entity);
     }
 
     /**
@@ -124,6 +125,10 @@ public class Level implements Playable {
      */
     public Tile get(Coordinate coords) {
         return tileMap[coords.getX()][coords.getY()];
+    }
+
+    void setTerritory(Territory t, Coordinate coords) {
+        tileMap[coords.getX()][coords.getY()].setTerritory(t);
     }
 
     public boolean buy(Entity entity, Coordinate coordinate) {
@@ -355,6 +360,7 @@ public class Level implements Playable {
                             to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), false));
                         }
                         from.setEntity(null);
+                        System.out.println(((Soldier) to.getEntity()).getSoldierLevel().getLevel());
 
                     } else {
                         // Just move the Entity
@@ -457,6 +463,7 @@ public class Level implements Playable {
                         // Remove all the cells that are not in the neighborhood
                         // and create a new territory for them
                         Territory newTerr = new Territory(cell.getTerritory().getOwner());
+                        processedTerritories.add(newTerr);
                         List<Tile> tilesInTerritory = cell.getTerritory().getCells();
                         Tile[] tilesArray = new Tile[tilesInTerritory.size()];
                         tilesInTerritory.toArray(tilesArray);
@@ -470,6 +477,10 @@ public class Level implements Playable {
                     processedTerritories.add(cell.getTerritory());
                 }
             }
+        }
+
+        for (Territory t : processedTerritories) {
+            t.newCapital();
         }
     }
 
