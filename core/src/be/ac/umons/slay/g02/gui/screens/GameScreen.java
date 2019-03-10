@@ -342,6 +342,8 @@ public class GameScreen implements Screen {
 
         if (level.isInLevel(temp)) {
 
+            Gdx.app.log("moves", temp + " " + level.get(temp));
+
             //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
             if (coord1.getX() >= 0 && coord2.getX() >= 0) {
                 coord1.setX(UNREAL);
