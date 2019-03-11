@@ -2,6 +2,8 @@ package be.ac.umons.slay.g02.level;
 
 import com.badlogic.gdx.Gdx;
 
+import net.bytebuddy.dynamic.scaffold.MethodGraph;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -64,6 +66,7 @@ public class Level implements Playable {
 
     }
 
+    @Override
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
@@ -73,6 +76,7 @@ public class Level implements Playable {
      *
      * @return
      */
+    @Override
     public int width() {
         return width;
     }
@@ -82,6 +86,7 @@ public class Level implements Playable {
      *
      * @return
      */
+    @Override
     public int height() {
         return height;
     }
@@ -113,6 +118,7 @@ public class Level implements Playable {
      * @param y
      * @return
      */
+    @Override
     public Tile get(int x, int y) {
         return tileMap[x][y];
     }
@@ -123,6 +129,7 @@ public class Level implements Playable {
      * @param coords the coordinates for which we want the tile
      * @return A Tile
      */
+    @Override
     public Tile get(Coordinate coords) {
         return tileMap[coords.getX()][coords.getY()];
     }
@@ -131,10 +138,12 @@ public class Level implements Playable {
         tileMap[coords.getX()][coords.getY()].setTerritory(t);
     }
 
+    @Override
     public boolean buy(Entity entity, Coordinate coordinate) {
         return get(coordinate).buy(entity);
     }
 
+    @Override
     public void nextTurn() {
         List<Territory> processed = new LinkedList<Territory>();
 
@@ -202,7 +211,7 @@ public class Level implements Playable {
      * @param n     Maximum number of steps
      * @return List of coordinates that can be reached
      */
-
+    @Override
     public List<Coordinate> getMoves(Coordinate start, int n) {
         ArrayList<Coordinate> visited = new ArrayList<Coordinate>();
         visited.add(start);
@@ -236,6 +245,26 @@ public class Level implements Playable {
     }
 
     /**
+     * Returns a list of all entites we can buy in the territory at the mentionned coordianate.
+     * @param p the coordinate where we want to buy the Entity
+     * @return
+     */
+    @Override
+    public List<Entity> canBuy(Coordinate p) {
+        if (get(p).getTerritory() == null) {
+            return null;
+        }
+        List<Entity> canBuyE = new ArrayList<Entity>();
+        for (SoldierLevel lvl : SoldierLevel.values()) {
+            Soldier s = new Soldier(lvl);
+            if (get(p).getTerritory().canBuy(s)) {
+                canBuyE.add(s);
+            }
+        }
+        return canBuyE;
+    }
+
+    /**
      * Return if it's possible to go from the starting coordinates
      * to the arrival coordinates
      *
@@ -243,7 +272,6 @@ public class Level implements Playable {
      * @param toC   Arrival coordinate
      * @return True if it's possible, else false
      */
-
     private boolean canMove(Coordinate fromC, Coordinate toC) {
         if (fromC.equals(toC) || !get(fromC).getTerritory().getOwner().equals(currentPlayer)) {
             // Prevent movement on the starting cell
@@ -333,7 +361,7 @@ public class Level implements Playable {
      * @param fromC Start coordinates
      * @param toC   Arrival coordinates
      */
-
+    @Override
     public void move(Coordinate fromC, Coordinate toC) {
 
         // Load the list of possible moves
@@ -491,6 +519,7 @@ public class Level implements Playable {
      * @param pos The position of one cell of the neighbourhood
      * @return A list of all the cells in the neighbourhood of which contains the position pos
      */
+    @Override
     public List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
         List<Coordinate> neighbours = new LinkedList<Coordinate>();
         Tile cell = tileMap[pos.getX()][pos.getY()];
@@ -549,6 +578,7 @@ public class Level implements Playable {
      * @param c the position to check
      * @return true if the position c is in the level
      */
+    @Override
     public boolean isInLevel(Coordinate c) {
         return c.getX() > 0 && c.getX() < width && c.getY() > 0 && c.getY() < height;
     }
