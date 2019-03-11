@@ -188,6 +188,7 @@ public class GameScreen implements Screen {
         //buttonNext.setBounds(buttonNext.getX(), buttonNext.getY() ,buttonNext.getWidth(), buttonNext.getHeight());
 
         hud.addActor(buttonNext);
+        hud.addActor(buttonPause);
 
 
         // Create multiplexer to handle input in stage and hud
@@ -243,7 +244,7 @@ public class GameScreen implements Screen {
         windowPause.row();
         windowPause.add(buttonQuit).fill().width(Value.percentWidth(1f));
 
-        stage.addActor(windowPause);
+        hud.addActor(windowPause);
     }
 
     private void showWindowQuit() {
@@ -289,7 +290,7 @@ public class GameScreen implements Screen {
         table.add(buttonYes).padRight(windowQuit.getWidth() * 8 / 100).width(Value.percentWidth(1f));
         table.add(buttonNo).width(Value.percentWidth(1f));
 
-        stage.addActor(windowQuit);
+        hud.addActor(windowQuit);
     }
 
     @Override
