@@ -32,6 +32,10 @@ public class Territory {
         }
     }
 
+    public void setCoins (int coins) {
+        this.coins = coins;
+    }
+
     public void add(Tile cell) {
         if (cell.getEntity() == null) {
             income += 1;
@@ -145,18 +149,18 @@ public class Territory {
      */
     boolean newCapital() {
 
-        // Territory empty => No capital
-        if (cells.size() == 0) {
+        // Territory empty or too small => No capital
+        if (cells.size() <= 1) {
             return false;
         }
 
-        // If a capital is already there we delete don't anything
         List<Tile> capitals = getCapitals();
-        Gdx.app.log("moves", owner.getName() + capitals.toString());
+        //Gdx.app.log("moves", owner.getName() + capitals.toString());
 
         if (capitals.size() == 1) {
             // If a capital is already there we delete don't anything
             return false;
+
         } else if (capitals.size() > 1) {
             // We have to many capitals (e.g. if merge), we remove all of them but one.
             for (int i = 1; i < capitals.size(); i++) {

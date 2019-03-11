@@ -7,9 +7,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -30,8 +29,8 @@ import be.ac.umons.slay.g02.players.Player;
 public class LevelLoader {
 
     private static final String LEVELS_PATH = "worlds";
-    private static List<Player> players;
 
+    private static Player[] players;
     /**
      * Returns a Map object from the the following files :
      *  - assets/world/filename.tmx
@@ -39,139 +38,39 @@ public class LevelLoader {
      *
      *  Loads the world using the pattern mentioned in the requirements.
      *
-     * @param levelname the name of the level (filename without extension)
+     * @param levelName the name of the level (filename without extension)
      * @return a Map object consisting of a Slay Level and a libGDX TiledMap for the GUI.
      * @throws FileFormatException If the file don't use the correct format
      */
-    public static Map load(String levelname) throws FileFormatException {
+
+    public static Map load(String levelName) throws FileFormatException {
+        String tmxName = LEVELS_PATH + File.separator +levelName + ".tmx";
+        String xmlName = LEVELS_PATH + File.separator +levelName + ".xml";
+
+        // Init level and load water and playable territories
+        TiledMap map = new TmxMapLoader().load(tmxName);
+        Level level = loadBackground(map);
+
+        //Load xml file
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        String name;
-        int width = 0;
-        int height = 0;
-
-        TiledMap map = new TmxMapLoader().load(LEVELS_PATH + "/" +levelname + ".tmx");
-
-        MapProperties prop = map.getProperties();
-
-        width = prop.get("width", Integer.class);
-        height = prop.get("height", Integer.class);
-
-        Level level = new Level(width, height);
-
-
-        // Load water and playable territories
-
-        TiledMapTileLayer background = (TiledMapTileLayer) map.getLayers().get("Background");
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                TileType type = TileSetManagement.fromId(background.getCell(i, j).getTile().getId()).getType(); //TODO crash si id = 0
-                Coordinate coords = new Coordinate(i, j);
-                level.set(new be.ac.umons.slay.g02.level.Tile(type), coords);
-            }
-        }
-        // Add territories and players
-
-        players = new ArrayList<Player>();
-        List<Integer> colors = new ArrayList<Integer>();
-
-        TiledMapTileLayer terr = (TiledMapTileLayer) map.getLayers().get("Territories");
-        //int p1nb = 0;
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                // Creates a new territory for each tile then merges them.
-                Coordinate coords = new Coordinate(i, j);
-                Colors color;
-
-                if (terr.getCell(i, j) != null) {
-                    int colorId = terr.getCell(i, j).getTile().getId();
-
-                    int index = colors.indexOf(colorId);
-                    if (index == -1) {
-                        // Add a new player for this color
-                        players.add(new HumanPlayer("p" + players.size(), Colors.fromId(colorId)));
-                        colors.add(colorId);
-                        index = colors.indexOf(colorId);
-                    }
-
-                    level.get(i, j).setTerritory(new Territory(players.get(index), level.get(coords)));
-                }
-            }
-        }
-
-        level.setPlayers(players);
-        level.mergeTerritories();
-
-        // Add entities
-
+        Element root;
         try {
             DocumentBuilder builder = factory.newDocumentBuilder();
-            FileHandle fileXML = Gdx.files.internal(LEVELS_PATH + "/" +  levelname + ".xml");
-            fileXML.copyTo(Gdx.files.local( "currentLevel.xml"));
-            Document xml = builder.parse(Gdx.files.local( "currentLevel.xml").file());
+            FileHandle fileXML = Gdx.files.internal(xmlName);
+            fileXML.copyTo(Gdx.files.local("currentLevel.xml"));
+            Document xml = builder.parse(Gdx.files.local("currentLevel.xml").file());
             Gdx.files.local("currentLevel.xml").delete();
-            Element root = xml.getDocumentElement();
-            name = root.getAttribute("name");
+            root = xml.getDocumentElement();
 
-            for (int i = 0; i < root.getChildNodes().getLength(); i++) {
-                Node n = root.getChildNodes().item(i);
-                if (n.getNodeName() == "players") {
-                    // handle players
-                    Element plys = (Element) n;
-                    int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
-                    //TODO nbplayers == players.size()
-                    if (nbPlayers != players.size()) {
-                        throw new FileFormatException("The amount of player specified in the " +
-                                "level and in the description don't match");
-                    }
+            // ADd players
+            loadPlayers(root);
 
-                } else if (n.getNodeName().equals("items")) {
-                    // handle items
-                    for (int j = 0; j < n.getChildNodes().getLength(); j++) {
-                        // add each item to the map
+            // Add territories
+            loadTerritories(root, level);
 
-                        Node item = n.getChildNodes().item(j);
-                        if (item.getNodeName().equals("item")) {
-                            Element itm = (Element) item;
-                            String type = itm.getAttribute("type");
-                            int x = Integer.parseInt(itm.getAttribute("x"));
-                            int y = Integer.parseInt(itm.getAttribute("y"));
-                            Coordinate coords = new Coordinate(x, y);
-                            StaticEntity e = StaticEntity.fromString(type);
-                            level.set(e, coords);
-                            // TODO read the coins if the item is a capital and add it to the territory
-                            if (e == StaticEntity.CAPITAL) {
-                                level.get(coords).getTerritory().setCapital(level.get(coords));
-                            }
-                        }
-                    }
+            // Add entities
+            loadEntities(root, level);
 
-                } else if (n.getNodeName().equals("units")) {
-                    // handle units
-                    for (int j = 0; j < n.getChildNodes().getLength(); j++) {
-                        // add each item to the map
-
-                        Node unit = n.getChildNodes().item(j);
-                        if (unit.getNodeName().equals("unit")) {
-                            Element unt = (Element) unit;
-                            String type = unt.getAttribute("type");
-                            int x = Integer.parseInt(unt.getAttribute("x"));
-                            int y = Integer.parseInt(unt.getAttribute("y"));
-                            Coordinate coords = new Coordinate(x, y);
-
-                            if (type.equals("soldier")) {
-                                int lvl = Integer.parseInt(unt.getAttribute("level"));
-                                Soldier s = new Soldier(SoldierLevel.fromLevel(lvl), false);
-                                if (level.get(coords).getTerritory() == null) {
-                                    // A soldier has to belong to a territory
-                                    throw new FileFormatException("A soldier has to belong to a territory");
-                                }
-                                level.set(s, coords);
-                            }
-                        }
-                    }
-                }
-            }
         } catch (ParserConfigurationException e) {
             Gdx.app.error("slay", e.getMessage());
             throw new FileFormatException(e);
@@ -182,23 +81,171 @@ public class LevelLoader {
             Gdx.app.error("slay", e.getMessage());
             throw new FileFormatException(e);
         }
+
         return new Map(level, map);
     }
+
+    private static Level loadBackground (TiledMap map) {
+        MapProperties prop = map.getProperties();
+
+        int width = prop.get("width", Integer.class);
+        int height = prop.get("height", Integer.class);
+
+        Level level = new Level(width, height);
+
+        TiledMapTileLayer background = (TiledMapTileLayer) map.getLayers().get("Background");
+
+        try {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    int id = background.getCell(i, j).getTile().getId();
+                    TileType type = TileSetManagement.fromId(id).getType();
+                    if (type != null) {
+                        Tile tile = new Tile(type);
+                        Coordinate coord = new Coordinate(i, j);
+                        level.set(tile, coord);
+                    }
+                }
+            }
+        } catch (FileFormatException e) {
+            Gdx.app.error("slay", e.getMessage());
+        }
+        return level;
+    }
+
+    private static void loadPlayers (Element root) {
+        for (int i = 0; i < root.getChildNodes().getLength(); i++) {
+            Node n = root.getChildNodes().item(i);
+            // Load players numbers and init players tab
+            if (n.getNodeName().equals("players")) {
+                Element plys = (Element) n;
+                int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
+                players = new Player[nbPlayers];
+                for (int p = 0; p < players.length; p++) {
+                    //TODO Modifier init de player pour avoir IA et choisir couleur
+                    Player play = new HumanPlayer("p" + p, Colors.fromId(p + 1));
+                    players[p] = play;
+                }
+            }
+        }
+
+    }
+
+    private static void loadTerritories (Element root, Level level) throws FileFormatException {
+        for (int i = 0; i < root.getChildNodes().getLength(); i++) {
+            Node n = root.getChildNodes().item(i);
+
+            if (n.getNodeName().equals("territories")) {
+                for (int j = 0; j < n.getChildNodes().getLength(); j++) {
+                    // Add each territory to the map
+
+                    Node terr = n.getChildNodes().item(j);
+                    if (terr.getNodeName().equals("terr")) {
+                        Element tty = (Element) terr;
+                        int numPlayer = Integer.parseInt(tty.getAttribute("player"));
+                        int x = Integer.parseInt(tty.getAttribute("x"));
+                        int y = Integer.parseInt(tty.getAttribute("y"));
+                        Coordinate coord = new Coordinate(x, y);
+                        if (level.get(coord).getType() == TileType.WATER) {
+                            // A territory has to be on a neutral type
+                            throw new FileFormatException("A territory has to be on a neutral type");
+                        }
+                        Territory territory = new Territory(players[numPlayer], level.get(coord));
+                        level.set(territory, coord);
+                    }
+                }
+            }
+
+        }
+        level.setPlayers(players);
+        level.mergeTerritories();
+    }
+
+    private static void loadEntities (Element root, Level level) throws FileFormatException {
+        for (int i = 0; i < root.getChildNodes().getLength(); i++) {
+            Node n = root.getChildNodes().item(i);
+
+            if (n.getNodeName().equals("items")) {
+                // handle items
+                for (int j = 0; j < n.getChildNodes().getLength(); j++) {
+                    // add each item and soldier to the map
+
+                    Node item = n.getChildNodes().item(j);
+                    if (item.getNodeName().equals("item")) {
+                        // Add each static entity
+                        Element itm = (Element) item;
+                        String type = itm.getAttribute("type");
+                        int x = Integer.parseInt(itm.getAttribute("x"));
+                        int y = Integer.parseInt(itm.getAttribute("y"));
+                        Coordinate coord = new Coordinate(x, y);
+
+
+                        StaticEntity entity = StaticEntity.fromString(type);
+
+                        if (level.get(coord).getTerritory() == null && entity == StaticEntity.CAPITAL) {
+                            // A capital has to belong to a territory
+                            throw new FileFormatException("A static entity has to belong to a territory");
+                        }
+
+                        level.set(entity, coord);
+
+                        if (entity == StaticEntity.CAPITAL) {
+                            // If it is a capital, add capital and coins to the territory
+                            Territory territory = level.get(coord).getTerritory();
+                            int coins = Integer.parseInt(itm.getAttribute("coins"));
+                            territory.setCapital(level.get(coord));
+                            territory.setCoins(coins);
+                        }
+
+                    }
+                }
+            }  else if (n.getNodeName().equals("units")) {
+                // handle units
+                for (int j = 0; j < n.getChildNodes().getLength(); j++) {
+                    // add each soldier to the map
+
+                    Node unit = n.getChildNodes().item(j);
+                    if (unit.getNodeName().equals("unit")) {
+                        // Add each Soldier
+
+                        Element unt = (Element) unit;
+                        String type = unt.getAttribute("type");
+                        int x = Integer.parseInt(unt.getAttribute("x"));
+                        int y = Integer.parseInt(unt.getAttribute("y"));
+                        Coordinate coord = new Coordinate(x, y);
+
+                        if (type.equals("soldier")) {
+                            int lvl = Integer.parseInt(unt.getAttribute("level"));
+                            Soldier s = new Soldier(SoldierLevel.fromLevel(lvl), false);
+                            if (level.get(coord).getTerritory() == null) {
+                                // A soldier has to belong to a territory
+                                throw new FileFormatException("A soldier has to belong to a territory");
+                            }
+                            level.set(s, coord);
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
+
 
     /**
      * Return object for loading the world. Consists of a Level object and a libGDX TiledMap.
      */
     public static class Map {
-        private Playable lvl;
+        private Playable level;
         private TiledMap map;
 
-        Map(Level lvl, TiledMap map) {
-            this.lvl = lvl;
+        Map(Playable level, TiledMap map) {
+            this.level = level;
             this.map = map;
         }
 
         public Playable getLevel() {
-            return this.lvl;
+            return this.level;
         }
 
         public TiledMap getMap() {

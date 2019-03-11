@@ -35,7 +35,7 @@ public class Level implements Playable {
     /**
      * List of players in this level
      */
-    private List<Player> players;
+    private Player[] players;
 
     /**
      * Current turn
@@ -53,16 +53,16 @@ public class Level implements Playable {
      * @param x the width of the level
      * @param y the height of the level
      */
-    public Level(int x, int y) {
+    Level(int x, int y) {
         tileMap = new Tile[x][y];
         width = x;
         height = y;
     }
 
-    void setPlayers(List<Player> players) {
+    void setPlayers(Player[] players) {
         this.players = players;
         turn = 0;
-        currentPlayer = players.get(turn);
+        currentPlayer = players[turn];
 
     }
 
@@ -147,8 +147,8 @@ public class Level implements Playable {
     public void nextTurn() {
         List<Territory> processed = new LinkedList<Territory>();
 
-        turn = (turn + 1) % players.size();
-        currentPlayer = players.get(turn);
+        turn = (turn + 1) % players.length;
+        currentPlayer = players[turn];
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -224,12 +224,16 @@ public class Level implements Playable {
             fringes.add(new ArrayList<Coordinate>());
             for (Coordinate c : fringes.get(k - 1)) {
                 for (Coordinate neighbour : c.getNeighbors()) {
-                    // Not already visited and can move to
                     if (!visited.contains(neighbour) && canMove(start, neighbour)) {
-                        // Not same owner so stop in this direction
+                        // Not already visited and can move to
+
                         if (!get(neighbour).hasSameOwner(get(start))) {
+                            // Not same owner so stop in this direction
+
                             visited.add(neighbour);
                         } else {
+                            // Same owner so continue in this direction
+
                             visited.add(neighbour);
                             fringes.get(k).add(neighbour);
                         }
@@ -269,8 +273,8 @@ public class Level implements Playable {
      * @return True if it's possible, else false
      */
     private boolean canMove(Coordinate fromC, Coordinate toC) {
-        // Prevent movement on the starting cell
         if (fromC.equals(toC) || !get(fromC).getTerritory().getOwner().equals(currentPlayer)) {
+            // Prevent movement on the starting cell
             return false;
         }
 
@@ -278,61 +282,65 @@ public class Level implements Playable {
         Tile from = get(fromC);
         Tile to = get(toC);
 
-        //Prevent movement int the water, verify that you are trying to move a soldier and entity has not already moved
         if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier && !(((Soldier) from.getEntity()).getMoved())) {
+            //Prevent movement int the water, verify that you are trying to move a soldier and entity has not already moved
 
-            // Moving to a cell that doesn't belong to anyone
             if (to.getTerritory() == null) {
+                // Moving to a cell that doesn't belong to anyone
                 return true;
             }
 
-            // Moving in the same territory
             else if (to.hasSameOwner(from)) {
+                // Moving in the same territory
 
-                // Moving on other soldier
                 if (to.getEntity() != null && to.getEntity() instanceof Soldier) {
+                    // Moving on other soldier
+
                     int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                     int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
-                    // Soldiers can fusion
-                    if (toLvl + fromLvl < 3) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+
+                    // Soldier can fusion ?
+                    return toLvl + fromLvl < 3;
+
                 }
                 return true;
             }
 
-            // Moving in a other territory
             else {
-                // The arrival cell contains a soldier so check if it can be attacked
+                // Moving in a other territory
+
                 if (to.getEntity() instanceof Soldier) {
+                    // The arrival cell contains a soldier so check if it can be attacked
+
                     return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
                 }
 
-                // The arrival cell contains a capital so check if we can attack it
                 else if (to.getEntity() == StaticEntity.CAPITAL) {
+                    // The arrival cell contains a capital so check if we can attack it
+
                     return ((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 0;
                 }
 
-                // Check if a soldier is watching the arrival cell
                 else {
+                    // Check if a soldier is watching the arrival cell
+
                     // Get the neighbour direct from the arrival cell
                     Coordinate[] neighbors = toC.getNeighbors();
                     boolean bool = true;
 
-                    // Check all neighbours
                     for (Coordinate coordinate : neighbors) {
+                        // Check all neighbours
                         Tile current = get(coordinate);
 
-                        // To not check in the water and avoid nullPointerException
                         if (current.getType().equals(TileType.NEUTRAL)
                                 && current.getEntity() != null) {
+                            // To not check in the water and avoid nullPointerException
 
-                            // If a soldier has been found
-                            //      and belongs to the same owner as the arrival cell
                             if (current.getEntity() instanceof Soldier
                                     && to.hasSameOwner(current)) {
+                                // If a soldier has been found
+                                //      and belongs to the same owner as the arrival cell
+
                                 bool = ((Soldier) from.getEntity()).canAttack(
                                         (Soldier) current.getEntity());
 
@@ -402,10 +410,7 @@ public class Level implements Playable {
 
             splitTerritories(); //TODO find a better approach
             mergeTerritories();
-
-
         }
-
     }
 
 
@@ -433,17 +438,14 @@ public class Level implements Playable {
     private void mergeTerritories(Coordinate pos, List<Coordinate> processed) {
         // Source: https://codereview.stackexchange.com/questions/90108/recursively-evaluate-neighbors-in-a-two-dimensional-grid
 
-        if (processed.contains(pos)) {
-            // Base case: We already checked this cell
-            return;
-        } else {
+        // Base case: We already checked this cell
+        if (!processed.contains(pos)) {
             processed.add(pos);
 
             int x = pos.getX();
             int y = pos.getY();
 
             Coordinate[] neighbors = pos.getNeighbors();
-            //Gdx.app.log("slay", Arrays.toString(neighbors));
 
             for (Coordinate nb : neighbors) {
                 if (isInLevel(nb)) {

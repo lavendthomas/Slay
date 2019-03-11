@@ -9,14 +9,8 @@ public class Tile {
     private Entity entity;
     private Territory territory;
 
-    public Tile(TileType type) {
+    Tile(TileType type) {
         this.type = type;
-    }
-
-    public Tile(TileType type, Entity entity, Territory territory) {
-        this.type = type;
-        setEntity(entity);
-        this.territory = territory;
     }
 
     public Entity getEntity() {
@@ -27,9 +21,6 @@ public class Tile {
         return type;
     }
 
-    public boolean isEmpty() {
-        return entity == null;
-    }
 
     /**
      * Buys a new Entity on this tile
@@ -53,16 +44,16 @@ public class Tile {
      * @param entity
      * @param rec If you should check for changes in income/wages and capitals or not.
      */
-    public void setEntity(Entity entity, boolean rec) {
-        Gdx.app.log("moves", "setEntity called on " + entity);
+     void setEntity(Entity entity, boolean rec) {
+        Gdx.app.log("moves1", "setEntity called on " + entity);
         // Update the income of the territory
-        if (territory != null & rec) {
+        if (territory != null && rec) {
             territory.update(this.entity, entity);
         }
         this.entity = entity;
     }
 
-    public void setEntity(Entity entity) {
+    void setEntity(Entity entity) {
         setEntity(entity, true);
     }
 
@@ -71,18 +62,18 @@ public class Tile {
      * @param entity
      * @return
      */
-    public boolean contains(Entity entity) {
+    boolean contains(Entity entity) {
         return this.entity == entity;
     }
 
-    public boolean hasSameOwner(Tile other) {
+    boolean hasSameOwner(Tile other) {
         if (territory == null) {
             return false;
         }
         return territory.hasSameOwner(other.territory);
     }
 
-    public boolean mergeTerritories(Tile other) {
+    boolean mergeTerritories(Tile other) {
          if (hasSameOwner(other)) {
             other.territory.remove(other);
             other.territory = territory;

@@ -124,7 +124,7 @@ public class GameScreen implements Screen {
 
         try {
             //Chargement de la map et du Level associé
-            LevelLoader.Map lvlLoader = LevelLoader.load("g02_01");
+            LevelLoader.Map lvlLoader = LevelLoader.load("g02_01 - Copie");
             level = lvlLoader.getLevel();
             map = lvlLoader.getMap();
 

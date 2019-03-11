@@ -9,6 +9,7 @@ import java.util.List;
  *
  */
 public enum TileSetManagement {
+    VOID(0),
     LIGHT_GREEN(1),
     RED(2),
     DARK_GREEN(3),
