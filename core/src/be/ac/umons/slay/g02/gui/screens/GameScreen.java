@@ -38,9 +38,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
@@ -78,6 +80,14 @@ public class GameScreen implements Screen {
     private ImageButton buttonNext;
     private TextButton buttonResume;
     private TextButton buttonQuit;
+    private ImageButton buttonL0;
+    private ImageButton buttonL1;
+    private ImageButton buttonL2;
+    private ImageButton buttonL3;
+    private boolean visibleL0;
+    private boolean visibleL1;
+    private boolean visibleL2;
+    private boolean visibleL3;
 
     private static Window windowPause = new Window("Pause", skinSgx);
     private static Window windowQuit = new Window("Quit Game", skinSgx);
@@ -189,6 +199,37 @@ public class GameScreen implements Screen {
 
         hud.addActor(buttonNext);
         hud.addActor(buttonPause);
+
+        // Add entity market
+
+        TextureRegionDrawable imageL0 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L0.png")))));
+        buttonL0 = new ImageButton(imageL0);
+        buttonL0.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL0.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        buttonL0.setVisible(false);
+        hud.addActor(buttonL0);
+
+        TextureRegionDrawable imageL1 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L1.png")))));
+        buttonL1 = new ImageButton(imageL1);
+        buttonL1.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL1.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        buttonL1.setVisible(false);
+        hud.addActor(buttonL1);
+
+        TextureRegionDrawable imageL2 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L2.png")))));
+        buttonL2 = new ImageButton(imageL2);
+        buttonL2.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL2.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        buttonL2.setVisible(false);
+        hud.addActor(buttonL2);
+
+        TextureRegionDrawable imageL3 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L3.png")))));
+        buttonL3 = new ImageButton(imageL3);
+        buttonL3.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL3.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() - buttonL3.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        buttonL3.setVisible(false);
+        hud.addActor(buttonL3);
+
 
 
         // Create multiplexer to handle input in stage and hud
@@ -344,6 +385,7 @@ public class GameScreen implements Screen {
         if (level.isInLevel(temp)) {
 
             Gdx.app.log("moves", temp + " " + level.get(temp));
+            showMarket(temp, true);
 
             //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
             if (coord1.getX() >= 0 && coord2.getX() >= 0) {
@@ -371,6 +413,7 @@ public class GameScreen implements Screen {
                     List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
                     EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT")); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
                     // TODO Ajouter l'affichage des données du territoire et achat soldat
+                    showMarket(temp, false);
                 }
             }
 
@@ -382,10 +425,33 @@ public class GameScreen implements Screen {
                     coord1 = temp;
                     coord2.setX(UNREAL);
                     //TODO Ajouter affichage donneés du territoire et achat soldat
+                    showMarket(temp, false);
                 }
             }
         }
 
+    }
+
+    private void showMarket(Coordinate c, boolean hidden) {
+        boolean shown = !hidden;
+        List<String> canBuy = new ArrayList<String>();
+        List<Entity> couldBuy = level.canBuy(c);
+        if (couldBuy != null) {
+            for (Entity e : level.canBuy(c)) {
+                canBuy.add(e.getName());
+            }
+        }
+
+        Gdx.app.log("", c.toString() + canBuy.toString());
+        visibleL0 =  shown && canBuy.contains("L0");
+        visibleL1 =  shown && canBuy.contains("L1");
+        visibleL2 =  shown && canBuy.contains("L2");
+        visibleL3 =  shown && canBuy.contains("L3");
+
+        buttonL0.setVisible(visibleL0);
+        buttonL1.setVisible(visibleL1);
+        buttonL2.setVisible(visibleL2);
+        buttonL3.setVisible(visibleL3);
     }
 
     /**

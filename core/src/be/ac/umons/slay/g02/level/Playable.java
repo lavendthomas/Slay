@@ -24,6 +24,8 @@ public interface Playable {
 
     boolean buy(Entity entity, Coordinate coordinate);
 
+    List<Entity> canBuy(Coordinate p);
+
     void nextTurn();
 
     Player getCurrentPlayer();
