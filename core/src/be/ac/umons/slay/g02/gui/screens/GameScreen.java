@@ -44,6 +44,7 @@ import java.util.Map;
 
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
+import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
@@ -108,6 +109,8 @@ public class GameScreen implements Screen {
     private OrthographicCamera hudCam;
     private InputMultiplexer multiplexer;
 
+    ClickState click;
+    Coordinate previousClick;
     private Coordinate coord1;
     private Coordinate coord2;
     private final int UNREAL = -1;
@@ -117,6 +120,7 @@ public class GameScreen implements Screen {
         game = aGame;
         coord1 = new Coordinate(UNREAL, UNREAL);
         coord2 = new Coordinate(UNREAL, UNREAL);
+        click = ClickState.NOTHING_SELECTED;
 
         try {
             //Chargement de la map et du Level associé
@@ -207,6 +211,12 @@ public class GameScreen implements Screen {
         buttonL0.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
         buttonL0.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL0.setVisible(false);
+        buttonL0.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton3.play(0.1f);
+            }
+        });
         hud.addActor(buttonL0);
 
         TextureRegionDrawable imageL1 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L1.png")))));
@@ -214,6 +224,12 @@ public class GameScreen implements Screen {
         buttonL1.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
         buttonL1.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL1.setVisible(false);
+        buttonL1.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton3.play(0.1f);
+            }
+        });
         hud.addActor(buttonL1);
 
         TextureRegionDrawable imageL2 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L2.png")))));
@@ -221,6 +237,12 @@ public class GameScreen implements Screen {
         buttonL2.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
         buttonL2.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL2.setVisible(false);
+        buttonL2.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton3.play(0.1f);
+            }
+        });
         hud.addActor(buttonL2);
 
         TextureRegionDrawable imageL3 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L3.png")))));
@@ -228,6 +250,12 @@ public class GameScreen implements Screen {
         buttonL3.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
         buttonL3.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() - buttonL3.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL3.setVisible(false);
+        buttonL3.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton3.play(0.1f);
+            }
+        });
         hud.addActor(buttonL3);
 
 
@@ -235,7 +263,7 @@ public class GameScreen implements Screen {
         // Create multiplexer to handle input in stage and hud
 
         multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(camera)));
+        multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
         multiplexer.addProcessor(hud);
         multiplexer.addProcessor(stage);
 
@@ -349,9 +377,6 @@ public class GameScreen implements Screen {
         hud.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
 
-        if (Gdx.input.justTouched()) {
-            loadClick();
-        }
         if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
             camera.zoom -= 0.02;
         }
@@ -378,59 +403,79 @@ public class GameScreen implements Screen {
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
-    private void loadClick() {
-        EffectsManagement.eraseCells(effects);
-        Coordinate temp = rectifyCoord();
+    public void onTap() {
 
-        if (level.isInLevel(temp)) {
+        Coordinate clickPos = rectifyCoord();
 
-            Gdx.app.log("moves", temp + " " + level.get(temp));
-            showMarket(temp, true);
-
-            //Si les 2 variables ont déjà été utilisé, les réinitialisé aux valeurs iréelles
-            if (coord1.getX() >= 0 && coord2.getX() >= 0) {
-                coord1.setX(UNREAL);
-                coord2.setX(UNREAL);
+        if (level.isInLevel(clickPos)) {
+            Tile clickedTile = level.get(clickPos);
+            // CHange state if needed
+            switch (click) {
+                case NOTHING_SELECTED:
+                    if (clickedTile.getTerritory() != null && !(clickedTile.getEntity() instanceof Soldier) &&
+                            clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
+                        click = ClickState.ON_TERRITORY;
+                    } else if (clickedTile.getTerritory() != null && clickedTile.getEntity() instanceof Soldier &&
+                            clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
+                        click = ClickState.ON_SOLDIER;
+                    }
+                    break;
+                case ON_TERRITORY:
+                    if (clickedTile.getEntity() instanceof Soldier) {
+                        click = ClickState.ON_SOLDIER;
+                    } else if (clickedTile.getTerritory() == null) {
+                        click = ClickState.NOTHING_SELECTED;
+                    }
+                    break;
+                case ON_SOLDIER:
+                    // We clicked on a soldier then on a territory so the soldier should be moved
+                    if (level.getMoves(previousClick, 4).contains(clickPos)) {
+                        level.move(previousClick, clickPos);
+                        click = ClickState.NOTHING_SELECTED;
+                    } else {
+                        click = ClickState.NOTHING_SELECTED;
+                    }
+                    break;
+                case BUYING_UNIT:
+                    break;
             }
 
-            // Récupère la tile concernée par le clic
-            Tile current = level.get(temp);
+
+            // Show effects
+            EffectsManagement.eraseCells(effects);
 
 
-            if (listMove.contains(temp) && coord1.getX() >= 0 && coord2.getX() < 0) {
-                coord2 = temp;
-                level.move(coord1, coord2);
-            } else {
-                coord1.setX(UNREAL);
-                coord2.setX(UNREAL);
-            }
+            switch (click) {
 
-            // clic sur un territoire mais pas sur un soldat => afficher le territoire
-            if (current.getTerritory() != null && !(current.getEntity() instanceof Soldier)) {
-                // Empty list of movements
-                listMove = new ArrayList<Coordinate>();
-                if (current.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
-                    List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(temp);
-                    EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT")); // Récupérer toutes les tuiles d'un territoire pour ajouter effet et pas besoin de stocker les coordonées pour plus tard
-                    // TODO Ajouter l'affichage des données du territoire et achat soldat
-                    showMarket(temp, false);
-                }
-            }
+                case NOTHING_SELECTED:
+                    showMarket(clickPos, true);
+                    break;
 
-            if (coord1.getX() < 0 && current.getEntity() instanceof Soldier) { // Clic sur un soldat + Vérif premier clic d'une série de 2
-                if (current.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
-                    listMove = level.getMoves(temp, 4); // Récupère la liste des mouvements possibles à partir de la coordonée donnée pour pouvoir surligner
+                case ON_TERRITORY:
+                    // If we click on a territory but not on a soldier, tiles from that territory
+                    // have to be highlighted and we show the market for this territory
+                    List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(clickPos);
+                    EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT"));
+
+                    showMarket(clickPos, false);
+                    break;
+
+                case ON_SOLDIER:
+                    listMove = level.getMoves(clickPos, 4);
                     EffectsManagement.shadowMap(effects, level, set);
                     EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
-                    coord1 = temp;
-                    coord2.setX(UNREAL);
-                    //TODO Ajouter affichage donneés du territoire et achat soldat
-                    showMarket(temp, false);
-                }
+
+                    showMarket(clickPos, true); // Move soldier -> No shop
+                    break;
+
+                case BUYING_UNIT:
+                    break;
             }
         }
 
+        previousClick = clickPos;
     }
+
 
     private void showMarket(Coordinate c, boolean hidden) {
         boolean shown = !hidden;
@@ -526,6 +571,14 @@ public class GameScreen implements Screen {
     public void dispose() {
         stage.dispose();
         hud.dispose();
+    }
+
+
+    enum ClickState {
+        NOTHING_SELECTED,
+        ON_TERRITORY,
+        ON_SOLDIER,
+        BUYING_UNIT;
     }
 }
 
