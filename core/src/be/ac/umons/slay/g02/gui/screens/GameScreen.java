@@ -1,17 +1,13 @@
 package be.ac.umons.slay.g02.gui.screens;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.maps.MapProperties;
@@ -21,9 +17,10 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -32,14 +29,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import java.nio.charset.CoderResult;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +40,6 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.level.Coordinate;
-import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
@@ -55,15 +47,12 @@ import be.ac.umons.slay.g02.level.TileSetManagement;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
-import static be.ac.umons.slay.g02.gui.Main.cursor;
-import static be.ac.umons.slay.g02.gui.Main.pm;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.gui.screens.Menu.disableButton;
 import static be.ac.umons.slay.g02.gui.screens.Menu.enableButton;
-import static be.ac.umons.slay.g02.level.TileSetManagement.WHITE_HIGHLIGHT;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
@@ -86,6 +75,7 @@ public class GameScreen implements Screen {
     private ImageButton buttonL1;
     private ImageButton buttonL2;
     private ImageButton buttonL3;
+    private ImageButton buttonChest;
     private boolean visibleL0;
     private boolean visibleL1;
     private boolean visibleL2;
@@ -93,6 +83,10 @@ public class GameScreen implements Screen {
 
     private static Window windowPause = new Window("Pause", skinSgx);
     private static Window windowQuit = new Window("Quit Game", skinSgx);
+
+    private Table screenTable;
+
+    private Cell cellCoins;
 
     private int tileW;
     private int tileH;
@@ -117,6 +111,7 @@ public class GameScreen implements Screen {
     GameScreen(Game aGame) {
         game = aGame;
         click = ClickState.NOTHING_SELECTED;
+        windowPause.setVisible(false);
 
         try {
             //Chargement de la map et du Level associé
@@ -134,7 +129,6 @@ public class GameScreen implements Screen {
             set = map.getTileSets().getTileSet("tileset");
 
             tileMap = loadTileHashMap();
-            //chargeLevel(level);
 
             // Chargement de la carte dans le renderer
             renderer = new HexagonalTiledMapRenderer(map);
@@ -169,9 +163,6 @@ public class GameScreen implements Screen {
                     showPauseWindow();
                 }
             });
-            //stage.addActor(buttonPause);
-
-
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
 
             buttonNext = new ImageButton(imageNext);
@@ -185,7 +176,6 @@ public class GameScreen implements Screen {
                     click = ClickState.NOTHING_SELECTED;
                     EffectsManagement.eraseCells(effects);
                     soundButton3.play(0.1f);
-
                 }
             });
 
@@ -193,11 +183,8 @@ public class GameScreen implements Screen {
             e.printStackTrace();
         }
 
-
         hudCam = new OrthographicCamera();
         hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
-
-        //buttonNext.setBounds(buttonNext.getX(), buttonNext.getY() ,buttonNext.getWidth(), buttonNext.getHeight());
 
         hud.addActor(buttonNext);
         hud.addActor(buttonPause);
@@ -206,7 +193,7 @@ public class GameScreen implements Screen {
 
         TextureRegionDrawable imageL0 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L0.png")))));
         buttonL0 = new ImageButton(imageL0);
-        buttonL0.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL0.getImage().setScale(2.5f);
         buttonL0.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL0.setVisible(false);
         buttonL0.addListener(new ClickListener() {
@@ -222,7 +209,7 @@ public class GameScreen implements Screen {
 
         TextureRegionDrawable imageL1 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L1.png")))));
         buttonL1 = new ImageButton(imageL1);
-        buttonL1.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL1.getImage().setScale(2.5f);
         buttonL1.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL1.setVisible(false);
         buttonL1.addListener(new ClickListener() {
@@ -238,7 +225,7 @@ public class GameScreen implements Screen {
 
         TextureRegionDrawable imageL2 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L2.png")))));
         buttonL2 = new ImageButton(imageL2);
-        buttonL2.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL2.getImage().setScale(2.5f);
         buttonL2.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL2.setVisible(false);
         buttonL2.addListener(new ClickListener() {
@@ -254,7 +241,7 @@ public class GameScreen implements Screen {
 
         TextureRegionDrawable imageL3 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L3.png")))));
         buttonL3 = new ImageButton(imageL3);
-        buttonL3.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonL3.getImage().setScale(2.5f);
         buttonL3.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() - buttonL3.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL3.setVisible(false);
         buttonL3.addListener(new ClickListener() {
@@ -268,6 +255,51 @@ public class GameScreen implements Screen {
         });
         hud.addActor(buttonL3);
 
+        screenTable = new Table();
+        hud.addActor(screenTable);
+        screenTable.setFillParent(true);
+
+        TextureRegionDrawable imageChest = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("levels/chest.png")))));
+        buttonChest = new ImageButton(imageChest);
+        buttonChest.getImage().setScale(1.5f);
+        buttonChest.setPosition(buttonChest.getWidth(), (SCREEN_HEIGHT - 1.5f*buttonChest.getHeight())*94/100);
+        buttonChest.setVisible(false);
+
+        Label labelCoins = new Label("", skinSgx, "title-white");
+
+
+
+
+        screenTable.addActor(buttonChest);
+        screenTable.addActor(labelCoins);
+        cellCoins = screenTable.getCell(labelCoins);
+
+
+
+
+        hud.addListener(new InputListener() {
+            @Override
+            public boolean keyUp(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ENTER && !windowPause.isVisible()) {
+                    level.nextTurn();
+                    click = ClickState.NOTHING_SELECTED;
+                    EffectsManagement.eraseCells(effects);
+                    soundButton3.play(0.1f);
+                }
+                else if (keycode == Input.Keys.ESCAPE && !windowPause.isVisible()) {
+                    soundButton1.play(0.2f);
+                    showPauseWindow();
+                }
+                else if (keycode == Input.Keys.ESCAPE && windowPause.isVisible()) {
+                    soundButton2.play(0.2f);
+                    windowPause.remove();
+                    enableButton(buttonPause, buttonNext);
+                    windowPause.setVisible(false);
+                }
+                return false;
+            }
+        });
+        Gdx.input.setInputProcessor(stage);
 
 
         // Create multiplexer to handle input in stage and hud
@@ -289,6 +321,7 @@ public class GameScreen implements Screen {
         windowPause.setMovable(false);
         // place le titre de la fenetre au milieu
         windowPause.getTitleTable().padLeft(windowPause.getWidth() / 2 - windowPause.getTitleLabel().getWidth() / 2);
+        windowPause.setVisible(true);
 
         Table table = new Table();
         table.setDebug(true);
@@ -300,12 +333,12 @@ public class GameScreen implements Screen {
         buttonResume.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(0.2f);
                 windowPause.remove();
-                enableButton(buttonPause);
+                enableButton(buttonPause, buttonNext);
+                windowPause.setVisible(false);
             }
         });
-
         buttonQuit = new TextButton("Quit Game", skinSgx, "big");
         buttonQuit.addListener(new ClickListener() {
             @Override
@@ -314,9 +347,7 @@ public class GameScreen implements Screen {
                 showWindowQuit();
             }
         });
-
         buttonResume.setWidth(windowPause.getWidth() * 40 / 100);
-
         buttonQuit.setWidth(windowPause.getWidth() * 40 / 100);
 
         windowPause.add(buttonResume).padBottom(windowPause.getWidth() * 7 / 100).fill().width(Value.percentWidth(1f));
@@ -325,6 +356,7 @@ public class GameScreen implements Screen {
 
         hud.addActor(windowPause);
     }
+
 
     private void showWindowQuit() {
         disableButton(buttonResume, buttonQuit);
@@ -346,7 +378,7 @@ public class GameScreen implements Screen {
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(0.2f);
                 stage.clear();
                 game.setScreen(new LevelSelection(game));
             }
@@ -356,7 +388,7 @@ public class GameScreen implements Screen {
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(0.2f);
                 windowQuit.remove();
                 enableButton(buttonResume, buttonQuit);
             }
@@ -386,13 +418,12 @@ public class GameScreen implements Screen {
         stage.getViewport().update(SCREEN_WIDTH + tileH * 2 / 5, SCREEN_HEIGHT, true);
         hud.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
-
-        if (Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.EQUALS))
             camera.zoom -= 0.02;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+
+        if (Gdx.input.isKeyPressed(Input.Keys.MINUS))
             camera.zoom += 0.02;
-        }
+
         loadLevel();
         renderer.render();
 
@@ -401,12 +432,9 @@ public class GameScreen implements Screen {
 
         stage.draw();
         hud.draw();
-
-
     }
 
     private Coordinate rectifyCoord() {
-
         int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / size * errorOffset);
         Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
         vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
@@ -414,7 +442,6 @@ public class GameScreen implements Screen {
     }
 
     public void onTap() {
-
         Coordinate clickPos = rectifyCoord();
 
         if (level.isInLevel(clickPos)) {
@@ -467,7 +494,7 @@ public class GameScreen implements Screen {
         switch (click) {
 
             case NOTHING_SELECTED:
-                showMarket(clickPos, true);
+                showMarket(clickPos, true);showCoins(clickPos, true);
                 break;
 
             case ON_TERRITORY:
@@ -477,6 +504,7 @@ public class GameScreen implements Screen {
                 EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT"));
 
                 showMarket(clickPos, false);
+                showCoins(clickPos, false);
                 break;
 
             case ON_SOLDIER:
@@ -485,6 +513,7 @@ public class GameScreen implements Screen {
                 EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
 
                 showMarket(clickPos, true); // Move soldier -> No shop
+                showCoins(clickPos, false);
                 break;
 
             case BUYING_UNIT:
@@ -494,7 +523,6 @@ public class GameScreen implements Screen {
                 break;
         }
     }
-
 
     private void showMarket(Coordinate c, boolean hidden) {
         boolean shown = !hidden;
@@ -519,10 +547,29 @@ public class GameScreen implements Screen {
     }
 
     /**
+     * Display the coins of the selected territory and its income
+     * @param c
+     * @param hidden
+     */
+    private void showCoins(Coordinate c, boolean hidden) {
+        if (hidden) {
+            buttonChest.setVisible(false);
+  /*          cellCoins.clearActor();
+            Label labelCoins = new Label("", skinSgx, "title-white");
+            cellCoins.setActor(labelCoins); */
+        }
+        else {
+            buttonChest.setVisible(true);
+   /*         cellCoins.clearActor();
+            String coins = "" + 36;//level.get(c).getTerritory().getCoins();
+            Label labelCoins = new Label("" + coins, skinSgx, "title-white");
+            cellCoins.setActor(labelCoins); */
+        }
+    }
+
+    /**
      * Reload the visual of the level according to the changes made in the logic
      */
-
-
     private void loadLevel() {
         for (int i = 0; i < level.width(); i++) {
             for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique

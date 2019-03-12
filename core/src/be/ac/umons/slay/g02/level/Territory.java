@@ -32,6 +32,10 @@ public class Territory {
         }
     }
 
+    public int getCoins () {
+        return this.coins;
+    }
+
     public void setCoins (int coins) {
         this.coins = coins;
     }
