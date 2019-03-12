@@ -191,7 +191,7 @@ public class LevelSelection implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton3.play(0.2f);
                 stage.clear();
-                game.setScreen(new GameScreen(game));
+                game.setScreen(new GameScreen(game, String.format("g02_%02d",currentIslandNumber)));
             }
         });
 

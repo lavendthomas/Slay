@@ -304,20 +304,6 @@ public class Menu implements Screen {
             tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
         }
 
-
-        // bouton le temps de faire les tests, a enlever
-        boutonNiveau = new TextButton("NIVEAU", skinSgx, "big");
-        boutonNiveau.setScale(1.2f);
-        boutonNiveau.setPosition(tableCenterPositionX + buttonCenterWidth * 5 / 6, tableCenterPositionY/*Main.SCREEN_HEIGHT/2*/);
-        boutonNiveau.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
-                stage.clear();
-                game.setScreen(new GameScreen(game));
-            }
-        });
-        stage.addActor(boutonNiveau);
     }
 
     public static void disableButton(Button... button) {

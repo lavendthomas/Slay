@@ -108,14 +108,14 @@ public class GameScreen implements Screen {
     Coordinate previousClick;
     Entity boughtEntity;
 
-    GameScreen(Game aGame) {
+    GameScreen(Game aGame, String levelName) {
         game = aGame;
         click = ClickState.NOTHING_SELECTED;
         windowPause.setVisible(false);
 
         try {
             //Chargement de la map et du Level associé
-            LevelLoader.Map lvlLoader = LevelLoader.load("g02_01");
+            LevelLoader.Map lvlLoader = LevelLoader.load(levelName);
             level = lvlLoader.getLevel();
             map = lvlLoader.getMap();
 
