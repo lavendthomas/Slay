@@ -47,6 +47,7 @@ import be.ac.umons.slay.g02.level.TileSetManagement;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
+import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
@@ -158,7 +159,7 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        soundButton1.play(0.2f);
+                        soundButton1.play(prefs.getFloat("volume", 1f));
                         showPauseWindow();
                     }
                 }
@@ -176,7 +177,7 @@ public class GameScreen implements Screen {
                         level.nextTurn();
                         click = ClickState.NOTHING_SELECTED;
                         EffectsManagement.eraseCells(effects);
-                        soundButton3.play(0.1f);
+                        soundButton3.play(prefs.getFloat("volume", 1f) / 2);
                     }
                 }
             });
@@ -202,7 +203,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(0.1f);
+                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
                     boughtEntity = new Soldier(SoldierLevel.L0);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -220,7 +221,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(0.1f);
+                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
                     boughtEntity = new Soldier(SoldierLevel.L1);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -238,7 +239,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(0.1f);
+                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
                     boughtEntity = new Soldier(SoldierLevel.L2);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -256,7 +257,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(0.1f);
+                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
                     boughtEntity = new Soldier(SoldierLevel.L3);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -294,14 +295,14 @@ public class GameScreen implements Screen {
                     level.nextTurn();
                     click = ClickState.NOTHING_SELECTED;
                     EffectsManagement.eraseCells(effects);
-                    soundButton3.play(0.1f);
+                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
                 }
                 else if (keycode == Input.Keys.ESCAPE && !windowPause.isVisible()) {
-                    soundButton1.play(0.2f);
+                    soundButton1.play(prefs.getFloat("volume", 1f));
                     showPauseWindow();
                 }
                 else if (keycode == Input.Keys.ESCAPE && windowPause.isVisible()) {
-                    soundButton2.play(0.2f);
+                    soundButton2.play(prefs.getFloat("volume", 1f));
                     windowPause.remove();
                     windowPause.setVisible(false);
                 }
@@ -340,7 +341,7 @@ public class GameScreen implements Screen {
         buttonResume.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 windowPause.remove();
                 windowPause.setVisible(false);
             }
@@ -349,7 +350,7 @@ public class GameScreen implements Screen {
         buttonQuit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 showWindowQuit();
             }
         });
@@ -383,7 +384,7 @@ public class GameScreen implements Screen {
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 stage.clear();
                 game.setScreen(new LevelSelection(game));
             }
@@ -393,7 +394,7 @@ public class GameScreen implements Screen {
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 windowQuit.remove();
             }
         });
