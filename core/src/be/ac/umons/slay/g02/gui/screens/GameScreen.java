@@ -36,6 +36,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import java.nio.charset.CoderResult;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -111,15 +112,9 @@ public class GameScreen implements Screen {
 
     ClickState click;
     Coordinate previousClick;
-    private Coordinate coord1;
-    private Coordinate coord2;
-    private final int UNREAL = -1;
-    private List<Coordinate> listMove = new ArrayList<Coordinate>();
 
     GameScreen(Game aGame) {
         game = aGame;
-        coord1 = new Coordinate(UNREAL, UNREAL);
-        coord2 = new Coordinate(UNREAL, UNREAL);
         click = ClickState.NOTHING_SELECTED;
 
         try {
@@ -186,6 +181,8 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     level.nextTurn();
+                    click = ClickState.NOTHING_SELECTED;
+                    EffectsManagement.eraseCells(effects);
                     soundButton3.play(0.1f);
 
                 }
@@ -461,7 +458,7 @@ public class GameScreen implements Screen {
                     break;
 
                 case ON_SOLDIER:
-                    listMove = level.getMoves(clickPos, 4);
+                    List<Coordinate> listMove = level.getMoves(clickPos, 4);
                     EffectsManagement.shadowMap(effects, level, set);
                     EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
 
