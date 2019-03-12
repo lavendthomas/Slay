@@ -438,7 +438,7 @@ public class GameScreen implements Screen {
             }
 
 
-            // Show effects
+            // Erase effects
             EffectsManagement.eraseCells(effects);
 
 

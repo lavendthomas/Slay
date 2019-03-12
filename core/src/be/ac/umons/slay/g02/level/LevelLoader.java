@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -122,8 +123,9 @@ public class LevelLoader {
                 int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
                 players = new Player[nbPlayers];
                 for (int p = 0; p < players.length; p++) {
+                    int rand = new Random().nextInt(8);; //TODO empêcher d'avoir 2 fois la même couleur
                     //TODO Modifier init de player pour avoir IA et choisir couleur
-                    Player play = new HumanPlayer("p" + p, Colors.fromId(p + 1));
+                    Player play = new HumanPlayer("p" + p, Colors.fromId(rand));
                     players[p] = play;
                 }
             }
