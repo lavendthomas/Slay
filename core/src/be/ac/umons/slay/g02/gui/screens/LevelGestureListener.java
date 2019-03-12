@@ -7,18 +7,22 @@ import com.badlogic.gdx.math.Vector2;
 
 public class LevelGestureListener implements GestureDetector.GestureListener {
     OrthographicCamera camera;
+    GameScreen game;
 
-    LevelGestureListener(OrthographicCamera c) {
+    LevelGestureListener(GameScreen gs, OrthographicCamera c) {
         camera = c;
+        game = gs;
     }
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
+        game.onTap();
         return false;
     }
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
+
         return false;
     }
 
