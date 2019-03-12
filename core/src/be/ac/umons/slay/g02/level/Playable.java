@@ -18,11 +18,13 @@ public interface Playable {
 
     List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos);
 
+    List<Coordinate> getMoves(Entity entity, Coordinate start);
+
     List<Coordinate> getMoves(Coordinate start, int n);
 
     void move(Coordinate from, Coordinate to);
 
-    boolean buy(Entity entity, Coordinate coordinate);
+    boolean buy(Entity entity, Coordinate start,  Coordinate to);
 
     List<Entity> canBuy(Coordinate p);
 

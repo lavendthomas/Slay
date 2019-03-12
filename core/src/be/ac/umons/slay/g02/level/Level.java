@@ -1,11 +1,6 @@
 package be.ac.umons.slay.g02.level;
 
-import com.badlogic.gdx.Gdx;
-
-import net.bytebuddy.dynamic.scaffold.MethodGraph;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -14,7 +9,6 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
-import be.ac.umons.slay.g02.gui.screens.HexManagement;
 import be.ac.umons.slay.g02.players.Player;
 
 
@@ -134,13 +128,12 @@ public class Level implements Playable {
         return tileMap[coords.getX()][coords.getY()];
     }
 
-    void setTerritory(Territory t, Coordinate coords) {
-        tileMap[coords.getX()][coords.getY()].setTerritory(t);
-    }
-
     @Override
-    public boolean buy(Entity entity, Coordinate coordinate) {
-        return get(coordinate).buy(entity);
+    public boolean buy(Entity entity, Coordinate start,  Coordinate to) {
+        if (getMoves(entity, start).contains(to)) {
+            return get(start).buy(entity, get(to));
+        }
+        return false;
     }
 
     @Override
@@ -203,6 +196,62 @@ public class Level implements Playable {
         return random < odds && turn == 0;
     }
 
+    // Utiliser pour charger les positions où on peut placer un soldat quand on l'achète
+    @Override
+    public List<Coordinate> getMoves(Entity entity, Coordinate start) {
+        // charge la liste des cellules dans le territoire en double car il faut la parcourir et y ajouter les éléments en même temps
+        List<Coordinate> listTerr = neighbourTilesInSameTerritory(start);
+        List<Coordinate> visited = new ArrayList<Coordinate>();
+
+        for (Coordinate terr : listTerr) {
+            // Pour toutes les cellules déjà dans la liste
+
+            if (get(terr).getEntity() != null && get(terr).getEntity() instanceof Soldier) {
+                // Placing on other soldier
+                int toLvl = ((Soldier) get(terr).getEntity()).getSoldierLevel().getLevel();
+                int fromLvl = ((Soldier) entity).getSoldierLevel().getLevel();
+
+                // Soldiers can fusion ?
+                if (toLvl + fromLvl < 3) {
+                    visited.add(terr);
+                }
+            } else {
+                visited.add(terr);
+            }
+
+            for(Coordinate neighbour : terr.getNeighbors()) {
+                // Parcours tous ses voisins
+                Tile neigh = get(neighbour);
+
+                if (neigh.getType() == TileType.NEUTRAL // Ne pas regarder dans l'eau
+                    && !visited.contains(neighbour) // Pas encore dans la liste de résultat
+                        && !neigh.hasSameOwner(get(start))) { //Ajoute juste les cellules en limite du territoire
+
+                    if (neigh.getEntity() != null) {
+                        // Une entité est présente sur la case
+                        if (neigh.getEntity() instanceof Soldier) {
+                            // Soldat ennemie
+                            if (((Soldier) entity).canAttack((Soldier) neigh.getEntity())) {
+                                // Peut attaquer
+                                visited.add(neighbour);
+                            }
+                        }
+
+                        if (neigh.getEntity() == StaticEntity.TREE
+                            // Arbre
+                            || (neigh.getEntity() == StaticEntity.CAPITAL && ((Soldier) entity).getSoldierLevel().getLevel() > 0)  ) {
+                            // Attaque une capitale
+                            visited.add(neighbour);
+                        }
+                    } else {
+                        visited.add(neighbour);
+                    }
+                }
+            }
+        }
+        return visited;
+    }
+    
     /**
      * Return the list of coordinates that can be reached
      * from the start coordinate limited to n steps
@@ -381,12 +430,9 @@ public class Level implements Playable {
                         int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                         int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
                         int newLvl = toLvl + fromLvl + 1;
-                        if (((Soldier) to.getEntity()).getMoved()) {
-                            // If to soldier has already moved (no need to check each other because it can move)
-                            to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), true));
-                        } else {
-                            to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), false));
-                        }
+                        // If to soldier has already moved (no need to check each other because it can move)
+                        to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
+                                ((Soldier) to.getEntity()).getMoved()));
                         from.setEntity(null);
 
                     } else {

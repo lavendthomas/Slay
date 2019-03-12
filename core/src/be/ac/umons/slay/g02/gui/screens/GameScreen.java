@@ -447,7 +447,9 @@ public class GameScreen implements Screen {
                     }
                     break;
                 case BUYING_UNIT:
-                    level.buy(boughtEntity, clickPos);
+                    if (level.getMoves(boughtEntity, previousClick).contains(clickPos)) {
+                        level.buy(boughtEntity, previousClick, clickPos);
+                    }
                     click = ClickState.NOTHING_SELECTED;
                     break;
             }
@@ -486,7 +488,8 @@ public class GameScreen implements Screen {
                 break;
 
             case BUYING_UNIT:
-                List<Coordinate> listBuyable = level.getMoves(previousClick ,Math.max(level.height(), level.width()));
+                List<Coordinate> listBuyable = level.getMoves(boughtEntity, previousClick);
+                EffectsManagement.shadowMap(effects, level, set);
                 EffectsManagement.highlightCells(effects, listBuyable, tileMap.get("GREEN_HIGHLIGHT"));
                 break;
         }

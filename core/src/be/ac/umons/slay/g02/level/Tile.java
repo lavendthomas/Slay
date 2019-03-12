@@ -3,6 +3,9 @@ package be.ac.umons.slay.g02.level;
 import com.badlogic.gdx.Gdx;
 
 import be.ac.umons.slay.g02.entities.Entity;
+import be.ac.umons.slay.g02.entities.Soldier;
+import be.ac.umons.slay.g02.entities.SoldierLevel;
+import be.ac.umons.slay.g02.entities.StaticEntity;
 
 public class Tile {
     private TileType type;
@@ -27,25 +30,46 @@ public class Tile {
      * @param e The new entity to place
      * @return
      */
-    boolean buy(Entity e) {
-        //TODO do something if an Entity is already on the territory
-        if (territory == null) {
-            return false;
-        } else if (territory.buy(e)) {
-            setEntity(e);
-            return true;
+    boolean buy(Entity e, Tile to) {
+        if (hasSameOwner(to)) {
+            // Dans son propre territoire
+            if (to.getEntity() != null) {
+                // Entité déjà présente
+                if (to.getEntity() instanceof Soldier) {
+                    // Place dans mon territoire et il y a déjà un soldat
+                    int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
+                    int fromLvl = ((Soldier) e).getSoldierLevel().getLevel();
+                    int newLvl = toLvl + fromLvl + 1;
+                    to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), ((Soldier) to.getEntity()).getMoved()));
+                    return true;
+                } else if (to.getEntity() == StaticEntity.CAPITAL) {
+                    // Empêche de se placer sur sa capitale
+                    return false;
+                } else {
+                    // Cas résiduel (arbre ou tombe)
+                    to.setEntity(e);
+                    return true;
+                }
+            } else {
+                // pas d'entité
+                to.setEntity(e);
+                return true;
+            }
         } else {
-            return false;
+            // territoire ennemie ou neutre
+            to.setEntity(e);
+            ((Soldier) to.getEntity()).setMoved(true);
+            to.setTerritory(territory);
+            return true;
         }
     }
-
     /**
      *
      * @param entity
      * @param rec If you should check for changes in income/wages and capitals or not.
      */
      void setEntity(Entity entity, boolean rec) {
-         Gdx.app.log("moves1", "setEntity called on " + entity);
+         //Gdx.app.log("moves1", "setEntity called on " + entity);
         // Update the income of the territory
         if (territory != null & rec) {
             territory.update(this.entity, entity);
