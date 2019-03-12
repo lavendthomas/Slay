@@ -151,7 +151,7 @@ public class LevelLoader {
                             throw new FileFormatException("A territory has to be on a neutral type");
                         }
                         Territory territory = new Territory(players[numPlayer], level.get(coord));
-                        level.set(territory, coord);
+                        level.get(coord).setTerritory(territory);
                     }
                 }
             }

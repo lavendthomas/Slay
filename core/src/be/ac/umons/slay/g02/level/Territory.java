@@ -150,7 +150,7 @@ public class Territory {
     boolean newCapital() {
 
         // Territory empty or too small => No capital
-        if (cells.size() <= 1) {
+        if (cells.size() == 1) {
             return false;
         }
 

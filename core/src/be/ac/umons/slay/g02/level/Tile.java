@@ -45,15 +45,16 @@ public class Tile {
      * @param rec If you should check for changes in income/wages and capitals or not.
      */
      void setEntity(Entity entity, boolean rec) {
-        Gdx.app.log("moves1", "setEntity called on " + entity);
+         Gdx.app.log("moves1", "setEntity called on " + entity);
         // Update the income of the territory
-        if (territory != null && rec) {
+        if (territory != null & rec) {
             territory.update(this.entity, entity);
         }
         this.entity = entity;
     }
 
     void setEntity(Entity entity) {
+
         setEntity(entity, true);
     }
 
