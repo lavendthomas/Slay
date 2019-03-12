@@ -9,6 +9,8 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -64,7 +66,8 @@ public class LevelLoader {
             root = xml.getDocumentElement();
 
             // ADd players
-            loadPlayers(root);
+            List<Colors> alreadyUsed = new ArrayList<Colors>();
+            loadPlayers(root, alreadyUsed);
 
             // Add territories
             loadTerritories(root, level);
@@ -114,7 +117,7 @@ public class LevelLoader {
         return level;
     }
 
-    private static void loadPlayers (Element root) {
+    private static void loadPlayers (Element root, List<Colors> alreadyUsed) {
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
             Node n = root.getChildNodes().item(i);
             // Load players numbers and init players tab
@@ -123,9 +126,15 @@ public class LevelLoader {
                 int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
                 players = new Player[nbPlayers];
                 for (int p = 0; p < players.length; p++) {
-                    int rand = new Random().nextInt(8);; //TODO empêcher d'avoir 2 fois la même couleur
-                    //TODO Modifier init de player pour avoir IA et choisir couleur
-                    Player play = new HumanPlayer("p" + p, Colors.fromId(rand));
+                    int rand = new Random().nextInt(8);
+                    //TODO Modifier init de player pour avoir IA
+                    Colors color = Colors.fromId(rand);
+                    while (alreadyUsed.contains(color)) {
+                        rand = new Random().nextInt(8);
+                        color = Colors.fromId(rand);
+                    }
+                    alreadyUsed.add(color);
+                    Player play = new HumanPlayer("p" + p, color);
                     players[p] = play;
                 }
             }
