@@ -51,8 +51,6 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
-import static be.ac.umons.slay.g02.gui.screens.Menu.disableButton;
-import static be.ac.umons.slay.g02.gui.screens.Menu.enableButton;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
@@ -159,8 +157,10 @@ public class GameScreen implements Screen {
             buttonPause.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    soundButton1.play(0.2f);
-                    showPauseWindow();
+                    if (!windowPause.isVisible()) {
+                        soundButton1.play(0.2f);
+                        showPauseWindow();
+                    }
                 }
             });
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
@@ -172,10 +172,12 @@ public class GameScreen implements Screen {
             buttonNext.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    level.nextTurn();
-                    click = ClickState.NOTHING_SELECTED;
-                    EffectsManagement.eraseCells(effects);
-                    soundButton3.play(0.1f);
+                    if (!windowPause.isVisible()) {
+                        level.nextTurn();
+                        click = ClickState.NOTHING_SELECTED;
+                        EffectsManagement.eraseCells(effects);
+                        soundButton3.play(0.1f);
+                    }
                 }
             });
 
@@ -199,10 +201,12 @@ public class GameScreen implements Screen {
         buttonL0.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton3.play(0.1f);
-                boughtEntity = new Soldier(SoldierLevel.L0);
-                click = ClickState.BUYING_UNIT;
-                showEffects(previousClick);
+                if (!windowPause.isVisible()) {
+                    soundButton3.play(0.1f);
+                    boughtEntity = new Soldier(SoldierLevel.L0);
+                    click = ClickState.BUYING_UNIT;
+                    showEffects(previousClick);
+                }
             }
         });
         hud.addActor(buttonL0);
@@ -215,10 +219,12 @@ public class GameScreen implements Screen {
         buttonL1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton3.play(0.1f);
-                boughtEntity = new Soldier(SoldierLevel.L1);
-                click = ClickState.BUYING_UNIT;
-                showEffects(previousClick);
+                if (!windowPause.isVisible()) {
+                    soundButton3.play(0.1f);
+                    boughtEntity = new Soldier(SoldierLevel.L1);
+                    click = ClickState.BUYING_UNIT;
+                    showEffects(previousClick);
+                }
             }
         });
         hud.addActor(buttonL1);
@@ -231,10 +237,12 @@ public class GameScreen implements Screen {
         buttonL2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton3.play(0.1f);
-                boughtEntity = new Soldier(SoldierLevel.L2);
-                click = ClickState.BUYING_UNIT;
-                showEffects(previousClick);
+                if (!windowPause.isVisible()) {
+                    soundButton3.play(0.1f);
+                    boughtEntity = new Soldier(SoldierLevel.L2);
+                    click = ClickState.BUYING_UNIT;
+                    showEffects(previousClick);
+                }
             }
         });
         hud.addActor(buttonL2);
@@ -247,10 +255,12 @@ public class GameScreen implements Screen {
         buttonL3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton3.play(0.1f);
-                boughtEntity = new Soldier(SoldierLevel.L3);
-                click = ClickState.BUYING_UNIT;
-                showEffects(previousClick);
+                if (!windowPause.isVisible()) {
+                    soundButton3.play(0.1f);
+                    boughtEntity = new Soldier(SoldierLevel.L3);
+                    click = ClickState.BUYING_UNIT;
+                    showEffects(previousClick);
+                }
             }
         });
         hud.addActor(buttonL3);
@@ -293,7 +303,6 @@ public class GameScreen implements Screen {
                 else if (keycode == Input.Keys.ESCAPE && windowPause.isVisible()) {
                     soundButton2.play(0.2f);
                     windowPause.remove();
-                    enableButton(buttonPause, buttonNext);
                     windowPause.setVisible(false);
                 }
                 return false;
@@ -313,8 +322,6 @@ public class GameScreen implements Screen {
     }
 
     private void showPauseWindow() {
-//      il faudra desactiver tout le background ici et le reactiver dans le bouton Resume
-        disableButton(buttonPause, buttonNext);
         windowPause.clear();
         windowPause.setSize(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3);
         windowPause.setPosition(SCREEN_WIDTH / 2 - windowPause.getWidth() / 2, SCREEN_HEIGHT / 2 - windowPause.getHeight() / 2);
@@ -335,7 +342,6 @@ public class GameScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(0.2f);
                 windowPause.remove();
-                enableButton(buttonPause, buttonNext);
                 windowPause.setVisible(false);
             }
         });
@@ -359,7 +365,6 @@ public class GameScreen implements Screen {
 
 
     private void showWindowQuit() {
-        disableButton(buttonResume, buttonQuit);
         windowQuit.clear();
         windowQuit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowQuit.setPosition(SCREEN_WIDTH / 2 - windowQuit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowQuit.getHeight() / 2);
@@ -390,7 +395,6 @@ public class GameScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(0.2f);
                 windowQuit.remove();
-                enableButton(buttonResume, buttonQuit);
             }
         });
 
@@ -442,49 +446,51 @@ public class GameScreen implements Screen {
     }
 
     public void onTap() {
-        Coordinate clickPos = rectifyCoord();
+        if (!windowPause.isVisible()) {
+            Coordinate clickPos = rectifyCoord();
 
-        if (level.isInLevel(clickPos)) {
-            Tile clickedTile = level.get(clickPos);
-            // CHange state if needed
-            switch (click) {
-                case NOTHING_SELECTED:
-                    if (clickedTile.getTerritory() != null && !(clickedTile.getEntity() instanceof Soldier) &&
-                            clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
-                        click = ClickState.ON_TERRITORY;
-                    } else if (clickedTile.getTerritory() != null && clickedTile.getEntity() instanceof Soldier &&
-                            clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
-                        click = ClickState.ON_SOLDIER;
-                    }
-                    break;
-                case ON_TERRITORY:
-                    if (clickedTile.getEntity() instanceof Soldier) {
-                        click = ClickState.ON_SOLDIER;
-                    } else if (clickedTile.getTerritory() == null) {
+            if (level.isInLevel(clickPos)) {
+                Tile clickedTile = level.get(clickPos);
+                // CHange state if needed
+                switch (click) {
+                    case NOTHING_SELECTED:
+                        if (clickedTile.getTerritory() != null && !(clickedTile.getEntity() instanceof Soldier) &&
+                                clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
+                            click = ClickState.ON_TERRITORY;
+                        } else if (clickedTile.getTerritory() != null && clickedTile.getEntity() instanceof Soldier &&
+                                clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
+                            click = ClickState.ON_SOLDIER;
+                        }
+                        break;
+                    case ON_TERRITORY:
+                        if (clickedTile.getEntity() instanceof Soldier) {
+                            click = ClickState.ON_SOLDIER;
+                        } else if (clickedTile.getTerritory() == null) {
+                            click = ClickState.NOTHING_SELECTED;
+                        }
+                        break;
+                    case ON_SOLDIER:
+                        // We clicked on a soldier then on a territory so the soldier should be moved
+                        if (level.getMoves(previousClick, 4).contains(clickPos)) {
+                            level.move(previousClick, clickPos);
+                            click = ClickState.NOTHING_SELECTED;
+                        } else {
+                            click = ClickState.NOTHING_SELECTED;
+                        }
+                        break;
+                    case BUYING_UNIT:
+                        if (level.getMoves(boughtEntity, previousClick).contains(clickPos)) {
+                            level.buy(boughtEntity, previousClick, clickPos);
+                        }
                         click = ClickState.NOTHING_SELECTED;
-                    }
-                    break;
-                case ON_SOLDIER:
-                    // We clicked on a soldier then on a territory so the soldier should be moved
-                    if (level.getMoves(previousClick, 4).contains(clickPos)) {
-                        level.move(previousClick, clickPos);
-                        click = ClickState.NOTHING_SELECTED;
-                    } else {
-                        click = ClickState.NOTHING_SELECTED;
-                    }
-                    break;
-                case BUYING_UNIT:
-                    if (level.getMoves(boughtEntity, previousClick).contains(clickPos)) {
-                        level.buy(boughtEntity, previousClick, clickPos);
-                    }
-                    click = ClickState.NOTHING_SELECTED;
-                    break;
+                        break;
+                }
+
+                showEffects(clickPos);
             }
 
-            showEffects(clickPos);
+            previousClick = clickPos;
         }
-
-        previousClick = clickPos;
     }
 
     private void showEffects(Coordinate clickPos) {

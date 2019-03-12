@@ -93,6 +93,8 @@ public class LevelSelection implements Screen {
     public LevelSelection(Game aGame) {
         game = aGame;
 
+        stage = Main.stage;
+
         int buttonGapY = SCREEN_HEIGHT * 10 / 100;
         cellHeight = SCREEN_HEIGHT * 6 / 100;
 
