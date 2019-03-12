@@ -22,7 +22,6 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean tap(float x, float y, int count, int button) {
-
         return false;
     }
 

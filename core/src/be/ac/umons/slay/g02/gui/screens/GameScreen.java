@@ -112,6 +112,7 @@ public class GameScreen implements Screen {
 
     ClickState click;
     Coordinate previousClick;
+    Entity boughtEntity;
 
     GameScreen(Game aGame) {
         game = aGame;
@@ -212,6 +213,9 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton3.play(0.1f);
+                boughtEntity = new Soldier(SoldierLevel.L0);
+                click = ClickState.BUYING_UNIT;
+                showEffects(previousClick);
             }
         });
         hud.addActor(buttonL0);
@@ -225,6 +229,9 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton3.play(0.1f);
+                boughtEntity = new Soldier(SoldierLevel.L1);
+                click = ClickState.BUYING_UNIT;
+                showEffects(previousClick);
             }
         });
         hud.addActor(buttonL1);
@@ -238,6 +245,9 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton3.play(0.1f);
+                boughtEntity = new Soldier(SoldierLevel.L2);
+                click = ClickState.BUYING_UNIT;
+                showEffects(previousClick);
             }
         });
         hud.addActor(buttonL2);
@@ -251,6 +261,9 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton3.play(0.1f);
+                boughtEntity = new Soldier(SoldierLevel.L3);
+                click = ClickState.BUYING_UNIT;
+                showEffects(previousClick);
             }
         });
         hud.addActor(buttonL3);
@@ -260,8 +273,8 @@ public class GameScreen implements Screen {
         // Create multiplexer to handle input in stage and hud
 
         multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
         multiplexer.addProcessor(hud);
+        multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
         multiplexer.addProcessor(stage);
 
 
@@ -393,9 +406,9 @@ public class GameScreen implements Screen {
     }
 
     private Coordinate rectifyCoord() {
-        Vector3 vect;
+
         int shift = (int) ((SCREEN_HEIGHT - Gdx.input.getY()) / size * errorOffset);
-        vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
+        Vector3 vect = stage.getViewport().unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY() + tileH - shift, 0));
         vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH / 2)), 0);
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
@@ -434,43 +447,49 @@ public class GameScreen implements Screen {
                     }
                     break;
                 case BUYING_UNIT:
+                    level.buy(boughtEntity, clickPos);
+                    click = ClickState.NOTHING_SELECTED;
                     break;
             }
 
-
-            // Show effects
-            EffectsManagement.eraseCells(effects);
-
-
-            switch (click) {
-
-                case NOTHING_SELECTED:
-                    showMarket(clickPos, true);
-                    break;
-
-                case ON_TERRITORY:
-                    // If we click on a territory but not on a soldier, tiles from that territory
-                    // have to be highlighted and we show the market for this territory
-                    List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(clickPos);
-                    EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT"));
-
-                    showMarket(clickPos, false);
-                    break;
-
-                case ON_SOLDIER:
-                    List<Coordinate> listMove = level.getMoves(clickPos, 4);
-                    EffectsManagement.shadowMap(effects, level, set);
-                    EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
-
-                    showMarket(clickPos, true); // Move soldier -> No shop
-                    break;
-
-                case BUYING_UNIT:
-                    break;
-            }
+            showEffects(clickPos);
         }
 
         previousClick = clickPos;
+    }
+
+    private void showEffects(Coordinate clickPos) {
+        // Show effects
+        EffectsManagement.eraseCells(effects);
+
+        switch (click) {
+
+            case NOTHING_SELECTED:
+                showMarket(clickPos, true);
+                break;
+
+            case ON_TERRITORY:
+                // If we click on a territory but not on a soldier, tiles from that territory
+                // have to be highlighted and we show the market for this territory
+                List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(clickPos);
+                EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT"));
+
+                showMarket(clickPos, false);
+                break;
+
+            case ON_SOLDIER:
+                List<Coordinate> listMove = level.getMoves(clickPos, 4);
+                EffectsManagement.shadowMap(effects, level, set);
+                EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
+
+                showMarket(clickPos, true); // Move soldier -> No shop
+                break;
+
+            case BUYING_UNIT:
+                List<Coordinate> listBuyable = level.getMoves(previousClick ,Math.max(level.height(), level.width()));
+                EffectsManagement.highlightCells(effects, listBuyable, tileMap.get("GREEN_HIGHLIGHT"));
+                break;
+        }
     }
 
 
@@ -575,7 +594,7 @@ public class GameScreen implements Screen {
         NOTHING_SELECTED,
         ON_TERRITORY,
         ON_SOLDIER,
-        BUYING_UNIT;
+        BUYING_UNIT
     }
 }
 
