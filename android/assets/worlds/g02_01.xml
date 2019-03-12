@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <world name = "g02_01">
+	<players number="2"/>
+	<territories>
+		<terr
+			player="0" x="2" y="6"/>
+		<terr
+			player="0" x="3" y="6"/>
+		<terr
+			player="0" x="3" y="7"/>
+		<terr
+			player="0" x="4" y="6"/>
+		<terr
+			player="1" x="15" y="4"/>
+		<terr
+			player="1" x="15" y="5"/>
+		<terr
+			player="1" x="16" y="4"/>
+		<terr
+			player="1" x="17" y="4"/>
+	</territories>
 	<items>
 		<item
 			type="capital" coins="20" x="3" y="6"/>
@@ -23,8 +42,6 @@
 	<units>
 		<unit
 			type="soldier" level="0" x="4" y="6"/>
-		<unit
-			type="soldier" level="0" x="5" y="6"/>
 		<unit
 			type="soldier" level="0" x="16" y="4"/>
 	</units>
