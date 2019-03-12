@@ -7,7 +7,7 @@ public enum Colors {
     C4("PINK", 4),
     C5("YELLOW", 5),
     C6("DARK_RED", 6),
-    C7("BLUE", 8);
+    C7("BLUE", 7);
 
     private String name;
     private int id;
