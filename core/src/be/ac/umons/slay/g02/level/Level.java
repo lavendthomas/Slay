@@ -98,7 +98,7 @@ public class Level implements Playable {
      * @param tile   The tile to place
      * @param coords The coordiantes to place the tile to
      */
-    public void set(Tile tile, Coordinate coords) {
+    void set(Tile tile, Coordinate coords) {
         tileMap[coords.getX()][coords.getY()] = tile;
     }
 
@@ -388,7 +388,6 @@ public class Level implements Playable {
                             to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), false));
                         }
                         from.setEntity(null);
-                        System.out.println(((Soldier) to.getEntity()).getSoldierLevel().getLevel());
 
                     } else {
                         // Just move the Entity
