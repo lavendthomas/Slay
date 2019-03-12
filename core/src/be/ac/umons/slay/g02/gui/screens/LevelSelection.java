@@ -35,6 +35,7 @@ import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.isAccountEnabled;
+import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.skinSgxTable;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
@@ -118,7 +119,7 @@ public class LevelSelection implements Screen {
         ChangeListener selectBoxIslandListener = new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
 
                 // changer la previsualisation de la carte - A RAJOUTER
 
@@ -134,7 +135,7 @@ public class LevelSelection implements Screen {
         ChangeListener selectBoxNumberListener = new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
 
                 if (selectBoxNumber.getSelected() == 1 /* et qu'au moins une personne est connectee ! - A RAJOUTER */)
                     enableBox(selectBoxDifficulty, selectBoxPlayer);
@@ -156,7 +157,7 @@ public class LevelSelection implements Screen {
         ChangeListener selectBoxPlayerListener = new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 humanPlayer = selectBoxPlayer.getSelected();
             }
         };
@@ -170,7 +171,7 @@ public class LevelSelection implements Screen {
         ChangeListener selectBoxDifficultyListener = new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 difficulty = selectBoxDifficulty.getSelectedIndex() + 1;
             }
         };
@@ -180,7 +181,7 @@ public class LevelSelection implements Screen {
         buttonBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 stage.clear();
                 game.setScreen(new Menu(game));
             }
@@ -189,7 +190,7 @@ public class LevelSelection implements Screen {
         buttonPlay.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton3.play(0.2f);
+                soundButton3.play(prefs.getFloat("volume", 1f));
                 stage.clear();
                 game.setScreen(new GameScreen(game, String.format("g02_%02d",currentIslandNumber)));
             }
@@ -226,7 +227,7 @@ public class LevelSelection implements Screen {
             buttonStats.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    soundButton1.play(0.2f);
+                    soundButton1.play(prefs.getFloat("volume", 1f));
                     showStats();
                 }
             });
@@ -394,7 +395,7 @@ public class LevelSelection implements Screen {
         ChangeListener selectBoxPlayerStatsListener = new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 humanPlayerStats = selectBoxPlayerStats.getSelected();
             }
         };
@@ -415,7 +416,7 @@ public class LevelSelection implements Screen {
         buttonIsland.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonIsland.setDisabled(true);
                 buttonGlobal.setDisabled(false);
                 content.swapActor(containerGlobal, containerIsland);
@@ -425,7 +426,7 @@ public class LevelSelection implements Screen {
         buttonGlobal.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonIsland.setDisabled(false);
                 buttonGlobal.setDisabled(true);
                 content.swapActor(containerIsland, containerGlobal);
@@ -440,7 +441,7 @@ public class LevelSelection implements Screen {
         buttonStatBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 mainTableStats.remove();
                 Menu.enableButton(buttonBack, buttonPlay, buttonStats);
                 enableBox(selectBoxIsland, selectBoxNumber);

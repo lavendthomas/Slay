@@ -46,6 +46,7 @@ import static be.ac.umons.slay.g02.gui.Main.camera;
 import static be.ac.umons.slay.g02.gui.Main.cursor;
 import static be.ac.umons.slay.g02.gui.Main.isAccountEnabled;
 import static be.ac.umons.slay.g02.gui.Main.pm;
+import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.skinSgxTable;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
@@ -437,8 +438,12 @@ public class Menu implements Screen {
             @Override
             public void drag(InputEvent event, float x, float y, int coordinatesPointer) {
                 sliderVolume.setRange(0, sliderVolume.getWidth());
-                soundButton1.setVolume(1, x / sliderVolume.getWidth());
-                soundButton2.setVolume(2, x / sliderVolume.getWidth());
+
+                prefs.putFloat("volume", Math.min(1f, Math.max(0f, x / sliderVolume.getWidth())));
+                prefs.flush();
+
+                soundButton1.setVolume(1, prefs.getFloat("volume", 1f));
+                soundButton2.setVolume(2, prefs.getFloat("volume", 1f));
             }
         });
 
@@ -458,11 +463,15 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!Gdx.graphics.isFullscreen()) {
-                    soundButton2.play(0.2f);
+                    prefs.putBoolean("isFullScreenEnabled", true);
+                    prefs.flush();
+                    soundButton2.play(prefs.getFloat("volume", 1f));
                     Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
                 } else {
-                    soundButton2.play(0.2f);
+                    soundButton2.play(prefs.getFloat("volume", 1f));
                     Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
+                    prefs.putBoolean("isFullScreenEnabled", false);
+                    prefs.flush();
                 }
             }
         });
@@ -484,7 +493,7 @@ public class Menu implements Screen {
                 if (!switchRegistration.isChecked()) {
                     showAlertSettings();
                 } else {
-                    soundButton2.play(0.2f);
+                    soundButton2.play(prefs.getFloat("volume", 1f));
                 }
             }
         });
@@ -499,13 +508,17 @@ public class Menu implements Screen {
         buttonSettingsBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 if (switchRegistration.isChecked()) {
                     isAccountEnabled = true;
+                    prefs.putBoolean("isAccountEnabled", true);
+                    prefs.flush();
                     stage.clear();
                     game.setScreen(new Menu(game));
                 } else if (!switchRegistration.isChecked()) {
                     isAccountEnabled = false;
+                    prefs.putBoolean("isAccountEnabled", false);
+                    prefs.flush();
                     stage.clear();
                     game.setScreen(new Menu(game));
                 }
@@ -545,7 +558,7 @@ public class Menu implements Screen {
         buttonContinue.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 enableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
                 windowAlert.remove();
             }
@@ -556,7 +569,7 @@ public class Menu implements Screen {
         buttonCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 switchRegistration.setChecked(true);
                 enableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
                 windowAlert.remove();
@@ -583,7 +596,7 @@ public class Menu implements Screen {
         buttonTabLogin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonTabLogin.setDisabled(true);
                 buttonTabSignUp.setDisabled(false);
             }
@@ -592,7 +605,7 @@ public class Menu implements Screen {
         buttonTabSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonTabLogin.setDisabled(false);
                 buttonTabSignUp.setDisabled(true);
             }
@@ -689,7 +702,7 @@ public class Menu implements Screen {
         buttonLogin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 // find player
                 //     player1=getStatisticsPlayer(fieldUserName,fieldCurrentPasswordLogin);
                 // gerer messages d'erreurs avec exceptions
@@ -707,7 +720,7 @@ public class Menu implements Screen {
         buttonSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
 
                 // gerer messages d'erreurs avec exceptions
 
@@ -724,7 +737,7 @@ public class Menu implements Screen {
         buttonLoginCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 mainTableLogin.remove();
                 enableButton(buttonPlay, buttonSettings, buttonExit);
                 if (isAccountEnabled)
@@ -737,7 +750,7 @@ public class Menu implements Screen {
         buttonSignUpCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 mainTableLogin.remove();
                 enableButton(buttonPlay, buttonSettings, buttonExit);
                 if (isAccountEnabled)
@@ -896,7 +909,7 @@ public class Menu implements Screen {
         buttonEdit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 showEdit();
             }
         });
@@ -905,7 +918,7 @@ public class Menu implements Screen {
         buttonLogOut.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 showLogOut();
             }
         });
@@ -913,7 +926,7 @@ public class Menu implements Screen {
         buttonDelete.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 showDelete();
             }
         });
@@ -921,7 +934,7 @@ public class Menu implements Screen {
         buttonBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
                 windowProfile.remove();
                 enableButton(buttonPlay, buttonSettings, buttonExit);
                 if (isAccountEnabled)
@@ -966,7 +979,7 @@ public class Menu implements Screen {
         buttonEditAvatar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.1f);
+                soundButton1.play(prefs.getFloat("volume", 1f) / 2);
                 buttonEditAvatar = new ImageButton(imageAnonymous);
                 isInEdit = true;
                 showAvatarSelectionWindow();
@@ -976,7 +989,7 @@ public class Menu implements Screen {
         buttonEditCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
                 windowEdit.remove();
                 enableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
             }
@@ -985,7 +998,7 @@ public class Menu implements Screen {
         buttonEditSave.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
 
 
                 //  a faire
@@ -1096,7 +1109,7 @@ public class Menu implements Screen {
         buttonImport.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.1f);
+                soundButton1.play(prefs.getFloat("volume", 1f) / 2);
 
                 // chercher une image sur le pc et remplacer l'image de l'avatar actuel par cette image
             }
@@ -1105,7 +1118,7 @@ public class Menu implements Screen {
         buttonSave.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
 
                 // enregistrer le nouvel avatar (sauvegarder l'image dans le dossier des avatars si
                 // elle est importee + modifier le chemin de l'image dans le fichier ou la classe)
@@ -1128,7 +1141,7 @@ public class Menu implements Screen {
         buttonCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
                 windowAvatarSelection.remove();
 
                 if (isInEdit) {
@@ -1145,7 +1158,7 @@ public class Menu implements Screen {
         pandaButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imagePanda);
                 showAvatarSelectionWindow();
             }
@@ -1153,7 +1166,7 @@ public class Menu implements Screen {
         yetiButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageYeti);
                 showAvatarSelectionWindow();
             }
@@ -1161,7 +1174,7 @@ public class Menu implements Screen {
         wormButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageWorm);
                 showAvatarSelectionWindow();
             }
@@ -1169,7 +1182,7 @@ public class Menu implements Screen {
         mustacheButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageMustache);
                 showAvatarSelectionWindow();
             }
@@ -1177,7 +1190,7 @@ public class Menu implements Screen {
         bunnyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageBunny);
                 showAvatarSelectionWindow();
             }
@@ -1185,7 +1198,7 @@ public class Menu implements Screen {
         girlButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageGirl);
                 showAvatarSelectionWindow();
             }
@@ -1193,7 +1206,7 @@ public class Menu implements Screen {
         robotButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageRobot);
                 showAvatarSelectionWindow();
             }
@@ -1201,7 +1214,7 @@ public class Menu implements Screen {
         penguinButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imagePenguin);
                 showAvatarSelectionWindow();
             }
@@ -1209,7 +1222,7 @@ public class Menu implements Screen {
         birdButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageBird);
                 showAvatarSelectionWindow();
             }
@@ -1217,7 +1230,7 @@ public class Menu implements Screen {
         squidButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(0.2f);
+                soundButton1.play(prefs.getFloat("volume", 1f));
                 buttonEditAvatar = new ImageButton(imageSquid);
                 showAvatarSelectionWindow();
             }
@@ -1270,7 +1283,7 @@ public class Menu implements Screen {
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
 
                 // remettre l'image anonyme dans le bouton du menu qui est concerne
 
@@ -1283,7 +1296,7 @@ public class Menu implements Screen {
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 1f));
                 windowLogOut.remove();
                 enableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
             }
@@ -1330,7 +1343,7 @@ public class Menu implements Screen {
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
                 windowExit.remove();
                 enableButton(buttonPlay, buttonSettings, buttonExit);
                 if (isAccountEnabled)
@@ -1380,7 +1393,7 @@ public class Menu implements Screen {
         buttonConfirm.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
                 /*
                    il faudra supprimer toutes les donnees concernant le joueur dans les fichiers + (ne pas oublier)
                    dans le hall of fame + detruire enfin les classes liees au joueur
@@ -1399,7 +1412,7 @@ public class Menu implements Screen {
         buttonCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.1f);
+                soundButton2.play(prefs.getFloat("volume", 1f) / 2);
                 windowDelete.remove();
                 enableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
             }

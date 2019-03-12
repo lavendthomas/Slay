@@ -2,6 +2,7 @@ package be.ac.umons.slay.g02.gui;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Cursor;
@@ -23,6 +24,7 @@ public class Main extends Game {
     public static Stage stage;
 
     public static I18NBundle lang;
+    public static Preferences prefs;
 
     public static int SCREEN_HEIGHT;
     public static int SCREEN_WIDTH;
@@ -53,8 +55,15 @@ public class Main extends Game {
         Locale locale = new Locale("en", "UK", "VAR1");
         lang = I18NBundle.createBundle(baseFileHandle, locale);
 
+        prefs = Gdx.app.getPreferences("Slay");
+        isAccountEnabled = prefs.getBoolean("isAccountEnabled", true);
+
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();
+
+        if (prefs.getBoolean("isFullScreenEnabled", false)) {
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+        }
 
         skinSgx = new Skin(Gdx.files.internal("skins/sgx/sgx-ui.json"));
         skinSgxTable = new Skin(Gdx.files.internal("skins/sgx-table/sgx-ui.json"));
