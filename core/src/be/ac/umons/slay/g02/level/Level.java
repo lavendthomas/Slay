@@ -505,7 +505,7 @@ public class Level implements Playable {
      * @param pos
      * @param processed
      */
-    
+
     private void mergeTerritories(Coordinate pos, List<Coordinate> processed) {
         // Source: https://codereview.stackexchange.com/questions/90108/recursively-evaluate-neighbors-in-a-two-dimensional-grid
 
