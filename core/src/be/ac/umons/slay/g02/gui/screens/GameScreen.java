@@ -554,42 +554,26 @@ public class GameScreen implements Screen {
         isVisibleL1 = shown && canBuy.contains("L1");
         isVisibleL2 = shown && canBuy.contains("L2");
         isVisibleL3 = shown && canBuy.contains("L3");
-
 /*
         buttonL0.setVisible(isVisibleL0);
         buttonL1.setVisible(isVisibleL1);
         buttonL2.setVisible(isVisibleL2);
         buttonL3.setVisible(isVisibleL3);
 */
+        changeMarketDisplay(shown, isVisibleL0, buttonL0);
+        changeMarketDisplay(shown, isVisibleL1, buttonL1);
+        changeMarketDisplay(shown, isVisibleL2, buttonL2);
+        changeMarketDisplay(shown, isVisibleL3, buttonL3);
+    }
 
-        if (isVisibleL0) {
-            buttonL0.getImage().clearActions();
-            buttonL0.getImage().addAction(Actions.color(Color.WHITE));
+    private void changeMarketDisplay(boolean shown, boolean isVisibleL, ImageButton buttonL) {
+        if (isVisibleL) {
+            buttonL.getImage().clearActions();
+            buttonL.getImage().addAction(Actions.color(Color.WHITE));
         } else
-            buttonL0.getImage().addAction(Actions.color(Color.DARK_GRAY));
+            buttonL.getImage().addAction(Actions.color(Color.DARK_GRAY));
 
-        if (isVisibleL1) {
-            buttonL1.getImage().clearActions();
-            buttonL1.getImage().addAction(Actions.color(Color.WHITE));
-        } else
-            buttonL1.getImage().addAction(Actions.color(Color.DARK_GRAY));
-
-        if (isVisibleL2) {
-            buttonL2.getImage().clearActions();
-            buttonL2.getImage().addAction(Actions.color(Color.WHITE));
-        } else
-            buttonL2.getImage().addAction(Actions.color(Color.DARK_GRAY));
-
-        if (isVisibleL3) {
-            buttonL3.getImage().clearActions();
-            buttonL3.getImage().addAction(Actions.color(Color.WHITE));
-        } else
-            buttonL3.getImage().addAction(Actions.color(Color.DARK_GRAY));
-
-        buttonL0.setVisible(shown);
-        buttonL1.setVisible(shown);
-        buttonL2.setVisible(shown);
-        buttonL3.setVisible(shown);
+        buttonL.setVisible(shown);
     }
 
     /**
