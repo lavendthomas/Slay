@@ -21,6 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -40,6 +41,7 @@ import java.util.Map;
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
+import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
@@ -53,12 +55,12 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.gui.Main.stage;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
 // classe qui affiche l'interface pendant une partie
 public class GameScreen implements Screen {
-
     private Stage stage;
     private Game game;
 
@@ -83,8 +85,6 @@ public class GameScreen implements Screen {
 
     private static Window windowPause = new Window("Pause", skinSgx);
     private static Window windowQuit = new Window("Quit Game", skinSgx);
-
-    private Table screenTable;
 
     private Label labelCoins;
     private Label labelIncome;
@@ -147,59 +147,51 @@ public class GameScreen implements Screen {
             int worldH = nbreH * tileH + tileH / 2;
             camera = new OrthographicCamera();
             stage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, camera));
-
             stage.getViewport().setWorldSize(worldW + tileH / 2, worldH);
-
-            // boutons :
-
-            TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/dots.png"))));
-
-            buttonPause = new ImageButton(imageDots);
-            buttonPause.setSize(SCREEN_WIDTH * 2 / 100, SCREEN_HEIGHT * 5 / 100);
-            buttonPause.setPosition((SCREEN_WIDTH - buttonPause.getWidth()) * 97 / 100, (SCREEN_HEIGHT - buttonPause.getHeight()) * 94 / 100);
-            buttonPause.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (!windowPause.isVisible()) {
-                        soundButton1.play(prefs.getFloat("volume", 0.2f));
-                        showPauseWindow();
-                    }
-                }
-            });
-            TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
-
-            buttonNext = new ImageButton(imageNext);
-            buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
-            buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() / 2);
-
-            buttonNext.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    if (!windowPause.isVisible()) {
-                        level.nextTurn();
-                        click = ClickState.NOTHING_SELECTED;
-                        EffectsManagement.eraseCells(effects);
-                        soundButton3.play(prefs.getFloat("volume", 0.1f));
-                    }
-                }
-            });
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        // Add buttons Pause and Next
+
+        TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/dots.png"))));
+        buttonPause = new ImageButton(imageDots);
+        buttonPause.setSize(SCREEN_WIDTH * 2 / 100, SCREEN_HEIGHT * 5 / 100);
+        buttonPause.setPosition((SCREEN_WIDTH - buttonPause.getWidth()) * 97 / 100, (SCREEN_HEIGHT - buttonPause.getHeight()) * 94 / 100);
+        buttonPause.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!windowPause.isVisible()) {
+                    soundButton1.play(prefs.getFloat("volume", 0.2f));
+                    showPauseWindow();
+                }
+            }
+        });
+        TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/next.png"))));
+        buttonNext = new ImageButton(imageNext);
+        buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+        buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() / 2);
+        buttonNext.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (!windowPause.isVisible()) {
+                    level.nextTurn();
+                    click = ClickState.NOTHING_SELECTED;
+                    EffectsManagement.eraseCells(effects);
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                }
+            }
+        });
+
         hudCam = new OrthographicCamera();
         hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
-
-        hud.addActor(buttonNext);
-        hud.addActor(buttonPause);
 
         // Add entity market
 
         TextureRegionDrawable imageL0 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L0.png")))));
         buttonL0 = new ImageButton(imageL0);
         buttonL0.getImage().setScale(2.5f);
-        //    buttonL0.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL0.setVisible(false);
         buttonL0.addListener(new ClickListener() {
             @Override
@@ -212,12 +204,10 @@ public class GameScreen implements Screen {
                 }
             }
         });
-        hud.addActor(buttonL0);
 
         TextureRegionDrawable imageL1 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L1.png")))));
         buttonL1 = new ImageButton(imageL1);
         buttonL1.getImage().setScale(2.5f);
-        //   buttonL1.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL1.setVisible(false);
         buttonL1.addListener(new ClickListener() {
             @Override
@@ -230,12 +220,10 @@ public class GameScreen implements Screen {
                 }
             }
         });
-        hud.addActor(buttonL1);
 
         TextureRegionDrawable imageL2 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L2.png")))));
         buttonL2 = new ImageButton(imageL2);
         buttonL2.getImage().setScale(2.5f);
-        //    buttonL2.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL2.setVisible(false);
         buttonL2.addListener(new ClickListener() {
             @Override
@@ -248,12 +236,10 @@ public class GameScreen implements Screen {
                 }
             }
         });
-        hud.addActor(buttonL2);
 
         TextureRegionDrawable imageL3 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L3.png")))));
         buttonL3 = new ImageButton(imageL3);
         buttonL3.getImage().setScale(2.5f);
-        //    buttonL3.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() - buttonL3.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL3.setVisible(false);
         buttonL3.addListener(new ClickListener() {
             @Override
@@ -266,16 +252,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-        hud.addActor(buttonL3);
-
-        buttonL0.setPosition(SCREEN_WIDTH / 2 - buttonL1.getWidth() * 4.2f, buttonL0.getHeight() / 2);
-        buttonL1.setPosition(buttonL0.getX() + buttonL1.getWidth() * 2, buttonL0.getY());
-        buttonL2.setPosition(buttonL1.getX() + buttonL1.getWidth() * 2, buttonL0.getY());
-        buttonL3.setPosition(buttonL2.getX() + buttonL1.getWidth() * 2, buttonL0.getY());
-
-        screenTable = new Table();
-        hud.addActor(screenTable);
-        screenTable.setFillParent(true);
 
         TextureRegionDrawable imageChest = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("levels/chest.png")))));
         buttonChest = new ImageButton(imageChest);
@@ -293,11 +269,21 @@ public class GameScreen implements Screen {
         labelIncome.setPosition(SCREEN_WIDTH / 2 - buttonChest.getWidth(), buttonChest.getY() + buttonChest.getHeight() * 3 / 4);//(SCREEN_HEIGHT - 1.5f * buttonChest.getHeight()) * 94 / 100 + buttonChest.getHeight() / 2);
         labelIncome.setVisible(false);
 
+        Table tableMarket = new Table();
+        tableMarket.add(buttonL0).padRight(1.5f * buttonL1.getWidth());
+        tableMarket.add(buttonL1).padRight(1.5f * buttonL1.getWidth());
+        tableMarket.add(buttonL2).padRight(1.5f * buttonL1.getWidth());
+        tableMarket.add(buttonL3).padRight(1.5f * buttonL1.getWidth());
 
+        Table screenTable = new Table();
+        screenTable.setFillParent(true);
         screenTable.addActor(buttonChest);
         screenTable.addActor(labelCoins);
-        screenTable.addActor(labelIncome);
+        screenTable.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
 
+        hud.addActor(buttonNext);
+        hud.addActor(buttonPause);
+        hud.addActor(screenTable);
 
         hud.addListener(new InputListener() {
             @Override
@@ -321,9 +307,7 @@ public class GameScreen implements Screen {
         });
         Gdx.input.setInputProcessor(stage);
 
-
         // Create multiplexer to handle input in stage and hud
-
         multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(hud);
         multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
@@ -393,6 +377,7 @@ public class GameScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 stage.clear();
+                stage = Main.stage;
                 game.setScreen(new LevelSelection(game));
             }
         });
@@ -554,12 +539,7 @@ public class GameScreen implements Screen {
         isVisibleL1 = shown && canBuy.contains("L1");
         isVisibleL2 = shown && canBuy.contains("L2");
         isVisibleL3 = shown && canBuy.contains("L3");
-/*
-        buttonL0.setVisible(isVisibleL0);
-        buttonL1.setVisible(isVisibleL1);
-        buttonL2.setVisible(isVisibleL2);
-        buttonL3.setVisible(isVisibleL3);
-*/
+
         changeMarketDisplay(shown, isVisibleL0, buttonL0);
         changeMarketDisplay(shown, isVisibleL1, buttonL1);
         changeMarketDisplay(shown, isVisibleL2, buttonL2);
@@ -570,9 +550,11 @@ public class GameScreen implements Screen {
         if (isVisibleL) {
             buttonL.getImage().clearActions();
             buttonL.getImage().addAction(Actions.color(Color.WHITE));
-        } else
+            buttonL.setTouchable(Touchable.enabled);
+        } else {
             buttonL.getImage().addAction(Actions.color(Color.DARK_GRAY));
-
+            buttonL.setTouchable(Touchable.disabled);
+        }
         buttonL.setVisible(shown);
     }
 
@@ -645,6 +627,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        stage.getViewport().setScreenBounds(0, 0, width, height);
+        hud.getViewport().setScreenBounds(0, 0, width, height);
     }
 
     @Override
