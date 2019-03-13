@@ -63,7 +63,6 @@ public class GameScreen implements Screen {
     private Stage stage;
     private Game game;
 
-    private TiledMap map;
     private Playable level;
     private HexagonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
@@ -77,10 +76,6 @@ public class GameScreen implements Screen {
     private ImageButton buttonL2;
     private ImageButton buttonL3;
     private ImageButton buttonChest;
-    private boolean isVisibleL0;
-    private boolean isVisibleL1;
-    private boolean isVisibleL2;
-    private boolean isVisibleL3;
 
     private static Window windowPause = new Window("Pause", skinSgx);
     private static Window windowQuit = new Window("Quit Game", skinSgx);
@@ -98,7 +93,6 @@ public class GameScreen implements Screen {
     private int size;
     private double errorOffset;
 
-    private TiledMapTileLayer background;
     private TiledMapTileLayer territories;
     private TiledMapTileLayer entities;
     private TiledMapTileLayer effects;
@@ -109,9 +103,9 @@ public class GameScreen implements Screen {
     private OrthographicCamera hudCam;
     private InputMultiplexer multiplexer;
 
-    ClickState click;
-    Coordinate previousClick;
-    Entity boughtEntity;
+    private ClickState click;
+    private Coordinate previousClick;
+    private Entity boughtEntity;
 
     GameScreen(Game aGame, String levelName) {
         game = aGame;
@@ -122,13 +116,11 @@ public class GameScreen implements Screen {
             //Chargement de la map et du Level associé
             LevelLoader.Map lvlLoader = LevelLoader.load(levelName);
             level = lvlLoader.getLevel();
-            map = lvlLoader.getMap();
+            TiledMap map = lvlLoader.getMap();
 
-            // Chargement des couches et du tileset
-            background = (TiledMapTileLayer) map.getLayers().get("Background");
+            // Chargement des couches utiles et du tileset
             territories = (TiledMapTileLayer) map.getLayers().get("Territories");
             entities = (TiledMapTileLayer) map.getLayers().get("Entities");
-
             effects = (TiledMapTileLayer) map.getLayers().get("Effects");
 
             set = map.getTileSets().getTileSet("tileset");
@@ -470,9 +462,10 @@ public class GameScreen implements Screen {
 
             if (level.isInLevel(clickPos)) {
                 Tile clickedTile = level.get(clickPos);
-                // CHange state if needed
+                // Change state if needed
                 switch (click) {
                     case NOTHING_SELECTED:
+
                         if (clickedTile.getTerritory() != null && !(clickedTile.getEntity() instanceof Soldier) &&
                                 clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
                             click = ClickState.ON_TERRITORY;
@@ -482,11 +475,13 @@ public class GameScreen implements Screen {
                         }
                         break;
                     case ON_TERRITORY:
-                        if (clickedTile.getEntity() instanceof Soldier) {
-                            click = ClickState.ON_SOLDIER;
-                        } else if (clickedTile.getTerritory() == null) {
-                            click = ClickState.NOTHING_SELECTED;
-                        }
+                         if (clickedTile.getTerritory() == null
+                            || !(level.get(clickPos).getTerritory().getOwner().equals(level.getCurrentPlayer()))) {
+
+                             click = ClickState.NOTHING_SELECTED;
+                        } else if (clickedTile.getEntity() instanceof Soldier) {
+                             click = ClickState.ON_SOLDIER;
+                    }
                         break;
                     case ON_SOLDIER:
                         // We clicked on a soldier then on a territory so the soldier should be moved
@@ -526,18 +521,21 @@ public class GameScreen implements Screen {
             case ON_TERRITORY:
                 // If we click on a territory but not on a soldier, tiles from that territory
                 // have to be highlighted and we show the market for this territory
-                List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(clickPos);
-                EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT"));
+                if (level.get(clickPos).getTerritory().getOwner().equals(level.getCurrentPlayer())) {
+                    List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(clickPos);
+                    EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT"));
 
-                showMarket(clickPos, false);
-                showCoins(clickPos, false);
-                break;
-
+                    showMarket(clickPos, false);
+                    showCoins(clickPos, false);
+                    break;
+                } else {
+                    showMarket(clickPos, true);
+                    showCoins(clickPos, true);
+                }
             case ON_SOLDIER:
                 List<Coordinate> listMove = level.getMoves(clickPos, 4);
                 EffectsManagement.shadowMap(effects, level, set);
                 EffectsManagement.highlightCells(effects, listMove, tileMap.get("GREEN_HIGHLIGHT"));
-
                 showMarket(clickPos, true); // Move soldier -> No shop
                 showCoins(clickPos, false);
                 break;
@@ -561,10 +559,10 @@ public class GameScreen implements Screen {
         }
 
         Gdx.app.log("", c.toString() + canBuy.toString());
-        isVisibleL0 = shown && canBuy.contains("L0");
-        isVisibleL1 = shown && canBuy.contains("L1");
-        isVisibleL2 = shown && canBuy.contains("L2");
-        isVisibleL3 = shown && canBuy.contains("L3");
+        boolean isVisibleL0 = shown && canBuy.contains("L0");
+        boolean isVisibleL1 = shown && canBuy.contains("L1");
+        boolean isVisibleL2 = shown && canBuy.contains("L2");
+        boolean isVisibleL3 = shown && canBuy.contains("L3");
 
         changeMarketDisplay(shown, isVisibleL0, buttonL0);
         changeMarketDisplay(shown, isVisibleL1, buttonL1);

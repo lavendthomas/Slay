@@ -29,7 +29,7 @@ public class HexManagement {
             } else {
                 layer.getCell(coord.getX(), coord.getY()).setTile(tile);
             }
-        } //TODO Ajouter une exception si on sort du cadre ???
+        }
     }
 
     /**
@@ -54,7 +54,7 @@ public class HexManagement {
      * @return Coordinates of hexagon in the table
      */
 
-    public static Coordinate pixelToHex (int xp, int yp, int size) {
+    static Coordinate pixelToHex (int xp, int yp, int size) {
         double x = (2/3f * xp)/size;
         double y = (-xp/3f + sqrt(3)/3f*yp) / size;
         return cubeToOddq(cubeRound(x, -x-y, y));
@@ -71,13 +71,6 @@ public class HexManagement {
         int x = cube.x;
         int y = cube.z + (cube.x + (cube.x&1)) / 2;
         return new Coordinate(x, y);
-    }
-
-    private static Cube oddq_to_cube(Coordinate coord) {
-        int x = coord.getX();
-        int z = coord.getY() - (coord.getX() - (coord.getX() & 1)) / 2;
-        int y = -x - z;
-        return new Cube(x, y, z);
     }
 
     /**
@@ -132,17 +125,4 @@ public class HexManagement {
             this.z = z;
         }
     }
-
-
-    public static int distance(Coordinate p1, Coordinate p2) {
-
-
-
-        Cube c1= oddq_to_cube(p1);
-        Cube c2= oddq_to_cube(p2);
-        int dst = Math.max(Math.abs(c1.x - c2.x),
-                Math.max(Math.abs(c1.y - c2.y), Math.abs(c1.z - c2.z)));
-        return dst;
-    }
-
 }

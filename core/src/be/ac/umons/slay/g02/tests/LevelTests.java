@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import org.mockito.Mockito;
 
 import com.badlogic.gdx.Application;
 
