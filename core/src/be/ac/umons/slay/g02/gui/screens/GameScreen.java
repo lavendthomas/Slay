@@ -395,7 +395,6 @@ public class GameScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 stage.clear();
-                stage = Main.stage;
                 game.setScreen(new LevelSelection(game));
             }
         });
