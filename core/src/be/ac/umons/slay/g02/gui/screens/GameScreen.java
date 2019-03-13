@@ -261,12 +261,11 @@ public class GameScreen implements Screen {
 
         labelCoins = new Label("", skinSgx, "title-white");
         labelCoins.setFontScale(1.5f);
-        labelCoins.setPosition(3 * buttonChest.getWidth(), buttonChest.getY() + buttonChest.getHeight() * 3 / 4);//(SCREEN_HEIGHT - 1.5f * buttonChest.getHeight()) * 94 / 100 + buttonChest.getHeight() / 2);
+        labelCoins.setPosition(3 * buttonChest.getWidth(), buttonChest.getY() + buttonChest.getHeight() * 3 / 4);
         labelCoins.setVisible(false);
 
         labelIncome = new Label("", skinSgx, "title-white");
         labelIncome.setFontScale(1.5f);
-        labelIncome.setPosition(SCREEN_WIDTH / 2 - buttonChest.getWidth(), buttonChest.getY() + buttonChest.getHeight() * 3 / 4);//(SCREEN_HEIGHT - 1.5f * buttonChest.getHeight()) * 94 / 100 + buttonChest.getHeight() / 2);
         labelIncome.setVisible(false);
 
         Table tableMarket = new Table();
@@ -275,15 +274,22 @@ public class GameScreen implements Screen {
         tableMarket.add(buttonL2).padRight(1.5f * buttonL1.getWidth());
         tableMarket.add(buttonL3).padRight(1.5f * buttonL1.getWidth());
 
-        Table screenTable = new Table();
-        screenTable.setFillParent(true);
-        screenTable.addActor(buttonChest);
-        screenTable.addActor(labelCoins);
-        screenTable.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
+        Table tableIncome = new Table();
+        tableIncome.add(labelIncome);
+        Table screenTableIncome = new Table();
+        screenTableIncome.setFillParent(true);
+        screenTableIncome.add(tableIncome).padBottom(buttonChest.getY() - buttonChest.getHeight() * 9 / 10);
+
+        Table screenTableMarket = new Table();
+        screenTableMarket.setFillParent(true);
+        screenTableMarket.addActor(buttonChest);
+        screenTableMarket.addActor(labelCoins);
+        screenTableMarket.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
 
         hud.addActor(buttonNext);
         hud.addActor(buttonPause);
-        hud.addActor(screenTable);
+        hud.addActor(screenTableMarket);
+        hud.addActor(screenTableIncome);
 
         hud.addListener(new InputListener() {
             @Override
