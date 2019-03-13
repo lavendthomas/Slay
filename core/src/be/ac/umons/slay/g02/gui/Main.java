@@ -76,7 +76,7 @@ public class Main extends Game {
         camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
         // change cursor aspect
-        pm = new Pixmap(Gdx.files.internal("cursors/cursor_2.png"));
+        pm = new Pixmap(Gdx.files.internal("cursors/cursor.png"));
         // x = pm.getWidth()/2 et y = pm.getHeight()/2 si on veut que ca pointe au centre du curseur
         // = 0 ca pointe au bout de la fleche
         xHotSpot = 0;

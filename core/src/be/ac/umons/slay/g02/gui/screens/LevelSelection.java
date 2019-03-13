@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 
@@ -49,6 +51,16 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 
 // classe qui affiche l'ecran de selection de niveau
 public class LevelSelection implements Screen {
+    private Drawable imageLevel1 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/level1.png"))));
+    private Drawable imageLevel2 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/level2.png"))));
+    private Drawable imageLevel3 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/level3.png"))));
+    private Drawable imageLevel4 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/level4.png"))));
+    private Drawable imageLevel5 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/level5.png"))));
+    private Drawable imageLevel6 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/slay1.png"))));
+    private Drawable imageLevel7 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/slay2.png"))));
+    private Drawable imageLevel8 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/slay3.png"))));
+    private Drawable imageLevel9 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/slay4.png"))));
+    private Drawable imageLevel10 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/slay5.png"))));
 
     private Game game;
     private SpriteBatch batch;
@@ -73,6 +85,7 @@ public class LevelSelection implements Screen {
     private Table containerGlobal;
     private Table containerIsland;
     private Table tableButtonBack;
+    private Cell<ImageButton> cellPreview;
 
     // pour les tests
     public static final int TOTAL_NUMBER_ISLANDS = 10;
@@ -106,7 +119,7 @@ public class LevelSelection implements Screen {
         sprite.setOrigin(0, 0);
         sprite.setPosition(-sprite.getWidth() / 2, -sprite.getHeight() / 2);
 
-        ImageButton levelPreview = new ImageButton(Menu.imageAnonymous);
+        ImageButton levelPreview = new ImageButton(imageLevel1);
 
         Label labelIsland = new Label("Island", skinSgx, "title");
         Label labelHuman = new Label("Number of human\nplayers", skinSgx, "title");
@@ -193,7 +206,7 @@ public class LevelSelection implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton3.play(prefs.getFloat("volume", 0.1f));
                 stage.clear();
-                game.setScreen(new GameScreen(game, String.format("g02_%02d",currentIslandNumber)));
+                game.setScreen(new GameScreen(game, String.format("g02_%02d", currentIslandNumber)));
             }
         });
 
@@ -214,6 +227,8 @@ public class LevelSelection implements Screen {
         table.row().pad(buttonGapY * 7 / 4, 0, 0, 0);
         table.add(labelDifficulty).colspan(2);
         table.add(selectBoxDifficulty).colspan(3).padLeft(SCREEN_WIDTH * 1 / 100);
+
+        cellPreview = table.getCell(levelPreview);
 
         buttonBack.setWidth(SCREEN_WIDTH * 12 / 100);
         buttonPlay.setWidth(SCREEN_WIDTH * 12 / 100);
