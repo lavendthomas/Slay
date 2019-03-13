@@ -1,7 +1,5 @@
 package be.ac.umons.slay.g02.level;
 
-import com.badlogic.gdx.Gdx;
-
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
@@ -26,9 +24,10 @@ public class Tile {
 
 
     /**
-     * Buys a new Entity on this tile
+     * Buys a new Entity on to tile
      * @param e The new entity to place
-     * @return
+     * @param to Tile where place the entity
+     * @return boolean
      */
     boolean buy(Entity e, Tile to) {
         if (hasSameOwner(to) && territory.buy(e)) {

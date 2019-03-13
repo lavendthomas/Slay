@@ -53,6 +53,11 @@ public class Level implements Playable {
         height = y;
     }
 
+    /**
+     * Charge players, init turn and current player
+     *
+     * @param players Tab of players
+     */
     void setPlayers(Player[] players) {
         this.players = players;
         turn = 0;
@@ -128,6 +133,15 @@ public class Level implements Playable {
         return tileMap[coords.getX()][coords.getY()];
     }
 
+    /**
+     * Buy an entity
+     *
+     * @param entity The new entity to place
+     * @param start Origin Tile
+     * @param to Tile where place the entity
+     * @return
+     */
+
     @Override
     public boolean buy(Entity entity, Coordinate start,  Coordinate to) {
         if (getMoves(entity, start).contains(to)) {
@@ -196,7 +210,14 @@ public class Level implements Playable {
         return random < odds && turn == 0;
     }
 
-    // Utiliser pour charger les positions où on peut placer un soldat quand on l'achète
+    /**
+     * Use to load positions where you can place a soldier when you buy
+     *
+     * @param entity The new entity to place
+     * @param start Origin tile
+     * @return Coordinates list
+     */
+
     @Override
     public List<Coordinate> getMoves(Entity entity, Coordinate start) {
         // charge la liste des cellules dans le territoire en double car il faut la parcourir et y ajouter les éléments en même temps
@@ -260,6 +281,7 @@ public class Level implements Playable {
      * @param n     Maximum number of steps
      * @return List of coordinates that can be reached
      */
+
     @Override
     public List<Coordinate> getMoves(Coordinate start, int n) {
         ArrayList<Coordinate> visited = new ArrayList<Coordinate>();
@@ -296,8 +318,9 @@ public class Level implements Playable {
     /**
      * Returns a list of all entites we can buy in the territory at the mentionned coordianate.
      * @param p the coordinate where we want to buy the Entity
-     * @return
+     * @return List of entities we can buy
      */
+
     @Override
     public List<Entity> canBuy(Coordinate p) {
         if (get(p).getTerritory() == null) {
@@ -321,6 +344,7 @@ public class Level implements Playable {
      * @param toC   Arrival coordinate
      * @return True if it's possible, else false
      */
+
     private boolean canMove(Coordinate fromC, Coordinate toC) {
         if (fromC.equals(toC) || !get(fromC).getTerritory().getOwner().equals(currentPlayer)) {
             // Prevent movement on the starting cell
@@ -410,6 +434,7 @@ public class Level implements Playable {
      * @param fromC Start coordinates
      * @param toC   Arrival coordinates
      */
+
     @Override
     public void move(Coordinate fromC, Coordinate toC) {
 
@@ -480,6 +505,7 @@ public class Level implements Playable {
      * @param pos
      * @param processed
      */
+    
     private void mergeTerritories(Coordinate pos, List<Coordinate> processed) {
         // Source: https://codereview.stackexchange.com/questions/90108/recursively-evaluate-neighbors-in-a-two-dimensional-grid
 
