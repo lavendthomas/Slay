@@ -25,13 +25,10 @@ import be.ac.umons.slay.g02.players.Statis;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.camera;
-import static be.ac.umons.slay.g02.gui.Main.cursor;
-import static be.ac.umons.slay.g02.gui.Main.pm;
+import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.skinSgxTable;
-import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
-import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.gui.Main.stage;
 
 public class Hall implements Screen {
@@ -263,7 +260,7 @@ public class Hall implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(0.2f);
+                soundButton2.play(prefs.getFloat("volume", 0.2f));
                 stage.clear();
                 game.setScreen(new Menu(game));
             }

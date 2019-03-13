@@ -32,12 +32,16 @@ public class Territory {
         }
     }
 
-    public int getCoins () {
+    public int getCoins() {
         return this.coins;
     }
 
-    public void setCoins (int coins) {
+    public void setCoins(int coins) {
         this.coins = coins;
+    }
+
+    public int getIncome() {
+        return this.income;
     }
 
     public void add(Tile cell) {
@@ -265,6 +269,7 @@ public class Territory {
 
     /**
      * Removes the funds necessary to buy the entity if they are sufficient
+     *
      * @param e The entity to buy
      * @return true if the entity was bought successfully
      */

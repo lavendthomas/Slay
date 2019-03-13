@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,7 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -75,17 +76,18 @@ public class GameScreen implements Screen {
     private ImageButton buttonL2;
     private ImageButton buttonL3;
     private ImageButton buttonChest;
-    private boolean visibleL0;
-    private boolean visibleL1;
-    private boolean visibleL2;
-    private boolean visibleL3;
+    private boolean isVisibleL0;
+    private boolean isVisibleL1;
+    private boolean isVisibleL2;
+    private boolean isVisibleL3;
 
     private static Window windowPause = new Window("Pause", skinSgx);
     private static Window windowQuit = new Window("Quit Game", skinSgx);
 
     private Table screenTable;
 
-    private Cell cellCoins;
+    private Label labelCoins;
+    private Label labelIncome;
 
     private int tileW;
     private int tileH;
@@ -159,7 +161,7 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        soundButton1.play(prefs.getFloat("volume", 1f));
+                        soundButton1.play(prefs.getFloat("volume", 0.2f));
                         showPauseWindow();
                     }
                 }
@@ -168,7 +170,7 @@ public class GameScreen implements Screen {
 
             buttonNext = new ImageButton(imageNext);
             buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
-            buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+            buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() / 2);
 
             buttonNext.addListener(new ClickListener() {
                 @Override
@@ -177,7 +179,7 @@ public class GameScreen implements Screen {
                         level.nextTurn();
                         click = ClickState.NOTHING_SELECTED;
                         EffectsManagement.eraseCells(effects);
-                        soundButton3.play(prefs.getFloat("volume", 1f) / 2);
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
                     }
                 }
             });
@@ -197,13 +199,13 @@ public class GameScreen implements Screen {
         TextureRegionDrawable imageL0 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L0.png")))));
         buttonL0 = new ImageButton(imageL0);
         buttonL0.getImage().setScale(2.5f);
-        buttonL0.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        //    buttonL0.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL0.setVisible(false);
         buttonL0.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
                     boughtEntity = new Soldier(SoldierLevel.L0);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -215,13 +217,13 @@ public class GameScreen implements Screen {
         TextureRegionDrawable imageL1 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L1.png")))));
         buttonL1 = new ImageButton(imageL1);
         buttonL1.getImage().setScale(2.5f);
-        buttonL1.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        //   buttonL1.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL1.setVisible(false);
         buttonL1.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
                     boughtEntity = new Soldier(SoldierLevel.L1);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -233,13 +235,13 @@ public class GameScreen implements Screen {
         TextureRegionDrawable imageL2 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L2.png")))));
         buttonL2 = new ImageButton(imageL2);
         buttonL2.getImage().setScale(2.5f);
-        buttonL2.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        //    buttonL2.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL2.setVisible(false);
         buttonL2.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
                     boughtEntity = new Soldier(SoldierLevel.L2);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -251,13 +253,13 @@ public class GameScreen implements Screen {
         TextureRegionDrawable imageL3 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L3.png")))));
         buttonL3 = new ImageButton(imageL3);
         buttonL3.getImage().setScale(2.5f);
-        buttonL3.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() - buttonL3.getWidth() ) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
+        //    buttonL3.setPosition((SCREEN_WIDTH - buttonNext.getWidth() - buttonL0.getWidth() - buttonL1.getWidth() - buttonL2.getWidth() - buttonL3.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() - SCREEN_HEIGHT * 1 / 100);
         buttonL3.setVisible(false);
         buttonL3.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
                     boughtEntity = new Soldier(SoldierLevel.L3);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
@@ -266,6 +268,11 @@ public class GameScreen implements Screen {
         });
         hud.addActor(buttonL3);
 
+        buttonL0.setPosition(SCREEN_WIDTH / 2 - buttonL1.getWidth() * 4.2f, buttonL0.getHeight() / 2);
+        buttonL1.setPosition(buttonL0.getX() + buttonL1.getWidth() * 2, buttonL0.getY());
+        buttonL2.setPosition(buttonL1.getX() + buttonL1.getWidth() * 2, buttonL0.getY());
+        buttonL3.setPosition(buttonL2.getX() + buttonL1.getWidth() * 2, buttonL0.getY());
+
         screenTable = new Table();
         hud.addActor(screenTable);
         screenTable.setFillParent(true);
@@ -273,19 +280,23 @@ public class GameScreen implements Screen {
         TextureRegionDrawable imageChest = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("levels/chest.png")))));
         buttonChest = new ImageButton(imageChest);
         buttonChest.getImage().setScale(1.5f);
-        buttonChest.setPosition(buttonChest.getWidth(), (SCREEN_HEIGHT - 1.5f*buttonChest.getHeight())*94/100);
+        buttonChest.setPosition(buttonChest.getWidth(), (SCREEN_HEIGHT - 1.5f * buttonChest.getHeight()) * 94 / 100);
         buttonChest.setVisible(false);
 
-        Label labelCoins = new Label("", skinSgx, "title-white");
+        labelCoins = new Label("", skinSgx, "title-white");
+        labelCoins.setFontScale(1.5f);
+        labelCoins.setPosition(3 * buttonChest.getWidth(), buttonChest.getY() + buttonChest.getHeight() * 3 / 4);//(SCREEN_HEIGHT - 1.5f * buttonChest.getHeight()) * 94 / 100 + buttonChest.getHeight() / 2);
+        labelCoins.setVisible(false);
 
-
+        labelIncome = new Label("", skinSgx, "title-white");
+        labelIncome.setFontScale(1.5f);
+        labelIncome.setPosition(SCREEN_WIDTH / 2 - buttonChest.getWidth(), buttonChest.getY() + buttonChest.getHeight() * 3 / 4);//(SCREEN_HEIGHT - 1.5f * buttonChest.getHeight()) * 94 / 100 + buttonChest.getHeight() / 2);
+        labelIncome.setVisible(false);
 
 
         screenTable.addActor(buttonChest);
         screenTable.addActor(labelCoins);
-        cellCoins = screenTable.getCell(labelCoins);
-
-
+        screenTable.addActor(labelIncome);
 
 
         hud.addListener(new InputListener() {
@@ -295,18 +306,17 @@ public class GameScreen implements Screen {
                     level.nextTurn();
                     click = ClickState.NOTHING_SELECTED;
                     EffectsManagement.eraseCells(effects);
-                    soundButton3.play(prefs.getFloat("volume", 1f) / 2);
-                }
-                else if (keycode == Input.Keys.ESCAPE && !windowPause.isVisible()) {
-                    soundButton1.play(prefs.getFloat("volume", 1f));
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                } else if (keycode == Input.Keys.ESCAPE && !windowPause.isVisible()) {
+                    soundButton1.play(prefs.getFloat("volume", 0.2f));
                     showPauseWindow();
-                }
-                else if (keycode == Input.Keys.ESCAPE && windowPause.isVisible()) {
-                    soundButton2.play(prefs.getFloat("volume", 1f));
+                } else if (keycode == Input.Keys.ESCAPE && windowPause.isVisible()) {
+                    soundButton2.play(prefs.getFloat("volume", 0.2f));
                     windowPause.remove();
                     windowPause.setVisible(false);
                 }
                 return false;
+
             }
         });
         Gdx.input.setInputProcessor(stage);
@@ -318,8 +328,6 @@ public class GameScreen implements Screen {
         multiplexer.addProcessor(hud);
         multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
         multiplexer.addProcessor(stage);
-
-
     }
 
     private void showPauseWindow() {
@@ -341,7 +349,7 @@ public class GameScreen implements Screen {
         buttonResume.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(prefs.getFloat("volume", 1f));
+                soundButton2.play(prefs.getFloat("volume", 0.2f));
                 windowPause.remove();
                 windowPause.setVisible(false);
             }
@@ -350,7 +358,7 @@ public class GameScreen implements Screen {
         buttonQuit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(prefs.getFloat("volume", 1f));
+                soundButton1.play(prefs.getFloat("volume", 0.2f));
                 showWindowQuit();
             }
         });
@@ -363,7 +371,6 @@ public class GameScreen implements Screen {
 
         hud.addActor(windowPause);
     }
-
 
     private void showWindowQuit() {
         windowQuit.clear();
@@ -384,7 +391,7 @@ public class GameScreen implements Screen {
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(prefs.getFloat("volume", 1f));
+                soundButton2.play(prefs.getFloat("volume", 0.2f));
                 stage.clear();
                 game.setScreen(new LevelSelection(game));
             }
@@ -394,7 +401,7 @@ public class GameScreen implements Screen {
         buttonNo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(prefs.getFloat("volume", 1f));
+                soundButton2.play(prefs.getFloat("volume", 0.2f));
                 windowQuit.remove();
             }
         });
@@ -501,7 +508,8 @@ public class GameScreen implements Screen {
         switch (click) {
 
             case NOTHING_SELECTED:
-                showMarket(clickPos, true);showCoins(clickPos, true);
+                showMarket(clickPos, true);
+                showCoins(clickPos, true);
                 break;
 
             case ON_TERRITORY:
@@ -542,35 +550,65 @@ public class GameScreen implements Screen {
         }
 
         Gdx.app.log("", c.toString() + canBuy.toString());
-        visibleL0 =  shown && canBuy.contains("L0");
-        visibleL1 =  shown && canBuy.contains("L1");
-        visibleL2 =  shown && canBuy.contains("L2");
-        visibleL3 =  shown && canBuy.contains("L3");
+        isVisibleL0 = shown && canBuy.contains("L0");
+        isVisibleL1 = shown && canBuy.contains("L1");
+        isVisibleL2 = shown && canBuy.contains("L2");
+        isVisibleL3 = shown && canBuy.contains("L3");
 
-        buttonL0.setVisible(visibleL0);
-        buttonL1.setVisible(visibleL1);
-        buttonL2.setVisible(visibleL2);
-        buttonL3.setVisible(visibleL3);
+/*
+        buttonL0.setVisible(isVisibleL0);
+        buttonL1.setVisible(isVisibleL1);
+        buttonL2.setVisible(isVisibleL2);
+        buttonL3.setVisible(isVisibleL3);
+*/
+
+        if (isVisibleL0) {
+            buttonL0.getImage().clearActions();
+            buttonL0.getImage().addAction(Actions.color(Color.WHITE));
+        } else
+            buttonL0.getImage().addAction(Actions.color(Color.DARK_GRAY));
+
+        if (isVisibleL1) {
+            buttonL1.getImage().clearActions();
+            buttonL1.getImage().addAction(Actions.color(Color.WHITE));
+        } else
+            buttonL1.getImage().addAction(Actions.color(Color.DARK_GRAY));
+
+        if (isVisibleL2) {
+            buttonL2.getImage().clearActions();
+            buttonL2.getImage().addAction(Actions.color(Color.WHITE));
+        } else
+            buttonL2.getImage().addAction(Actions.color(Color.DARK_GRAY));
+
+        if (isVisibleL3) {
+            buttonL3.getImage().clearActions();
+            buttonL3.getImage().addAction(Actions.color(Color.WHITE));
+        } else
+            buttonL3.getImage().addAction(Actions.color(Color.DARK_GRAY));
+
+        buttonL0.setVisible(shown);
+        buttonL1.setVisible(shown);
+        buttonL2.setVisible(shown);
+        buttonL3.setVisible(shown);
     }
 
     /**
      * Display the coins of the selected territory and its income
+     *
      * @param c
      * @param hidden
      */
     private void showCoins(Coordinate c, boolean hidden) {
         if (hidden) {
             buttonChest.setVisible(false);
-  /*          cellCoins.clearActor();
-            Label labelCoins = new Label("", skinSgx, "title-white");
-            cellCoins.setActor(labelCoins); */
-        }
-        else {
+            labelCoins.setVisible(false);
+            labelIncome.setVisible(false);
+        } else {
             buttonChest.setVisible(true);
-   /*         cellCoins.clearActor();
-            String coins = "" + 36;//level.get(c).getTerritory().getCoins();
-            Label labelCoins = new Label("" + coins, skinSgx, "title-white");
-            cellCoins.setActor(labelCoins); */
+            labelCoins.setVisible(true);
+            labelIncome.setVisible(true);
+            labelCoins.setText("" + level.get(c).getTerritory().getCoins());
+            labelIncome.setText("+ " + level.get(c).getTerritory().getIncome());
         }
     }
 
@@ -654,4 +692,3 @@ public class GameScreen implements Screen {
         BUYING_UNIT
     }
 }
-
