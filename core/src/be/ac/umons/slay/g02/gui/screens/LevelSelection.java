@@ -108,7 +108,7 @@ public class LevelSelection implements Screen {
         game = aGame;
         stage = Main.stage;
 
-        int buttonGapY = SCREEN_HEIGHT * 10 / 100;
+        int buttonGapY = SCREEN_HEIGHT * 6 / 100;
         cellHeight = SCREEN_HEIGHT * 6 / 100;
 
         // background
@@ -135,9 +135,47 @@ public class LevelSelection implements Screen {
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
 
-                // changer la previsualisation de la carte - A RAJOUTER
-
                 currentIslandNumber = selectBoxIsland.getSelected();
+                Drawable imageLevel;
+
+                switch (currentIslandNumber) {
+                    case 1:
+                        imageLevel = imageLevel1;
+                        break;
+                    case 2:
+                        imageLevel = imageLevel2;
+                        break;
+                    case 3:
+                        imageLevel = imageLevel3;
+                        break;
+                    case 4:
+                        imageLevel = imageLevel4;
+                        break;
+                    case 5:
+                        imageLevel = imageLevel5;
+                        break;
+                    case 6:
+                        imageLevel = imageLevel6;
+                        break;
+                    case 7:
+                        imageLevel = imageLevel7;
+                        break;
+                    case 8:
+                        imageLevel = imageLevel8;
+                        break;
+                    case 9:
+                        imageLevel = imageLevel9;
+                        break;
+                    case 10:
+                        imageLevel = imageLevel10;
+                        break;
+                    default:
+                        imageLevel = imageLevel1;
+                }
+                ImageButton levelPreview = new ImageButton(imageLevel);
+
+                cellPreview.clearActor();
+                cellPreview.setActor(levelPreview);
             }
         };
         selectBoxIsland.addListener(selectBoxIslandListener);
@@ -211,22 +249,22 @@ public class LevelSelection implements Screen {
         });
 
         // partie gauche
-        final Table table = new Table();
+        Table table = new Table();
         table.setFillParent(true);
         table.left().padBottom(SCREEN_HEIGHT * 22 / 100);
         table.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT);
-
         labelIsland.setAlignment(1);
-        table.add(labelIsland).colspan(2).fill();
-        table.add(selectBoxIsland).colspan(3);
-        table.add(levelPreview).colspan(3).padLeft(SCREEN_WIDTH * 7 / 100);
+        table.add(labelIsland);
+        table.add(selectBoxIsland);
+
+        table.add(levelPreview).padLeft(SCREEN_WIDTH * 7 / 100).height(SCREEN_HEIGHT * 25 / 100).width(SCREEN_HEIGHT * 25 / 100);
         table.row().pad(buttonGapY, 0, 0, 0);
-        table.add(labelHuman).colspan(2).width(Value.percentWidth(1.40f)).fill();
-        table.add(selectBoxNumber).colspan(3);
-        table.add(selectBoxPlayer).colspan(3).padLeft(SCREEN_WIDTH * 5 / 100);
-        table.row().pad(buttonGapY * 7 / 4, 0, 0, 0);
-        table.add(labelDifficulty).colspan(2);
-        table.add(selectBoxDifficulty).colspan(3).padLeft(SCREEN_WIDTH * 1 / 100);
+        table.add(labelHuman).width(SCREEN_WIDTH * 25 / 100);
+        table.add(selectBoxNumber);
+        table.add(selectBoxPlayer).padLeft(SCREEN_WIDTH * 5 / 100);
+        table.row().pad(SCREEN_HEIGHT * 17 / 100, 0, 0, 0);
+        table.add(labelDifficulty);
+        table.add(selectBoxDifficulty).left().colspan(2);
 
         cellPreview = table.getCell(levelPreview);
 
