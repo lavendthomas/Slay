@@ -31,7 +31,7 @@ public class Tile {
      * @return
      */
     boolean buy(Entity e, Tile to) {
-        if (hasSameOwner(to)) {
+        if (hasSameOwner(to) && territory.buy(e)) {
             // Dans son propre territoire
             if (to.getEntity() != null) {
                 // Entité déjà présente
