@@ -44,6 +44,11 @@ public class Territory {
         return this.income;
     }
 
+    // pour les tests
+    public int getWages() {
+        return this.wages;
+    }
+
     public void add(Tile cell) {
         if (cell.getEntity() == null) {
             income += 1;

@@ -55,7 +55,6 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
-import static be.ac.umons.slay.g02.gui.Main.stage;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
 
@@ -88,6 +87,11 @@ public class GameScreen implements Screen {
 
     private Label labelCoins;
     private Label labelIncome;
+
+
+    // pour les tests
+    private Label labelWages;
+
 
     private int tileW;
     private int tileH;
@@ -268,6 +272,14 @@ public class GameScreen implements Screen {
         labelIncome.setFontScale(1.5f);
         labelIncome.setVisible(false);
 
+
+        // pour les tests
+        labelWages = new Label("", skinSgx, "title-white");
+        labelWages.setFontScale(1.5f);
+        labelWages.setVisible(false);
+
+
+
         Table tableMarket = new Table();
         tableMarket.add(buttonL0).padRight(1.5f * buttonL1.getWidth());
         tableMarket.add(buttonL1).padRight(1.5f * buttonL1.getWidth());
@@ -276,6 +288,14 @@ public class GameScreen implements Screen {
 
         Table tableIncome = new Table();
         tableIncome.add(labelIncome);
+
+
+        // pour les tests
+        tableIncome.row();
+        tableIncome.add(labelWages);
+
+
+
         Table screenTableIncome = new Table();
         screenTableIncome.setFillParent(true);
         screenTableIncome.add(tableIncome).padBottom(buttonChest.getY() - buttonChest.getHeight() * 9 / 10);
@@ -575,12 +595,19 @@ public class GameScreen implements Screen {
             buttonChest.setVisible(false);
             labelCoins.setVisible(false);
             labelIncome.setVisible(false);
+
+            // pour les tests
+            labelWages.setVisible(false);
         } else {
             buttonChest.setVisible(true);
             labelCoins.setVisible(true);
             labelIncome.setVisible(true);
             labelCoins.setText("" + level.get(c).getTerritory().getCoins());
             labelIncome.setText("+ " + level.get(c).getTerritory().getIncome());
+
+            // pour les tests
+            labelWages.setVisible(true);
+            labelWages.setText("- " + level.get(c).getTerritory().getWages());
         }
     }
 
