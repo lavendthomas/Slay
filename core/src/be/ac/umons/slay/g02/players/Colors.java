@@ -1,5 +1,7 @@
 package be.ac.umons.slay.g02.players;
 
+import com.badlogic.gdx.graphics.Color;
+
 public enum Colors {
     C1("LIGHT_GREEN", 1),
     C2("RED", 2),
@@ -28,5 +30,33 @@ public enum Colors {
             }
         }
         return C1; // Give a default value if the level doesn't exist
+    }
+
+    public Color toColor() {
+        Color color = new Color();
+
+        // LIGHT_GREEN
+        if (this.name.equals(C1.getName()))
+            color = new Color(19 / 255f, 244 / 255f, 27 / 255f, 1);
+            // RED
+        else if (this.name.equals(C2.getName()))
+            color = new Color(244 / 255f, 19 / 255f, 64 / 255f, 1);
+            // DARK_GREEN
+        else if (this.name.equals(C3.getName()))
+            color = new Color(8 / 255f, 100 / 255f, 19 / 255f, 1);
+            // PINK
+        else if (this.name.equals(C4.getName()))
+            color = new Color(254 / 255f, 2 / 255f, 202 / 255f, 1);
+            // YELLOW
+        else if (this.name.equals(C5.getName()))
+            color = new Color(255 / 255f, 253 / 255f, 27 / 255f, 1);
+            // DARK_RED
+        else if (this.name.equals(C6.getName()))
+            color = new Color(187 / 255f, 9 / 255f, 64 / 255f, 1);
+            // BLUE
+        else if (this.name.equals(C7.getName()))
+            color = new Color(2 / 255f, 10 / 255f, 158 / 255f, 1);
+
+        return color;
     }
 }

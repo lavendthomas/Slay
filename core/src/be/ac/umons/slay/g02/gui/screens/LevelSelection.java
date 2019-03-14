@@ -101,7 +101,7 @@ public class LevelSelection implements Screen {
 
     // il faudra les recuperer dans Players
     public static String player1Name = "P1";
-    public static String player2Name = "WWWWWWWWWWWWWWW";
+    public static String player2Name = "WWWWW";
 
 
     public LevelSelection(Game aGame) {

@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -41,12 +42,13 @@ import java.util.Map;
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
-import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Coordinate;
+import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 import be.ac.umons.slay.g02.level.TileSetManagement;
+import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -249,6 +251,50 @@ public class GameScreen implements Screen {
             }
         });
 
+        // Player 1
+
+        Player player1 = level.getCurrentPlayer();
+
+        CheckBox checkboxPlayer1 = new CheckBox("", skinSgx, "radio");
+        checkboxPlayer1.getImage().setScale(2f);
+        checkboxPlayer1.setTouchable(Touchable.disabled);
+        checkboxPlayer1.setChecked(Level.isPlayer1Turn);
+        checkboxPlayer1.getImage().setColor(player1.getColor().toColor());
+
+        ImageButton avatarP1 = new ImageButton(Menu.imageBunny); // (player1.getAvatar());
+
+        // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
+        // au lieu de : LevelSelection.player1Name
+
+        Label labelP1 = new Label(LevelSelection.player1Name, skinSgx, "title-white");
+        labelP1.setFontScale(1.2f);
+
+        // Player 2
+
+        CheckBox checkboxPlayer2 = new CheckBox("", skinSgx, "radio");
+        checkboxPlayer2.getImage().setScale(2f);
+        checkboxPlayer2.setTouchable(Touchable.disabled);
+        checkboxPlayer2.setChecked(!Level.isPlayer1Turn);
+
+        /*
+             ça il faut le faire qu'une seule fois : après que le premier ait passé son tour pour la
+             première fois, faudrait mettre un compteur juste pour ça...
+             dans nextTurn() on sait si c'est le P1 avec level.getCurrentPlayer().getName()
+             si c'est lui, on uncheck sa checkbox, on check l'autre (et on met la couleur à la box 2
+             si c'est le premier tour)
+         */
+        //      checkboxPlayer2.getImage().setColor(player2.getColor().toColor());
+
+        ImageButton avatarP2 = new ImageButton(Menu.imagePanda); // (player2.getAvatar());
+
+        // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
+        // au lieu de : LevelSelection.player2Name
+
+        Label labelP2 = new Label(LevelSelection.player2Name, skinSgx, "title-white");
+        labelP2.setFontScale(1.2f);
+
+        // Territory's money
+
         TextureRegionDrawable imageChest = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/chest.png")))));
         buttonChest = new ImageButton(imageChest);
         buttonChest.getImage().setScale(1.5f);
@@ -271,6 +317,16 @@ public class GameScreen implements Screen {
         labelWages.setVisible(false);
 
 
+        Table screenTablePlayers = new Table();
+        screenTablePlayers.setFillParent(true);
+        screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
+        screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth()).padTop(checkboxPlayer1.getImage().getHeight());
+        screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
+        screenTablePlayers.add(labelP1).left();
+        screenTablePlayers.row();
+        screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 2).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth());
+        screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
+        screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
 
         Table tableMarket = new Table();
         tableMarket.add(buttonL0).padRight(1.5f * buttonL1.getWidth());
@@ -287,7 +343,6 @@ public class GameScreen implements Screen {
         tableIncome.add(labelWages);
 
 
-
         Table screenTableIncome = new Table();
         screenTableIncome.setFillParent(true);
         screenTableIncome.add(tableIncome).padBottom(buttonChest.getY() - buttonChest.getHeight() * 9 / 10);
@@ -302,6 +357,7 @@ public class GameScreen implements Screen {
         hud.addActor(buttonPause);
         hud.addActor(screenTableMarket);
         hud.addActor(screenTableIncome);
+        hud.addActor(screenTablePlayers);
 
         hud.addListener(new InputListener() {
             @Override
@@ -474,13 +530,13 @@ public class GameScreen implements Screen {
                         }
                         break;
                     case ON_TERRITORY:
-                         if (clickedTile.getTerritory() == null
-                            || !(level.get(clickPos).getTerritory().getOwner().equals(level.getCurrentPlayer()))) {
+                        if (clickedTile.getTerritory() == null
+                                || !(level.get(clickPos).getTerritory().getOwner().equals(level.getCurrentPlayer()))) {
 
-                             click = ClickState.NOTHING_SELECTED;
+                            click = ClickState.NOTHING_SELECTED;
                         } else if (clickedTile.getEntity() instanceof Soldier) {
-                             click = ClickState.ON_SOLDIER;
-                    }
+                            click = ClickState.ON_SOLDIER;
+                        }
                         break;
                     case ON_SOLDIER:
                         // We clicked on a soldier then on a territory so the soldier should be moved

@@ -21,9 +21,9 @@ com.badlogic.gdx.graphics.Color: {
 		a: 1
 	}
 	check-box: {
-		r: 0.2
-		g: 0.38039216
-		b: 0.7411765
+      r: 1
+      g: 1
+      b: 1
 		a: 1
 	}
 	checkbox-disabled: {
@@ -33,8 +33,8 @@ com.badlogic.gdx.graphics.Color: {
 		a: 1
 	}
 	checkbox-over: {
-		r: 0.27058825
-		g: 0.5137255
+      r: 1
+      g: 1
 		b: 1
 		a: 1
 	}
@@ -193,8 +193,8 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		checkboxOff: radio-t
 		checkboxOnDisabled: radio-checked-d
 		checkboxOffDisabled: radio-d
-		font: small
-		fontColor: font
+      font: title
+      fontColor: font-over
 		overFontColor: font-over
 		disabledFontColor: font-disabled
 	}
@@ -203,8 +203,8 @@ com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
 		checkboxOff: checkbox-t
 		checkboxOnDisabled: checkbox-checked-d
 		checkboxOffDisabled: checkbox-d
-		font: small
-		fontColor: font
+      font: title
+      fontColor: font-over
 		overFontColor: font-over
 		disabledFontColor: font-disabled
 	}
@@ -257,8 +257,8 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 		imageChecked: radio-checked-t
 		imageCheckedOver: radio-checked-o
 		imageDisabled: radio-d
-		font: small
-		fontColor: font
+      font: title
+      fontColor: font-over
 		overFontColor: font-over
 		disabledFontColor: font-disabled
 	}

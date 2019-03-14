@@ -11,7 +11,6 @@ import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.players.Player;
 
-
 public class Level implements Playable {
 
     private Tile[][] tileMap;
@@ -40,6 +39,11 @@ public class Level implements Playable {
      * Current player
      */
     private Player currentPlayer;
+
+
+    public static boolean isPlayer1Turn = true;
+
+
 
     /**
      * Creates an empty level
