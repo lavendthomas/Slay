@@ -70,7 +70,7 @@ public class Tile {
      void setEntity(Entity entity, boolean rec) {
          //Gdx.app.log("moves1", "setEntity called on " + entity);
         // Update the income of the territory
-        if (territory != null & rec) {
+        if (territory != null && rec) {
             territory.update(this.entity, entity);
         }
         this.entity = entity;

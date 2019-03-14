@@ -50,9 +50,10 @@ public class Territory {
     }
 
     public void add(Tile cell) {
-        if (cell.getEntity() == null) {
+        if (cell.getEntity() != StaticEntity.TREE) {
             income += 1;
-        } else {
+        }
+        if (cell.getEntity() != null){
             // We add the wage if it is a soldier
             wages += cell.getEntity().getCost();
         }
@@ -68,9 +69,10 @@ public class Territory {
      * @return
      */
     public boolean remove(Tile cell) {
-        if (cell.getEntity() == null) {
+        if (cell.getEntity() != StaticEntity.TREE) {
             income -= 1;
-        } else {
+        }
+        if (cell.getEntity() != null) {
             // We remove the wage if it is a soldier
             wages -= cell.getEntity().getCost();
 
@@ -129,9 +131,10 @@ public class Territory {
      * @param added
      */
     void update(Entity removed, Entity added) {
-        if (removed == null) {
+        if (removed != StaticEntity.TREE) {
             income -= 1;
-        } else {
+        }
+        if (removed != null) {
             wages -= removed.getCost();
             if (removed instanceof StaticEntity) {
                 StaticEntity se = (StaticEntity) removed;
@@ -148,9 +151,10 @@ public class Territory {
                 }
             }
         }
-        if (added == null) {
+        if (added != StaticEntity.TREE) {
             income += 1;
-        } else {
+        }
+        if (added != null) {
             wages += added.getCost();
         }
     }
