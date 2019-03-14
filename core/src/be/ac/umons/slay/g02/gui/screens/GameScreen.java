@@ -114,7 +114,8 @@ public class GameScreen implements Screen {
     private Entity boughtEntity;
     private Viewport viewport;
 
-    int n = 0;
+    private int translateX;
+    private int translateY;
 
     GameScreen(Game aGame, String levelName) {
         game = aGame;
@@ -160,14 +161,10 @@ public class GameScreen implements Screen {
 
             int midScreenW = SCREEN_WIDTH / 2;
             int midScreenH = SCREEN_HEIGHT / 2;
-            int translateX = midScreenW - (int)  (worldW / 1.25);
-            int translateY = midScreenH - (int)  (worldH / 1.2);
+            translateX = midScreenW - (int)  (worldW / 1.25);
+            translateY = midScreenH - (int)  (worldH / 1.2);
 
             camera.translate(-translateX, -translateY, 0);
-
-            System.out.println(viewport.getWorldWidth() + " " + viewport.getWorldHeight());
-            System.out.println(SCREEN_WIDTH + " " + SCREEN_HEIGHT);
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -175,7 +172,7 @@ public class GameScreen implements Screen {
         loadButtons();
     }
 
-    private void handleInput() {
+    private void handleInput() { //TODO Bloquer dépassements (trop zoom, trop à gauche ...)
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             camera.zoom += 0.02;
         }
@@ -183,15 +180,19 @@ public class GameScreen implements Screen {
             camera.zoom -= 0.02;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            translateX -= 5;
             camera.translate(-5, 0, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            translateX += 5;
             camera.translate(5, 0, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            translateY -=5;
             camera.translate(0, -5, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            translateY += 5;
             camera.translate(0, 5, 0);
         }
 
@@ -306,18 +307,15 @@ public class GameScreen implements Screen {
     }
 
     private Coordinate getCoordinate() {
-        Vector3 vect = viewport.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Vector3 vect = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        // donne les valeurs en pixel dans la carte (négatives si en dessous ou à gauche de la carte et inexistante si au dessus ou à droite)
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
     public void onTap() {
         if (!windowPause.isVisible()) {
             Coordinate clickPos = getCoordinate();
-            List<Coordinate> test = new ArrayList<Coordinate>();
-            test.add(clickPos);
             System.out.println(clickPos);
-            EffectsManagement.highlightCells(effects, test, tileMap.get("WHITE_HIGHLIGHT"));
-
             if (level.isInLevel(clickPos)) {
                 Tile clickedTile = level.get(clickPos);
                 // Change state if needed
