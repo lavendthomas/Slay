@@ -17,8 +17,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -33,10 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
@@ -62,8 +58,6 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
-import static java.lang.Math.round;
-import static java.lang.Math.sqrt;
 
 // classe qui affiche l'interface pendant une partie
 public class GameScreen implements Screen {
@@ -114,8 +108,10 @@ public class GameScreen implements Screen {
     private Entity boughtEntity;
     private Viewport viewport;
 
+
     private int translateX;
     private int translateY;
+    private int nbreH;
 
     GameScreen(Game aGame, String levelName) {
         game = aGame;
@@ -124,16 +120,15 @@ public class GameScreen implements Screen {
 
         try {
             camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            float scale = Gdx.graphics.getWidth()/1280f;
             LevelLoader.Map lvlLoader = LevelLoader.load(levelName);
             level = lvlLoader.getLevel();
             TiledMap map = lvlLoader.getMap();
-            renderer = new HexagonalTiledMapRenderer(map,scale);
+            renderer = new HexagonalTiledMapRenderer(map);
             camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0);
 
             MapProperties prop = map.getProperties();
             int nbreW = prop.get("width", Integer.class);
-            int nbreH = prop.get("height", Integer.class);
+            nbreH = prop.get("height", Integer.class);
             tileW = prop.get("tilewidth", Integer.class);
             tileH = prop.get("tileheight", Integer.class);
             size = prop.get("hexsidelength", Integer.class);
@@ -148,8 +143,10 @@ public class GameScreen implements Screen {
 
             tileMap = loadTileHashMap();
 
+
+
             int worldW;
-            int worldH = nbreH * tileH;
+            int worldH = nbreH * tileH + tileH / 2;
 
             if (nbreW % 2 == 0) {
                 worldW = ((nbreW / 2) * tileW) + ((nbreW / 2) * (tileW / 2));
@@ -161,8 +158,8 @@ public class GameScreen implements Screen {
 
             int midScreenW = SCREEN_WIDTH / 2;
             int midScreenH = SCREEN_HEIGHT / 2;
-            translateX = midScreenW - (int)  (worldW / 1.25);
-            translateY = midScreenH - (int)  (worldH / 1.2);
+            translateX = midScreenW - (int)  (worldW / 2);
+            translateY = midScreenH - (int)  (worldH / 2);
 
             camera.translate(-translateX, -translateY, 0);
 
@@ -307,9 +304,13 @@ public class GameScreen implements Screen {
     }
 
     private Coordinate getCoordinate() {
-        Vector3 vect = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+        Vector2 vect = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+        vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH)));
         // donne les valeurs en pixel dans la carte (négatives si en dessous ou à gauche de la carte et inexistante si au dessus ou à droite)
-        return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
+        Coordinate coordinate = HexManagement.pixelToHex((int) vect.x, (int) vect.y, 32);
+        //coordinate.setX(coordinate.getX()-1);
+        //coordinate.setY(coordinate.getY()-1);
+        return coordinate;
     }
 
     public void onTap() {

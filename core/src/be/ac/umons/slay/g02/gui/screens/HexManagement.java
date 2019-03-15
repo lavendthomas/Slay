@@ -55,9 +55,10 @@ public class HexManagement {
      */
 
     static Coordinate pixelToHex (int xp, int yp, int size) {
-        double x = (2/3f * xp)/size;
+        double x = (2/3f * xp) / size;
         double y = (-xp/3f + sqrt(3)/3f*yp) / size;
         return cubeToOddq(cubeRound(x, -x-y, y));
+
     }
 
     /**
@@ -68,19 +69,11 @@ public class HexManagement {
      */
 
     private static Coordinate cubeToOddq (Cube cube) {
-        int x = cube.x;
-        int y = cube.z + (cube.x + (cube.x&1)) / 2;
-        return new Coordinate(x, y);
+        int col = cube.x;
+        int row = cube.z + (cube.x + (cube.x&1)) / 2;
+        return new Coordinate(col, row);
     }
 
-    /**
-     * Method to round to the nearest hexagon
-     *
-     * @param x Double representing the cubic x coordinate
-     * @param y Double representing the cubic y coordinate
-     * @param z Double representing the cubic z coordinate
-     * @return Cube coordinate of the nearest hexagon
-     */
 
     private static Cube cubeRound (double x, double y, double z) {
         int rx = (int) round(x);
@@ -100,7 +93,7 @@ public class HexManagement {
         else {
             rz = -rx-ry;
         }
-        return new Cube(rx, ry, rz);
+        return new Cube(round(rx), round(ry), round(rz));
     }
 
     /**
