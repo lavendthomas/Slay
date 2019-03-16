@@ -25,7 +25,8 @@ public class Tile {
 
     /**
      * Buys a new Entity on to tile
-     * @param e The new entity to place
+     *
+     * @param e  The new entity to place
      * @param to Tile where place the entity
      * @return boolean
      */
@@ -62,13 +63,13 @@ public class Tile {
             return true;
         }
     }
+
     /**
-     *
      * @param entity
-     * @param rec If you should check for changes in income/wages and capitals or not.
+     * @param rec    If you should check for changes in income/wages and capitals or not.
      */
-     void setEntity(Entity entity, boolean rec) {
-         //Gdx.app.log("moves1", "setEntity called on " + entity);
+    void setEntity(Entity entity, boolean rec) {
+        //Gdx.app.log("moves1", "setEntity called on " + entity);
         // Update the income of the territory
         if (territory != null && rec) {
             territory.update(this.entity, entity);
@@ -83,6 +84,7 @@ public class Tile {
 
     /**
      * Return true if this cell has this entity in it.
+     *
      * @param entity
      * @return
      */
@@ -98,7 +100,7 @@ public class Tile {
     }
 
     boolean mergeTerritories(Tile other) {
-         if (hasSameOwner(other)) {
+        if (hasSameOwner(other)) {
             other.territory.remove(other);
             other.territory = territory;
             territory.add(other);
@@ -115,7 +117,8 @@ public class Tile {
 
     /**
      * Changes the territory of the tile
-     * @param t the new territory
+     *
+     * @param t      the new territory
      * @param update if the olf territory should be notified
      */
     void setTerritory(Territory t, boolean update) {
@@ -130,6 +133,7 @@ public class Tile {
 
     /**
      * Changes the territory of the tile and notifies the old territory
+     *
      * @param t the new territory
      */
     void setTerritory(Territory t) {
@@ -142,6 +146,6 @@ public class Tile {
 
     @Override
     public String toString() {
-        return "[" + type.toString() + ":" + entity + ":" + territory +"]";
+        return "[" + type.toString() + ":" + entity + ":" + territory + "]";
     }
 }

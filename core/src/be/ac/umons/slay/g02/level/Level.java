@@ -28,7 +28,7 @@ public class Level implements Playable {
     /**
      * List of players in this level
      */
-    private Player[] players;
+    private static Player[] players;
 
     /**
      * Current turn
@@ -39,11 +39,6 @@ public class Level implements Playable {
      * Current player
      */
     private Player currentPlayer;
-
-
-    public static boolean isPlayer1Turn = true;
-
-
 
     /**
      * Creates an empty level
@@ -58,6 +53,15 @@ public class Level implements Playable {
     }
 
     /**
+     * Gives the list of players in this level
+     *
+     * @return Tab of players
+     */
+    public static Player[] getPlayers() {
+        return players;
+    }
+
+    /**
      * Charge players, init turn and current player
      *
      * @param players Tab of players
@@ -66,7 +70,6 @@ public class Level implements Playable {
         this.players = players;
         turn = 0;
         currentPlayer = players[turn];
-
     }
 
     @Override

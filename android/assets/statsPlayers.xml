@@ -1,1 +1,107 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><statistiques><player rank="1"><name>0000</name><password>QJUBDI</password><avatar>profile/wolf.jpg</avatar><army>3</army><games>124</games><wins>124</wins><lands>124</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>115000</score></player><player rank="2"><name>WWWWWWWWWWWWWWW</name><password>QJUBDI</password><avatar>profile/anonymous.png</avatar><army>11</army><games>6</games><wins>124</wins><lands>5</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>22300</score></player><player rank="3"><name>00000</name><password>QJUBDI</password><avatar>profile/worm.png</avatar><army>2</army><games>124</games><wins>124</wins><lands>124</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>19800</score></player><player rank="4"><name>WWWWWWWWWWWWWW</name><password>QJUBDI</password><avatar>profile/anonymous.png</avatar><army>11</army><games>6</games><wins>124</wins><lands>5</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>11100</score></player><player rank="5"><name>WWWW</name><password>toto</password><avatar>profile/wolf.jpg</avatar><army>3</army><games>124</games><wins>124</wins><lands>124</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>5600</score></player><player rank="6"><name>0000</name><password>QJUBDI</password><avatar>profile/wolf.jpg</avatar><army>3</army><games>124</games><wins>124</wins><lands>124</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>5200</score></player><player rank="7"><name>00000</name><password>QJUBDI</password><avatar>profile/worm.png</avatar><army>2</army><games>124</games><wins>124</wins><lands>124</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>900</score></player><player rank="8"><name>ppp</name><password>QJUBDI</password><avatar>profile/wolf.jpg</avatar><army>3</army><games>124</games><wins>124</wins><lands>124</lands><losses>124</losses><trees>124</trees><turns>124</turns><score>300</score></player></statistiques>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<statistiques>
+    <player rank="1">
+        <name>0000</name>
+        <password>QJUBDI</password>
+        <avatar>profile/blue.jpg</avatar>
+        <army>3</army>
+        <games>124</games>
+        <wins>124</wins>
+        <lands>124</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>115000</score>
+    </player>
+    <player rank="2">
+        <name>WWWWWWWWWWWWWWW</name>
+        <password>QJUBDI</password>
+        <avatar>profile/anonymous.png</avatar>
+        <army>11</army>
+        <games>6</games>
+        <wins>124</wins>
+        <lands>5</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>22300</score>
+    </player>
+    <player rank="3">
+        <name>00000</name>
+        <password>QJUBDI</password>
+        <avatar>profile/worm.png</avatar>
+        <army>2</army>
+        <games>124</games>
+        <wins>124</wins>
+        <lands>124</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>19800</score>
+    </player>
+    <player rank="4">
+        <name>WWWWWWWWWWWWWW</name>
+        <password>QJUBDI</password>
+        <avatar>profile/anonymous.png</avatar>
+        <army>11</army>
+        <games>6</games>
+        <wins>124</wins>
+        <lands>5</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>11100</score>
+    </player>
+    <player rank="5">
+        <name>WWWW</name>
+        <password>toto</password>
+        <avatar>profile/blue.jpg</avatar>
+        <army>3</army>
+        <games>124</games>
+        <wins>124</wins>
+        <lands>124</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>5600</score>
+    </player>
+    <player rank="6">
+        <name>0000</name>
+        <password>QJUBDI</password>
+        <avatar>profile/blue.jpg</avatar>
+        <army>3</army>
+        <games>124</games>
+        <wins>124</wins>
+        <lands>124</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>5200</score>
+    </player>
+    <player rank="7">
+        <name>00000</name>
+        <password>QJUBDI</password>
+        <avatar>profile/worm.png</avatar>
+        <army>2</army>
+        <games>124</games>
+        <wins>124</wins>
+        <lands>124</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>900</score>
+    </player>
+    <player rank="8">
+        <name>ppp</name>
+        <password>QJUBDI</password>
+        <avatar>profile/blue.jpg</avatar>
+        <army>3</army>
+        <games>124</games>
+        <wins>124</wins>
+        <lands>124</lands>
+        <losses>124</losses>
+        <trees>124</trees>
+        <turns>124</turns>
+        <score>300</score>
+    </player>
+</statistiques>

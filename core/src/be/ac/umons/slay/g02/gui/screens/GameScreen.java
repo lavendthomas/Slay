@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -44,12 +43,10 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.level.Coordinate;
-import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 import be.ac.umons.slay.g02.level.TileSetManagement;
-import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -58,6 +55,7 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.level.Level.getPlayers;
 
 // classe qui affiche l'interface pendant une partie
 public class GameScreen implements Screen {
@@ -76,6 +74,11 @@ public class GameScreen implements Screen {
     private ImageButton buttonL2;
     private ImageButton buttonL3;
     private ImageButton buttonChest;
+
+    private CheckBox checkboxPlayer1;
+    private CheckBox checkboxPlayer2;
+
+    private ArrayList<ImageButton> listButtonLDark = new ArrayList<ImageButton>();
 
     private static Window windowPause = new Window("Pause", skinSgx);
     private static Window windowQuit = new Window("Quit Game", skinSgx);
@@ -104,10 +107,9 @@ public class GameScreen implements Screen {
     private InputMultiplexer multiplexer;
 
     private ClickState click;
-    private Coordinate previousClick;
+    private Coordinate previousClick = new Coordinate(0, 0);
     private Entity boughtEntity;
     private Viewport viewport;
-
 
     private int translateX;
     private int translateY;
@@ -144,7 +146,6 @@ public class GameScreen implements Screen {
             tileMap = loadTileHashMap();
 
 
-
             int worldW;
             int worldH = nbreH * tileH + tileH / 2;
 
@@ -158,8 +159,8 @@ public class GameScreen implements Screen {
 
             int midScreenW = SCREEN_WIDTH / 2;
             int midScreenH = SCREEN_HEIGHT / 2;
-            translateX = midScreenW - (int)  (worldW / 2);
-            translateY = midScreenH - (int)  (worldH / 2);
+            translateX = midScreenW - (int) (worldW / 2);
+            translateY = midScreenH - (int) (worldH / 2);
 
             camera.translate(-translateX, -translateY, 0);
 
@@ -186,7 +187,7 @@ public class GameScreen implements Screen {
             camera.translate(5, 0, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            translateY -=5;
+            translateY -= 5;
             camera.translate(0, -5, 0);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
@@ -319,7 +320,6 @@ public class GameScreen implements Screen {
                 // Change state if needed
                 switch (click) {
                     case NOTHING_SELECTED:
-
                         if (clickedTile.getTerritory() != null && !(clickedTile.getEntity() instanceof Soldier) &&
                                 clickedTile.getTerritory().getOwner().equals(level.getCurrentPlayer())) {
                             click = ClickState.ON_TERRITORY;
@@ -353,10 +353,8 @@ public class GameScreen implements Screen {
                         click = ClickState.NOTHING_SELECTED;
                         break;
                 }
-
                 showEffects(clickPos);
             }
-
             previousClick = clickPos;
         }
     }
@@ -418,6 +416,8 @@ public class GameScreen implements Screen {
         boolean isVisibleL2 = shown && canBuy.contains("L2");
         boolean isVisibleL3 = shown && canBuy.contains("L3");
 
+        listButtonLDark.clear();
+
         changeMarketDisplay(shown, isVisibleL0, buttonL0);
         changeMarketDisplay(shown, isVisibleL1, buttonL1);
         changeMarketDisplay(shown, isVisibleL2, buttonL2);
@@ -426,11 +426,11 @@ public class GameScreen implements Screen {
 
     private void changeMarketDisplay(boolean shown, boolean isVisibleL, ImageButton buttonL) {
         if (isVisibleL) {
-            buttonL.getImage().clearActions();
-            buttonL.getImage().addAction(Actions.color(Color.WHITE));
+            buttonL.getImage().setColor(Color.WHITE);
             buttonL.setTouchable(Touchable.enabled);
         } else {
-            buttonL.getImage().addAction(Actions.color(Color.DARK_GRAY));
+            listButtonLDark.add(buttonL);
+            buttonL.getImage().setColor(Color.DARK_GRAY);
             buttonL.setTouchable(Touchable.disabled);
         }
         buttonL.setVisible(shown);
@@ -582,10 +582,12 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    soundButton1.play(prefs.getFloat("volume", 0.2f));
                     boughtEntity = new Soldier(SoldierLevel.L0);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
+                    makeUnitGreen(true, buttonL0);
+                    makeUnitGreen(false, buttonL1, buttonL2, buttonL3);
                 }
             }
         });
@@ -598,10 +600,12 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    soundButton1.play(prefs.getFloat("volume", 0.2f));
                     boughtEntity = new Soldier(SoldierLevel.L1);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
+                    makeUnitGreen(true, buttonL1);
+                    makeUnitGreen(false, buttonL0, buttonL2, buttonL3);
                 }
             }
         });
@@ -614,10 +618,12 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    soundButton1.play(prefs.getFloat("volume", 0.2f));
                     boughtEntity = new Soldier(SoldierLevel.L2);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
+                    makeUnitGreen(true, buttonL2);
+                    makeUnitGreen(false, buttonL1, buttonL0, buttonL3);
                 }
             }
         });
@@ -630,23 +636,23 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    soundButton1.play(prefs.getFloat("volume", 0.2f));
                     boughtEntity = new Soldier(SoldierLevel.L3);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
+                    makeUnitGreen(true, buttonL3);
+                    makeUnitGreen(false, buttonL1, buttonL2, buttonL0);
                 }
             }
         });
 
         // Player 1
 
-        Player player1 = level.getCurrentPlayer();
-
-        CheckBox checkboxPlayer1 = new CheckBox("", skinSgx, "radio");
-        checkboxPlayer1.getImage().setScale(2f);
+        checkboxPlayer1 = new CheckBox("", skinSgx, "radio");
+        checkboxPlayer1.getImage().setScale(1.5f);
         checkboxPlayer1.setTouchable(Touchable.disabled);
-        checkboxPlayer1.setChecked(Level.isPlayer1Turn);
-        checkboxPlayer1.getImage().setColor(player1.getColor().toColor());
+        checkboxPlayer1.setChecked(true);
+        checkboxPlayer1.getImage().setColor(getPlayers()[0].getColor().toColor());
 
         ImageButton avatarP1 = new ImageButton(Menu.imageBunny); // (player1.getAvatar());
 
@@ -658,19 +664,11 @@ public class GameScreen implements Screen {
 
         // Player 2
 
-        CheckBox checkboxPlayer2 = new CheckBox("", skinSgx, "radio");
-        checkboxPlayer2.getImage().setScale(2f);
+        checkboxPlayer2 = new CheckBox("", skinSgx, "radio");
+        checkboxPlayer2.getImage().setScale(1.5f);
         checkboxPlayer2.setTouchable(Touchable.disabled);
-        checkboxPlayer2.setChecked(!Level.isPlayer1Turn);
-
-        /*
-             ça il faut le faire qu'une seule fois : après que le premier ait passé son tour pour la
-             première fois, faudrait mettre un compteur juste pour ça...
-             dans nextTurn() on sait si c'est le P1 avec level.getCurrentPlayer().getName()
-             si c'est lui, on uncheck sa checkbox, on check l'autre (et on met la couleur à la box 2
-             si c'est le premier tour)
-         */
-        //      checkboxPlayer2.getImage().setColor(player2.getColor().toColor());
+        checkboxPlayer2.setChecked(false);
+        checkboxPlayer2.getImage().setColor(Color.WHITE);
 
         ImageButton avatarP2 = new ImageButton(Menu.imagePanda); // (player2.getAvatar());
 
@@ -707,11 +705,11 @@ public class GameScreen implements Screen {
         Table screenTablePlayers = new Table();
         screenTablePlayers.setFillParent(true);
         screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
-        screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth()).padTop(checkboxPlayer1.getImage().getHeight());
+        screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
         screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
         screenTablePlayers.add(labelP1).left();
         screenTablePlayers.row();
-        screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 2).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth());
+        screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
         screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
         screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
 
@@ -751,8 +749,7 @@ public class GameScreen implements Screen {
             public boolean keyUp(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ENTER && !windowPause.isVisible()) {
                     level.nextTurn();
-                    click = ClickState.NOTHING_SELECTED;
-                    EffectsManagement.eraseCells(effects);
+                    showNextTurnEffects();
                     soundButton3.play(prefs.getFloat("volume", 0.1f));
                 } else if (keycode == Input.Keys.ESCAPE && !windowPause.isVisible()) {
                     soundButton1.play(prefs.getFloat("volume", 0.2f));
@@ -763,7 +760,6 @@ public class GameScreen implements Screen {
                     windowPause.setVisible(false);
                 }
                 return false;
-
             }
         });
 
@@ -771,7 +767,40 @@ public class GameScreen implements Screen {
         multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(hud);
         multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
+    }
 
+    private void showNextTurnEffects() {
+        if (level.getCurrentPlayer() == getPlayers()[0]) {
+            checkboxPlayer1.setChecked(true);
+            checkboxPlayer1.getImage().setColor(getPlayers()[0].getColor().toColor());
+            checkboxPlayer2.setChecked(false);
+            checkboxPlayer2.getImage().setColor(Color.WHITE);
+        } else {
+            checkboxPlayer1.setChecked(false);
+            checkboxPlayer1.getImage().setColor(Color.WHITE);
+            checkboxPlayer2.setChecked(true);
+            checkboxPlayer2.getImage().setColor(getPlayers()[1].getColor().toColor());
+        }
+        click = ClickState.NOTHING_SELECTED;
+        showEffects(previousClick);
+        EffectsManagement.eraseCells(effects);
+    }
+
+    /**
+     * Turns the selected unit in market to green
+     *
+     * @param isSelected true if buttonL is the selected unit
+     * @param buttonL    the units in the market
+     */
+    private void makeUnitGreen(boolean isSelected, ImageButton... buttonL) {
+        if (isSelected) {
+            buttonL[0].getImage().setColor(Color.GREEN);
+        } else {
+            for (ImageButton button : buttonL) {
+                if (!listButtonLDark.contains(button))
+                    button.getImage().setColor(Color.WHITE);
+            }
+        }
     }
 
     public static Playable getLevel() {
