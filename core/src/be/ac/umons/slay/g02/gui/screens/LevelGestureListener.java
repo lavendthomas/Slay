@@ -20,7 +20,7 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
         if (GameScreen.getLevel().getCurrentPlayer() instanceof AI) { // TODO C'est bien ainsi ?
             ((AI) GameScreen.getLevel().getCurrentPlayer()).play();
         } else {
-            game.onTap();
+            game.onTap(x,y);
         }
         return false;
     }

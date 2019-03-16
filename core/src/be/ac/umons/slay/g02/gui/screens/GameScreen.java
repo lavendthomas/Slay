@@ -56,6 +56,8 @@ import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.level.Level.getPlayers;
+import static java.lang.Math.round;
+import static java.lang.StrictMath.sqrt;
 
 // classe qui affiche l'interface pendant une partie
 public class GameScreen implements Screen {
@@ -134,6 +136,7 @@ public class GameScreen implements Screen {
             tileW = prop.get("tilewidth", Integer.class);
             tileH = prop.get("tileheight", Integer.class);
             size = prop.get("hexsidelength", Integer.class);
+            errorOffset = size * sqrt(3) - round(size * sqrt(3));
 
 
             // Chargement des couches utiles et du tileset
@@ -305,16 +308,17 @@ public class GameScreen implements Screen {
         hud.draw();
     }
 
-    private Coordinate getCoordinate() {
-        Vector2 vect = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+    private Coordinate getCoordinate(float x, float y) {
+        Vector2 vect = viewport.unproject(new Vector2(x, y));
         // Bien mettre le système d'axe
-        vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH)));
+        int offset  = (int) ( vect.y/ size * errorOffset);
+        vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH) + offset));
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
-    void onTap() { // TODO Bloquer quand click sur territoire IA
+    void onTap(float x, float y) { // TODO Bloquer quand click sur territoire IA
         if (!windowPause.isVisible()) {
-            Coordinate clickPos = getCoordinate();
+            Coordinate clickPos = getCoordinate(x, y);
             if (level.isInLevel(clickPos)) {
                 Tile clickedTile = level.get(clickPos);
                 // Change state if needed
