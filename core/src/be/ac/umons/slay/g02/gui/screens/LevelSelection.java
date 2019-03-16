@@ -95,9 +95,9 @@ public class LevelSelection implements Screen {
     // n'est utile que s'il n'y a qu'un joueur humain dans la partie, par defaut c'est P1
     public String humanPlayer;
     // permet de savoir s'il faut creer des IA au debut du jeu
-    public int numberHumans = 0;
+    public static int numberHumans = 0;
     // permet de selectionner le bon type d'IA, on peut mettre autre chose que int, par defaut c'est Easy = 1 (Medium = 2 ...)
-    public int difficulty = 1;
+    public static int difficulty = 1;
 
     // il faudra les recuperer dans Players
     public static String player1Name = "P1";

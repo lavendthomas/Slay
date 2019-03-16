@@ -25,6 +25,11 @@ import org.xml.sax.SAXException;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.gui.screens.LevelSelection;
+import be.ac.umons.slay.g02.players.AIAdvanced;
+import be.ac.umons.slay.g02.players.AIEasy;
+import be.ac.umons.slay.g02.players.AIMedium;
+import be.ac.umons.slay.g02.players.AIRandom;
 import be.ac.umons.slay.g02.players.Colors;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
@@ -125,6 +130,8 @@ public class LevelLoader {
                 Element plys = (Element) n;
                 int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
                 players = new Player[nbPlayers];
+                int countHuman = 0;
+                int numberHumans = LevelSelection.numberHumans;
                 for (int p = 0; p < players.length; p++) {
                     int rand = new Random().nextInt(8);
                     //TODO Modifier init de player pour avoir IA
@@ -134,12 +141,57 @@ public class LevelLoader {
                         color = Colors.fromId(rand);
                     }
                     alreadyUsed.add(color);
-                    Player play = new HumanPlayer("p" + p, color);
-                    players[p] = play;
+                    Player player;
+                    int difficulty;
+
+                    switch (numberHumans) {
+                        case 0:
+                            // Two IAs
+                            difficulty = LevelSelection.difficulty;
+                            player = fromDifficulty (difficulty, color);
+                            break;
+                        case 1:
+                            // One IA and One human player
+                            if (countHuman == 0) {
+                                player = new HumanPlayer("p" + p, color); //TODO Modifier pour evoir le bon nom quand enregistré
+                                countHuman ++;
+                                break;
+                            } else {
+                                difficulty = LevelSelection.difficulty;
+                                player = fromDifficulty(difficulty, color);
+                                break;
+                            }
+
+                        default:
+                            // Two human players
+                            player = new HumanPlayer("p" + p, color); //TODO Modifier pour evoir le bon nom quand enregistré
+                            break;
+                    }
+
+                    players[p] = player;
                 }
             }
-        }
 
+        }
+    }
+
+    private static Player fromDifficulty (int difficulty, Colors color) {
+        Player player;
+        switch (difficulty) {
+            case 1 :
+                player = new AIEasy(color);
+                break;
+            case 2 :
+                player = new AIMedium(color);
+                break;
+            case 3 :
+                player = new AIAdvanced(color);
+                break;
+            default:
+                player = new AIRandom(color);
+                break;
+        }
+        return player;
     }
 
     private static void loadTerritories (Element root, Level level) throws FileFormatException {

@@ -167,6 +167,7 @@ public class GameScreen implements Screen {
             e.printStackTrace();
         }
         loadButtons();
+
     }
 
     private void handleInput() { //TODO Bloquer dépassements (trop zoom, trop à gauche ...)
@@ -305,18 +306,14 @@ public class GameScreen implements Screen {
 
     private Coordinate getCoordinate() {
         Vector2 vect = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+        // Bien mettre le système d'axe
         vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH)));
-        // donne les valeurs en pixel dans la carte (négatives si en dessous ou à gauche de la carte et inexistante si au dessus ou à droite)
-        Coordinate coordinate = HexManagement.pixelToHex((int) vect.x, (int) vect.y, 32);
-        //coordinate.setX(coordinate.getX()-1);
-        //coordinate.setY(coordinate.getY()-1);
-        return coordinate;
+        return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
-    public void onTap() {
+    void onTap() { // TODO Bloquer quand click sur territoire IA
         if (!windowPause.isVisible()) {
             Coordinate clickPos = getCoordinate();
-            System.out.println(clickPos);
             if (level.isInLevel(clickPos)) {
                 Tile clickedTile = level.get(clickPos);
                 // Change state if needed
