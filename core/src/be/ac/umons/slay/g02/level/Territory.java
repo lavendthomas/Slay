@@ -272,7 +272,7 @@ public class Territory {
      * @param e The entity we want to buy
      * @return true if the territory has the necessary funds
      */
-    boolean canBuy(Entity e) {
+    public boolean canBuy(Entity e) {
         return coins >= e.getPrice();
     }
 

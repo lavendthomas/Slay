@@ -12,27 +12,4 @@ public class AIRandom extends Player implements AI {
 
     }
 
-    @Override
-    public boolean canAddUnit() {
-        return true;
-
-    }
-
-    @Override
-    public boolean canMerge() {
-        return true;
-
-    }
-
-    @Override
-    public boolean canMove() {
-        return true;
-
-    }
-
-    @Override
-    public boolean checkCoins() {
-        return true;
-
-    }
 }

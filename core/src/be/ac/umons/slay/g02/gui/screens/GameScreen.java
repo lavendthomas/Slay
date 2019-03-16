@@ -63,7 +63,7 @@ import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 public class GameScreen implements Screen {
     private Game game;
 
-    private Playable level;
+    private static Playable level;
     private HexagonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
 
@@ -772,6 +772,10 @@ public class GameScreen implements Screen {
         multiplexer.addProcessor(hud);
         multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
 
+    }
+
+    public static Playable getLevel() {
+        return level;
     }
 
     enum ClickState {
