@@ -162,8 +162,8 @@ public class GameScreen implements Screen {
 
             int midScreenW = SCREEN_WIDTH / 2;
             int midScreenH = SCREEN_HEIGHT / 2;
-            translateX = midScreenW - (int) (worldW / 2);
-            translateY = midScreenH - (int) (worldH / 2);
+            translateX = midScreenW - (worldW / 2);
+            translateY = midScreenH - (worldH / 2);
 
             camera.translate(-translateX, -translateY, 0);
 

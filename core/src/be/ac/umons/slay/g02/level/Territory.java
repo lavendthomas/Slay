@@ -259,7 +259,7 @@ public class Territory {
         if (coins < 0) {
             for (Tile c : cells) {
                 if (c.getEntity() != null && c.getEntity().getCost() > 0) {
-                    c.setEntity(null);
+                    c.setEntity(StaticEntity.GRAVE);
                 }
             }
             coins = 0;

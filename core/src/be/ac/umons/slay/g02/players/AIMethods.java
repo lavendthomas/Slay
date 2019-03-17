@@ -25,7 +25,7 @@ public class AIMethods {
         return false;
     }
 
-    static List<List<Coordinate>> loadTerritories (Playable level, Player player) {
+    static List<List<Coordinate>> loadTerritories (Playable level) {
         List<List<Coordinate>> allTerritories = new ArrayList<List<Coordinate>>();
         List<Coordinate> visited = new ArrayList<Coordinate>();
 
@@ -33,10 +33,14 @@ public class AIMethods {
             for (int j = 0; j < level.height(); j++) {
                 Coordinate coordinate = new Coordinate(i, j);
                 Tile current = level.get(i, j);
-                if (current.getTerritory().getOwner().equals(player) && !visited.contains(coordinate)) {
+
+                if (current.getTerritory() != null &&
+                        current.getTerritory().getOwner().equals(level.getCurrentPlayer())
+                        && !visited.contains(coordinate)) {
                     List<Coordinate> territory = level.neighbourTilesInSameTerritory(coordinate);
                     allTerritories.add(territory);
-                    visited.add(coordinate);
+                    visited.addAll(territory);
+
                 }
             }
         }

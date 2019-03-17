@@ -148,7 +148,7 @@ public class LevelLoader {
                         case 0:
                             // Two IAs
                             difficulty = LevelSelection.difficulty;
-                            player = fromDifficulty (difficulty, color);
+                            player = fromDifficulty (difficulty, color, "p" + p);
                             break;
                         case 1:
                             // One IA and One human player
@@ -158,7 +158,7 @@ public class LevelLoader {
                                 break;
                             } else {
                                 difficulty = LevelSelection.difficulty;
-                                player = fromDifficulty(difficulty, color);
+                                player = fromDifficulty(difficulty, color, "p" + p);
                                 break;
                             }
 
@@ -175,20 +175,20 @@ public class LevelLoader {
         }
     }
 
-    private static Player fromDifficulty (int difficulty, Colors color) {
+    private static Player fromDifficulty (int difficulty, Colors color, String name) {
         Player player;
         switch (difficulty) {
             case 1 :
-                player = new AIEasy(color);
+                player = new AIEasy(color, name);
                 break;
             case 2 :
-                player = new AIMedium(color);
+                player = new AIMedium(color, name);
                 break;
             case 3 :
-                player = new AIAdvanced(color);
+                player = new AIAdvanced(color, name);
                 break;
             default:
-                player = new AIRandom(color);
+                player = new AIRandom(color, name);
                 break;
         }
         return player;

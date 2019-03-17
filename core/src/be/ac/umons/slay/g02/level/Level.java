@@ -219,6 +219,7 @@ public class Level implements Playable {
 
     /**
      * Use to load positions where you can place a soldier when you buy
+     * Used to buy a soldier
      *
      * @param entity The new entity to place
      * @param start Origin tile
@@ -283,6 +284,7 @@ public class Level implements Playable {
     /**
      * Return the list of coordinates that can be reached
      * from the start coordinate limited to n steps
+     * Used to move a soldier
      *
      * @param start Starting coordinate
      * @param n     Maximum number of steps
@@ -454,42 +456,51 @@ public class Level implements Playable {
             Tile to = get(toC);
             Tile from = get(fromC);
 
-            // Prevent movement on its own capital
-            if (to.hasSameOwner(from)) {
-                if (to.getEntity() != StaticEntity.CAPITAL) {
-                    if (to.getEntity() instanceof Soldier) {
-                        // Soldier fusion
-                        int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                        int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
-                        int newLvl = toLvl + fromLvl + 1;
-                        // If to soldier has already moved (no need to check each other because it can move)
-                        to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
-                                ((Soldier) to.getEntity()).getMoved()));
-                        from.setEntity(null);
+            // Prevent move in water
+            if (to.getTerritory() != null) {
 
-                    } else {
-                        // Just move the Entity
-                        to.setEntity(from.getEntity());
-                        from.setEntity(null);
-                        to.setTerritory(from.getTerritory());
-                        ((Soldier) to.getEntity()).setMoved(true);
+                if (to.hasSameOwner(from)) {
+                    // Move in own territory
+                    if (to.getEntity() != StaticEntity.CAPITAL) {
+                        // Prevent movement on its own capital
+
+                        if (to.getEntity() instanceof Soldier) {
+                            // Soldier fusion
+                            int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
+                            int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
+                            int newLvl = toLvl + fromLvl + 1;
+                            // If to soldier has already moved (no need to check each other because it can move)
+                            to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
+                                    ((Soldier) to.getEntity()).getMoved()));
+                            from.setEntity(null);
+
+                        } else {
+                            // Just move the Entity
+                            moveEntity(from, to);
+                        }
+
                     }
-
+                } else {
+                    // To territory is enemy
+                    moveEntity(from, to);
                 }
+
             } else {
-                // Move the Entity
-                to.setEntity(from.getEntity());
-                from.setEntity(null);
-                to.setTerritory(from.getTerritory());
-                ((Soldier) to.getEntity()).setMoved(true);
-
+                // To territory is null
+                moveEntity(from, to);
             }
-
             splitTerritories(); //TODO find a better approach
             mergeTerritories();
         }
     }
 
+    private void moveEntity (Tile from, Tile to) {
+        to.setTerritory(from.getTerritory());
+        to.setEntity(from.getEntity());
+        from.setEntity(null);
+
+        ((Soldier) to.getEntity()).setMoved(true);
+    }
 
     /**
      * Merges the territories of adjacent cells
@@ -584,9 +595,10 @@ public class Level implements Playable {
                 }
             }
         }
-
-        for (Territory t : processedTerritories) {
-            t.newCapital();
+        if (processedTerritories.size() > 0) {
+            for (Territory t : processedTerritories) {
+                t.newCapital();
+            }
         }
     }
 
