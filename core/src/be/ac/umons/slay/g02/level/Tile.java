@@ -31,38 +31,43 @@ public class Tile {
      * @return boolean
      */
     boolean buy(Entity e, Tile to) {
-        if (hasSameOwner(to) && territory.buy(e)) {
-            // Dans son propre territoire
-            if (to.getEntity() != null) {
-                // Entité déjà présente
-                if (to.getEntity() instanceof Soldier) {
-                    // Place dans mon territoire et il y a déjà un soldat
-                    int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                    int fromLvl = ((Soldier) e).getSoldierLevel().getLevel();
-                    int newLvl = toLvl + fromLvl + 1;
-                    to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), ((Soldier) to.getEntity()).getMoved()));
-                    return true;
-                } else if (to.getEntity() == StaticEntity.CAPITAL) {
-                    // Empêche de se placer sur sa capitale
-                    return false;
+        if (territory.buy(e)) {
+            if (hasSameOwner(to)) {
+                // Dans son propre territoire
+                if (to.getEntity() != null) {
+                    // Entité déjà présente
+                    if (to.getEntity() instanceof Soldier) {
+                        // Place dans mon territoire et il y a déjà un soldat
+                        int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
+                        int fromLvl = ((Soldier) e).getSoldierLevel().getLevel();
+                        int newLvl = toLvl + fromLvl + 1;
+                        to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), ((Soldier) to.getEntity()).getMoved()));
+                        return true;
+                    } else if (to.getEntity() == StaticEntity.CAPITAL) {
+                        // Empêche de se placer sur sa capitale
+                        return false;
+                    } else {
+                        // Cas résiduel (arbre ou tombe)
+                        to.setEntity(e);
+                        return true;
+                    }
                 } else {
-                    // Cas résiduel (arbre ou tombe)
+                    // pas d'entité
                     to.setEntity(e);
                     return true;
                 }
             } else {
-                // pas d'entité
+                // territoire ennemie ou neutre
                 to.setEntity(e);
+                ((Soldier) to.getEntity()).setMoved(true);
+                to.setTerritory(territory);
                 return true;
             }
         } else {
-            // territoire ennemie ou neutre
-            to.setEntity(e);
-            ((Soldier) to.getEntity()).setMoved(true);
-            to.setTerritory(territory);
-            return true;
+            return false;
         }
     }
+
 
     /**
      * @param entity
