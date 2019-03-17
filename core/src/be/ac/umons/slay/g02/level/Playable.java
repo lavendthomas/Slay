@@ -30,5 +30,7 @@ public interface Playable {
 
     void nextTurn();
 
+    Player hasWon();
+
     Player getCurrentPlayer();
 }

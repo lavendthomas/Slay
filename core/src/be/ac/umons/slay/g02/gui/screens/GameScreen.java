@@ -345,6 +345,7 @@ public class GameScreen implements Screen {
                         // We clicked on a soldier then on a territory so the soldier should be moved
                         if (level.getMoves(previousClick, 4).contains(clickPos)) {
                             level.move(previousClick, clickPos);
+                            level.hasWon();
                             click = ClickState.NOTHING_SELECTED;
                         } else {
                             click = ClickState.NOTHING_SELECTED;
