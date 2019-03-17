@@ -705,7 +705,7 @@ public class Level implements Playable {
             }
         }
         System.out.print(Arrays.toString(scores));
-        
+
 
         // We win if our score is 10 times higher than the score of all others
         for (int i=0; i<players.length; i++) {
