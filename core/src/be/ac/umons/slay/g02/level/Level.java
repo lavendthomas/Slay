@@ -1,6 +1,8 @@
 package be.ac.umons.slay.g02.level;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -648,6 +650,65 @@ public class Level implements Playable {
             }
         }
         return territories.size();
+    }
+
+    /**
+     * Ckecks if a player won the game
+     * @return a player is he won the game, null if no one did
+     */
+    @Override
+    public Player hasWon() {
+
+        int[] scores = new int[players.length];
+
+        HashMap<Player, Integer> pl = new HashMap<Player, Integer>(players.length);
+        for (int i=0; i<players.length; i++) {
+            pl.put(players[i], i);
+        }
+
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                Tile cell = tileMap[i][j];
+                if (cell.getTerritory() != null) {
+                    Player owner = cell.getTerritory().getOwner();
+                    if (cell.getTerritory() != null) {
+                        scores[pl.get(owner)] += 3; // 3 per cell
+
+                        if (cell.getEntity() != null) {
+                            if (cell.getEntity() instanceof Soldier) {
+                                scores[pl.get(owner)] += cell.getEntity().getPrice(); // price per unit
+                            } else if (cell.getEntity() instanceof StaticEntity) {
+                                if (cell.getEntity() == StaticEntity.TREE) {
+                                    scores[pl.get(owner)] -= 1; //-1 per tree because higher risk of loosing units
+                                } else if (cell.getEntity() == StaticEntity.CAPITAL) {
+                                    scores[pl.get(owner)] += 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        System.out.print(Arrays.toString(scores));
+
+
+        // We win if our score is 10 times higher than the score of all others
+        for (int i=0; i<players.length; i++) {
+            boolean won = true;
+            for (int j=0; j<players.length; j++) {
+                if (i != j) {
+                    if (scores[i] < 7 * scores[j]) {
+                        won = false;
+                    }
+                }
+            }
+            if (won) {
+                return players[i];
+            }
+        }
+
+        return null;
     }
 
     /**

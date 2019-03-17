@@ -262,7 +262,7 @@ public class Territory {
                     c.setEntity(null);
                 }
             }
-            coins = 0;
+            coins = income - wages;
         }
     }
 
