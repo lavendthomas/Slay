@@ -167,12 +167,11 @@ public class Territory {
     boolean newCapital() {
 
         // Territory empty or too small => No capital
-        if (cells.size() == 1) {
+        if (cells.size() <= 1) {
             return false;
         }
 
         List<Tile> capitals = getCapitals();
-        //Gdx.app.log("moves", owner.getName() + capitals.toString());
 
         if (capitals.size() == 1) {
             // If a capital is already there we delete don't anything
