@@ -70,9 +70,8 @@ public class LevelLoader {
             Gdx.files.local("currentLevel.xml").delete();
             root = xml.getDocumentElement();
 
-            // ADd players
-            List<Colors> alreadyUsed = new ArrayList<Colors>();
-            loadPlayers(root, alreadyUsed);
+            // Add players
+            loadPlayers(root);
 
             // Add territories
             loadTerritories(root, level);
@@ -93,6 +92,13 @@ public class LevelLoader {
 
         return new Map(level, map);
     }
+
+    /**
+     * Load map bottom from the TiledMap
+     *
+     * @param map TiledMap
+     * @return The level with the bottom
+     */
 
     private static Level loadBackground (TiledMap map) {
         MapProperties prop = map.getProperties();
@@ -122,7 +128,14 @@ public class LevelLoader {
         return level;
     }
 
-    private static void loadPlayers (Element root, List<Colors> alreadyUsed) {
+    /**
+     * Retrieve players from the game (number and type) and initialize them
+     *
+     * @param root The root of XML file
+     */
+
+    private static void loadPlayers (Element root) {
+        List<Colors> alreadyUsed = new ArrayList<Colors>();
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
             Node n = root.getChildNodes().item(i);
             // Load players numbers and init players tab
@@ -134,7 +147,6 @@ public class LevelLoader {
                 int numberHumans = LevelSelection.numberHumans;
                 for (int p = 0; p < players.length; p++) {
                     int rand = new Random().nextInt(8);
-                    //TODO Modifier init de player pour avoir IA
                     Colors color = Colors.fromId(rand);
                     while (alreadyUsed.contains(color)) {
                         rand = new Random().nextInt(8);
@@ -153,7 +165,7 @@ public class LevelLoader {
                         case 1:
                             // One IA and One human player
                             if (countHuman == 0) {
-                                player = new HumanPlayer("p" + p, color); //TODO Modifier pour evoir le bon nom quand enregistré
+                                player = new HumanPlayer("p" + p, color); //TODO Modifier pour avoir le bon nom quand enregistré
                                 countHuman ++;
                                 break;
                             } else {
@@ -164,7 +176,7 @@ public class LevelLoader {
 
                         default:
                             // Two human players
-                            player = new HumanPlayer("p" + p, color); //TODO Modifier pour evoir le bon nom quand enregistré
+                            player = new HumanPlayer("p" + p, color); //TODO Modifier pour avoir le bon nom quand enregistré
                             break;
                     }
 
@@ -174,6 +186,15 @@ public class LevelLoader {
 
         }
     }
+
+    /**
+     * Method initiating artificial intelligence from its difficulty level
+     *
+     * @param difficulty Integer representing AI difficulty
+     * @param color      Color assigned to AI
+     * @param name       Name assigned to AI
+     * @return           The artificial intelligence corresponding
+     */
 
     private static Player fromDifficulty (int difficulty, Colors color, String name) {
         Player player;
@@ -193,6 +214,14 @@ public class LevelLoader {
         }
         return player;
     }
+
+    /**
+     * Load territories in the level
+     *
+     * @param root                  The root of XML file
+     * @param level                 The level in which the territories
+     * @throws FileFormatException  If the file don't use the correct format
+     */
 
     private static void loadTerritories (Element root, Level level) throws FileFormatException {
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
@@ -223,6 +252,14 @@ public class LevelLoader {
         level.setPlayers(players);
         level.mergeTerritories();
     }
+
+    /**
+     * Load entities in the level
+     *
+     * @param root                  The root of XML file
+     * @param level                 The level in which the territories
+     * @throws FileFormatException  If the file don't use the correct format
+     */
 
     private static void loadEntities (Element root, Level level) throws FileFormatException {
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
@@ -298,6 +335,7 @@ public class LevelLoader {
     /**
      * Return object for loading the world. Consists of a Level object and a libGDX TiledMap.
      */
+
     public static class Map {
         private Playable level;
         private TiledMap map;

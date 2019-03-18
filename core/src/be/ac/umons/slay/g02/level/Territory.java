@@ -68,6 +68,7 @@ public class Territory {
      * @param cell
      * @return
      */
+
     public boolean remove(Tile cell) {
         if (cell.getEntity() != StaticEntity.TREE) {
             income -= 1;
