@@ -17,9 +17,8 @@ import be.ac.umons.slay.g02.level.Tile;
 public class AIEasy extends Player implements AI {
 
     private Playable level;
-    private List<List<Coordinate>> allTerritories;
 
-    public AIEasy (Colors color, String name) { //TODO Initialiser sa list de territoire et la màj au fur et à mesure
+    public AIEasy (Colors color, String name) {
         this.color = color;
         this.name = name;
     }
@@ -27,14 +26,10 @@ public class AIEasy extends Player implements AI {
     @Override
     public void play() {
         level = GameScreen.getLevel();
-        allTerritories = AIMethods.loadTerritories(level);
-
-
-
+        List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level);
 
         for (List<Coordinate> territory : allTerritories) {
             // Pour chaque territoire
-            // Ajouter une unité ? Avant le déplacement ains déplace le nouveau soldat créé
             tryToAddUnit(territory);
 
             // Déplacement ?
@@ -48,11 +43,8 @@ public class AIEasy extends Player implements AI {
                         // Il ne s'est pas encore déplacé
                         moveSoldier(soldier, coordinate);
                     }
-
                 }
             }
-
-
         }
 
         // finir son tour
@@ -83,7 +75,8 @@ public class AIEasy extends Player implements AI {
 
                             } else if (current.getEntity() instanceof Soldier) {
                                 // Il y a un soldat
-                                if (canFusion(soldier, (Soldier) current.getEntity(), current.getTerritory())) {
+                                if (canFusion(soldier, (Soldier) current.getEntity(),
+                                        current.getTerritory())) {
                                     // Fusion sans risque ? Retirer dans easy pour plus simple
                                     level.move(coordinate, c);
                                     break;
@@ -103,6 +96,18 @@ public class AIEasy extends Player implements AI {
                 }
             }
         }
+        if (!soldier.getMoved()) {
+            // Cas par défaut pour essayer de déplacer quand même le soldat sur une tuile vide dans son territoire
+            for (Coordinate c : level.getMoves(coordinate, 4)) {
+                Tile current = level.get(c);
+                if (current.getTerritory() != null
+                    && current.getTerritory().getOwner().equals(this)
+                    && current.getEntity() == null) {
+                    level.move(coordinate, c);
+                }
+            }
+
+        }
     }
 
     private boolean canFusion (Soldier sold1, Soldier sold2, Territory territory) {
@@ -112,7 +117,7 @@ public class AIEasy extends Player implements AI {
         return rest > cost;
     }
 
-    private boolean tryToAddUnit(List<Coordinate> territory) {
+    private void tryToAddUnit(List<Coordinate> territory) {
         // récup les données du territoire concerné
         Coordinate cFrom = territory.get(0);
         Territory terr = level.get(cFrom).getTerritory();
@@ -157,8 +162,6 @@ public class AIEasy extends Player implements AI {
                 }
             }
         }
-        return true;
-
     }
 
     private boolean canBuy (Soldier soldier, Territory territory) {
