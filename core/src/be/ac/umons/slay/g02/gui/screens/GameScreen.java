@@ -311,7 +311,7 @@ public class GameScreen implements Screen {
     private Coordinate getCoordinate(float x, float y) {
         Vector2 vect = viewport.unproject(new Vector2(x, y));
         // Bien mettre le système d'axe
-        int offset  = (int) ( vect.y/ size * errorOffset);
+        int offset = (int) (vect.y / size * errorOffset);
         vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH) + offset));
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
@@ -567,6 +567,7 @@ public class GameScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
                     level.nextTurn();
+                    showNextTurnEffects();
                     click = ClickState.NOTHING_SELECTED;
                     EffectsManagement.eraseCells(effects);
                     soundButton3.play(prefs.getFloat("volume", 0.1f));
@@ -659,12 +660,12 @@ public class GameScreen implements Screen {
         checkboxPlayer1.setChecked(true);
         checkboxPlayer1.getImage().setColor(getPlayers()[0].getColor().toColor());
 
-        ImageButton avatarP1 = new ImageButton(Menu.imageBunny); // (player1.getAvatar());
+        ImageButton avatarP1 = new ImageButton(Menu.imagePink); // (player1.getAvatar());
 
         // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
         // au lieu de : LevelSelection.player1Name
 
-        Label labelP1 = new Label(LevelSelection.player1Name, skinSgx, "title-white");
+        Label labelP1 = new Label("P1", skinSgx, "title-white");
         labelP1.setFontScale(1.2f);
 
         // Player 2
@@ -680,7 +681,7 @@ public class GameScreen implements Screen {
         // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
         // au lieu de : LevelSelection.player2Name
 
-        Label labelP2 = new Label(LevelSelection.player2Name, skinSgx, "title-white");
+        Label labelP2 = new Label("P2", skinSgx, "title-white");
         labelP2.setFontScale(1.2f);
 
         // Territory's money

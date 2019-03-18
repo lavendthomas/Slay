@@ -27,10 +27,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import be.ac.umons.slay.g02.gui.Main;
-import be.ac.umons.slay.g02.players.Statis;
+import be.ac.umons.slay.g02.players.GlobalStats;
+import be.ac.umons.slay.g02.players.HumanPlayer;
+import be.ac.umons.slay.g02.players.LevelStats;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -47,7 +50,10 @@ import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.gui.screens.Menu.backgroundGrey;
 import static be.ac.umons.slay.g02.gui.screens.Menu.disableBox;
 import static be.ac.umons.slay.g02.gui.screens.Menu.enableBox;
+import static be.ac.umons.slay.g02.gui.screens.Menu.isPlayer1Logged;
+import static be.ac.umons.slay.g02.gui.screens.Menu.isPlayer2Logged;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 // classe qui affiche l'ecran de selection de niveau
 public class LevelSelection implements Screen {
@@ -67,48 +73,55 @@ public class LevelSelection implements Screen {
     private Sprite sprite;
     private int cellHeight;
 
-    public int currentIslandNumber = 1;
+    // pour savoir quelle carte afficher pour la preview et quand on clique sur Play
+    private int currentIslandNumber = 1;
+    // dans la fenetre des stats
+    private int islandNumberStats = 1;
 
     private Button buttonIsland;
     private Button buttonGlobal;
-    private static TextButton buttonBack;
-    private static TextButton buttonPlay;
-    private static TextButton buttonStats;
-    private static SelectBox<String> selectBoxDifficulty;
-    private static SelectBox<String> selectBoxPlayer;
-    private static SelectBox<Integer> selectBoxIsland;
-    private static SelectBox<Integer> selectBoxNumber;
-    private static SelectBox<String> selectBoxPlayerStats;
+    private TextButton buttonBack;
+    private TextButton buttonPlay;
+    private TextButton buttonStats;
+    private SelectBox<String> selectBoxDifficulty;
+    private SelectBox<String> selectBoxPlayer;
+    private SelectBox<Integer> selectBoxIsland;
+    private SelectBox<Integer> selectBoxNumber;
+    private SelectBox<Integer> selectBoxIslandStats;
+    private SelectBox<String> selectBoxPlayerStats;
     private Array<Integer> islandNumbers;
     private Array<String> playerNames = new Array<String>();
-    private static Table mainTableStats = new Table();
+    private ArrayList labelsIsland;
+    private ArrayList labelsGlobal;
+    private Table mainTableStats = new Table();
     private Table containerGlobal;
     private Table containerIsland;
     private Table tableButtonBack;
     private Cell<ImageButton> cellPreview;
+    private Table tableBackground;
+    private Table tableTabs;
+    private Table tableIsland;
+    private Table tableGlobal;
+    private Cell cellContent;
+    private Cell cellTableTabs;
+    private boolean isInIsland;
 
-    // pour les tests
     public static final int TOTAL_NUMBER_ISLANDS = 10;
 
     // dans la fenetre de stats, c'est pas forcement le meme que celui choisi dans l'ecran de selection
-    public String humanPlayerStats;
+    private String humanPlayerStats;
     // n'est utile que s'il n'y a qu'un joueur humain dans la partie, par defaut c'est P1
-    public String humanPlayer;
+    private String humanPlayer;
     // permet de savoir s'il faut creer des IA au debut du jeu
     public static int numberHumans = 0;
     // permet de selectionner le bon type d'IA, on peut mettre autre chose que int, par defaut c'est Easy = 1 (Medium = 2 ...)
     public static int difficulty = 1;
 
-    // il faudra les recuperer dans Players
-    public static String player1Name = "P1";
-    public static String player2Name = "WWWWW";
-
 
     public LevelSelection(Game aGame) {
         game = aGame;
-        resize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        int buttonGapY = SCREEN_HEIGHT * 6 / 100;
+        int buttonGapY = SCREEN_HEIGHT * 10 / 100;
         cellHeight = SCREEN_HEIGHT * 6 / 100;
 
         // background
@@ -125,7 +138,7 @@ public class LevelSelection implements Screen {
         Label labelHuman = new Label("Number of human\nplayers", skinSgx, "title");
         labelHuman.setAlignment(1);
         Label labelDifficulty = new Label("Difficulty", skinSgx, "title");
-
+        Label labelBoxPlayer = new Label("", skinSgx, "title");
         selectBoxIsland = new SelectBox<Integer>(skinSgx);
         islandNumbers = new Array<Integer>();
         fillIslandNumbers();
@@ -203,19 +216,26 @@ public class LevelSelection implements Screen {
         selectBoxNumber.addListener(selectBoxNumberListener);
 
         selectBoxPlayer = new SelectBox<String>(skinSgx);
-        playerNames.add(player1Name, player2Name);
-        selectBoxPlayer.setItems(playerNames);
-        humanPlayer = selectBoxPlayer.getItems().first();
-        ChangeListener selectBoxPlayerListener = new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                soundButton1.play(prefs.getFloat("volume", 0.2f));
-                humanPlayer = selectBoxPlayer.getSelected();
-            }
-        };
-        selectBoxPlayer.addListener(selectBoxPlayerListener);
-        disableBox(selectBoxPlayer);
 
+        if (isPlayer1Logged)
+            playerNames.add(player1.getName());
+
+        if (isPlayer2Logged)
+            playerNames.add(player2.getName());
+
+        if (isPlayer1Logged || isPlayer2Logged) {
+            selectBoxPlayer.setItems(playerNames);
+            humanPlayer = selectBoxPlayer.getItems().first();
+            ChangeListener selectBoxPlayerListener = new ChangeListener() {
+                @Override
+                public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                    soundButton1.play(prefs.getFloat("volume", 0.2f));
+                    humanPlayer = selectBoxPlayer.getSelected();
+                }
+            };
+            selectBoxPlayer.addListener(selectBoxPlayerListener);
+            disableBox(selectBoxPlayer);
+        }
         selectBoxDifficulty = new SelectBox<String>(skinSgx);
         Array<String> difficultyDegrees = new Array<String>();
         difficultyDegrees.add("EASY", "MEDIUM", "ADVANCED");
@@ -249,10 +269,11 @@ public class LevelSelection implements Screen {
         });
 
         // partie gauche
-        Table table = new Table();
+        final Table table = new Table();
         table.setFillParent(true);
         table.left().padBottom(SCREEN_HEIGHT * 22 / 100);
         table.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+
         labelIsland.setAlignment(1);
         table.add(labelIsland);
         table.add(selectBoxIsland);
@@ -261,12 +282,14 @@ public class LevelSelection implements Screen {
         table.row().pad(buttonGapY, 0, 0, 0);
         table.add(labelHuman).width(SCREEN_WIDTH * 25 / 100);
         table.add(selectBoxNumber);
-        table.add(selectBoxPlayer).padLeft(SCREEN_WIDTH * 5 / 100);
+        if (isPlayer1Logged || isPlayer2Logged) {
+            table.add(selectBoxPlayer).padLeft(SCREEN_WIDTH * 5 / 100);
+        } else table.add(labelBoxPlayer).colspan(3).padLeft(SCREEN_WIDTH * 5 / 100);
         table.row().pad(SCREEN_HEIGHT * 17 / 100, 0, 0, 0);
         table.add(labelDifficulty);
         table.add(selectBoxDifficulty).left().colspan(2);
-
         cellPreview = table.getCell(levelPreview);
+
 
         buttonBack.setWidth(SCREEN_WIDTH * 12 / 100);
         buttonPlay.setWidth(SCREEN_WIDTH * 12 / 100);
@@ -328,7 +351,7 @@ public class LevelSelection implements Screen {
             tableStats.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
             tableStats.row();
 
-            Iterator iter = Menu.tabScore.iterator();
+            Iterator iter = Main.tabPlayers.iterator();
 
             Color currentColor = colorYellow;
             Color colorLabel = colorBlack;
@@ -347,12 +370,11 @@ public class LevelSelection implements Screen {
                     isNext = true;
                 }
                 i++;
-                Statis stats = (Statis) iter.next();
-                tableStats = displayHall(stats, tableStats, currentColor, colorLabel);
-            }
-            String name = "ttt";
-            Label label0 = new Label("", skinSgxTable, "title-white");
+                HumanPlayer stats = (HumanPlayer) iter.next();
 
+                tableStats = displayHall(stats.getGlobalStats().getRank(), stats.getName(), stats.getAvatar(), stats.getGlobalStats().getScore(), tableStats, currentColor, colorLabel);
+            }
+            Label label0 = new Label("", skinSgxTable, "title-white");
             label0.setHeight(cellHeight);
             tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
             tableStats.row();
@@ -362,16 +384,15 @@ public class LevelSelection implements Screen {
             label0.setAlignment(1);
             tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
             tableStats.row();
-            Statis statsPlayer = searchPlayer(name);
-            if (null != statsPlayer) {
-                tableStats = displayHall(statsPlayer, tableStats, colorGreen, colorLabel);
-            }
-            name = "0000";
-            statsPlayer = searchPlayer(name);
-            if (null != statsPlayer) {
-                tableStats = displayHall(statsPlayer, tableStats, colorGreen, colorLabel);
+
+            if (isPlayer1Logged) {
+                tableStats = displayHall(player1.getGlobalStats().getRank(), player1.getName(), player1.getAvatar(), player1.getGlobalStats().getScore(), tableStats, colorGreen, colorLabel);
             }
 
+            if (isPlayer2Logged) {
+                tableStats = displayHall(player2.getGlobalStats().getRank(), player2.getName(), player2.getAvatar(), player2.getGlobalStats().getScore(), tableStats, colorGreen, colorLabel);
+
+            }
             stage.addActor(tableStats);
             stage.addActor(buttonStats);
 
@@ -379,40 +400,39 @@ public class LevelSelection implements Screen {
             buttonPlay.setPosition(SCREEN_WIDTH * 27 / 100, SCREEN_HEIGHT * 10 / 100);
             buttonStats.setPosition(SCREEN_WIDTH * 47 / 100, SCREEN_HEIGHT * 10 / 100);
         }
-
         stage.addActor(table);
         stage.addActor(buttonBack);
         stage.addActor(buttonPlay);
     }
 
     private void fillIslandNumbers() {
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= TOTAL_NUMBER_ISLANDS; i++) {
             islandNumbers.add(i);
         }
     }
 
-    // rajoute une ligne dans le hall of fame
-    private Table displayHall(Statis stats, Table tableStats, Color currentColor, Color colorLabel) {
+    // rajoute une nouvelle ligne dans le hall of fame
+    private Table displayHall(int rank, String name, String avatar, int score, Table tableStats, Color currentColor, Color colorLabel) {
         TextButton cell;
 
-        cell = new TextButton(String.valueOf(stats.getRank()), skinSgxTable);
+        cell = new TextButton(String.valueOf(rank), skinSgxTable);
         cell.getLabel().setColor(colorLabel);
         tableStats.add(cell).fill();
         cell.setColor(currentColor);
 
-        TextureRegionDrawable imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(stats.getAvatar()))));
+        TextureRegionDrawable imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(avatar))));
         ImageButton avatarButton = new ImageButton(imageAvatar);
         avatarButton.setSize(SCREEN_HEIGHT * 6 / 100, SCREEN_HEIGHT * (6 / 100) * 95 / 100);
         cell.setColor(currentColor);
         tableStats.add(avatarButton).height(Value.percentHeight(1.27f)).width(Value.percentWidth(1.24f)).fill();
-        cell = new TextButton(String.valueOf(stats.getName()), skinSgxTable);
+        cell = new TextButton(String.valueOf(name), skinSgxTable);
         // coupe le nom s'il est trop long
         cell.setClip(true);
         cell.setColor(currentColor);
         cell.getLabel().setColor(colorLabel);
         cell.setHeight(cellHeight);
         tableStats.add(cell).height(Value.percentHeight(1.3f)).width(SCREEN_WIDTH * 16 / 100).fill();
-        cell = new TextButton(String.valueOf(stats.getScore()), skinSgxTable);
+        cell = new TextButton(String.valueOf(score), skinSgxTable);
         cell.setColor(currentColor);
         cell.getLabel().setColor(colorLabel);
         cell.setHeight(cellHeight);
@@ -422,11 +442,11 @@ public class LevelSelection implements Screen {
         return tableStats;
     }
 
-    private Statis searchPlayer(String name) {
-        Iterator iter = Menu.tabScore.iterator();
+    private HumanPlayer searchPlayer(String name) {
+        Iterator iter = Main.tabPlayers.iterator();
         while (iter.hasNext()) {
 
-            Statis statis = (Statis) iter.next();
+            HumanPlayer statis = (HumanPlayer) iter.next();
             if (statis.getName().equals(name)) {
                 return statis;
             }
@@ -437,11 +457,21 @@ public class LevelSelection implements Screen {
     private void showStats() {
         Menu.disableButton(buttonBack, buttonPlay, buttonStats);
         Menu.disableBox(selectBoxIsland, selectBoxDifficulty, selectBoxPlayer, selectBoxNumber);
+
+        Stack contentBack = new Stack();
+        final Table tableBack = new Table();
+        tableBack.setBackground(backgroundGrey);
+        contentBack.addActor(tableBack);
+        tableBackground = new Table();
+        tableBackground.setFillParent(true);
+        tableBackground.add(contentBack).size(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 76 / 100);
+        stage.addActor(tableBackground);
         mainTableStats.clear();
         stage.addActor(mainTableStats);
         mainTableStats.setFillParent(true);
 
         Label labelStats = new Label("Statistics", skinSgx, "title-white");
+        Label labelIsland = new Label("Island ", skinSgx, "white");
 
         selectBoxPlayerStats = new SelectBox<String>(skinSgx);
         selectBoxPlayerStats.setItems(playerNames);
@@ -451,9 +481,31 @@ public class LevelSelection implements Screen {
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 humanPlayerStats = selectBoxPlayerStats.getSelected();
+                cellTableTabs.clearActor();
+                cellContent.clearActor();
+                Stack content = createStatContent(islandNumberStats, humanPlayerStats);
+                cellTableTabs.setActor(tableTabs);
+                cellContent.setActor(content);
             }
         };
         selectBoxPlayerStats.addListener(selectBoxPlayerStatsListener);
+
+        selectBoxIslandStats = new SelectBox<Integer>(skinSgx);
+        selectBoxIslandStats.setItems(islandNumbers);
+        islandNumberStats = selectBoxIslandStats.getItems().first();
+        ChangeListener selectBoxIslandStatsListener = new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                soundButton2.play(0.2f);
+                islandNumberStats = selectBoxIslandStats.getSelected();
+                cellTableTabs.clearActor();
+                cellContent.clearActor();
+                Stack content = createStatContent(islandNumberStats, humanPlayerStats);
+                cellTableTabs.setActor(tableTabs);
+                cellContent.setActor(content);
+            }
+        };
+        selectBoxIslandStats.addListener(selectBoxIslandStatsListener);
 
         Stack contentTop = new Stack();
         final Table tableTop = new Table();
@@ -463,14 +515,50 @@ public class LevelSelection implements Screen {
         tableTop.row();
         tableTop.add(selectBoxPlayerStats).height(Value.percentHeight(1f));
         contentTop.addActor(tableTop);
+        Stack contentTopIsland = new Stack();
+        final Table tableTopIsland = new Table();
+        tableTopIsland.setBackground(backgroundGrey);
+        labelIsland.setWidth(SCREEN_HEIGHT * 70 / 100 / 2);
+        tableTopIsland.add(labelIsland).height(Value.percentHeight(1f)).padBottom(SCREEN_HEIGHT * 1 / 100);
+        tableTopIsland.add(selectBoxIslandStats).height(Value.percentHeight(1f)).padBottom(SCREEN_HEIGHT * 1 / 100);
+        contentTopIsland.addActor(tableTopIsland);
+
+        Stack content;
+        content = createStatContent(islandNumberStats, humanPlayerStats);
+
+        mainTableStats.add(contentTop).size(SCREEN_HEIGHT * 70 / 100, labelStats.getHeight() + selectBoxPlayerStats.getHeight() + SCREEN_HEIGHT * 3 / 100);
+        mainTableStats.row();
+        mainTableStats.add(contentTopIsland).size(SCREEN_HEIGHT * 70 / 100, selectBoxIslandStats.getHeight() + SCREEN_HEIGHT * 3 / 100);
+        mainTableStats.row();
+        mainTableStats.add(tableTabs);
+        mainTableStats.row();
+        mainTableStats.add(content).size(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100 - buttonIsland.getHeight() - (labelStats.getHeight() + selectBoxPlayerStats.getHeight() + SCREEN_HEIGHT * 7 / 100));
+
+        cellTableTabs = mainTableStats.getCell(tableTabs);
+        cellContent = mainTableStats.getCell(content);
+    }
+
+    private Stack createStatContent(int islandNumber, String humanPlayerStats) {
+        isInIsland = true;
+        HumanPlayer player;
+
+        if (humanPlayerStats.equals(player1.getName()))
+            player = player1;
+        else
+            player = player2;
+
+        LevelStats levelS = (LevelStats) player.getListLevelStats(islandNumber);
+        GlobalStats globalS = player.getGlobalStats();
+
         final Stack content = new Stack();
 
-        buttonIsland = new TextButton("Island " + currentIslandNumber, skinSgx, "number");
+        buttonIsland = new TextButton("Island " + islandNumberStats, skinSgx, "number");
         buttonIsland.setDisabled(true);
         buttonIsland.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
+                isInIsland = true;
                 buttonIsland.setDisabled(true);
                 buttonGlobal.setDisabled(false);
                 content.swapActor(containerGlobal, containerIsland);
@@ -481,13 +569,13 @@ public class LevelSelection implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
+                isInIsland = false;
                 buttonIsland.setDisabled(false);
                 buttonGlobal.setDisabled(true);
                 content.swapActor(containerIsland, containerGlobal);
             }
         });
-
-        Table tableTabs = new Table();
+        tableTabs = new Table();
         tableTabs.add(buttonIsland).width((SCREEN_HEIGHT * 70 / 100) / 2);
         tableTabs.add(buttonGlobal).width((SCREEN_HEIGHT * 70 / 100) / 2);
 
@@ -496,6 +584,7 @@ public class LevelSelection implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+                tableBackground.remove();
                 mainTableStats.remove();
                 Menu.enableButton(buttonBack, buttonPlay, buttonStats);
                 enableBox(selectBoxIsland, selectBoxNumber);
@@ -511,88 +600,182 @@ public class LevelSelection implements Screen {
             }
         });
 
+        labelsIsland = new ArrayList();
         Label labelScroll = new Label("", skinSgx, "white");
-        Label labelGames = new Label("Games : " + player1.getStatistics().getTotalGames(), skinSgx, "white");
-        Label labelWins = new Label("Wins : " + player1.getStatistics().getTotalWins(), skinSgx, "white");
-        Label labelDefeats = new Label("Defeats : " + player1.getStatistics().getTotalDefeats(), skinSgx, "white");
-        Label labelMinTurns = new Label("Minimum number of turns : " + player1.getStatistics().getMinTurns(), skinSgx, "white");
-        Label labelAvgTurns = new Label("Average number of turns : " + player1.getStatistics().getAvgTurns(), skinSgx, "white");
-        Label labelAvgLands = new Label("Average number of lands/turn : " + player1.getStatistics().getAvgLandsTurn(), skinSgx, "white");
-        Label labelMaxLands = new Label("Maximum number of lands/turn : " + player1.getStatistics().getMinLandsTurn(), skinSgx, "white");
-        Label labelAvgTrees = new Label("Average number of cut trees : " + player1.getStatistics().getAvgTrees(), skinSgx, "white");
-        Label labelMaxTrees = new Label("Maximum number of cut trees : " + player1.getStatistics().getMaxTrees(), skinSgx, "white");
-        Label labelAvgMoney = new Label("Average amount of earned money : " + player1.getStatistics().getAvgTotalMoney(), skinSgx, "white");
-        Label labelMaxMoney = new Label("Maximum amount of earned money : " + player1.getStatistics().getMaxTotalMoney(), skinSgx, "white");
-        Label labelAvgSavings = new Label("Average amount of savings : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
+        Label labelGames = new Label("Games : " + levelS.getTotalGames(), skinSgx, "white");
+        Label labelWins = new Label("Wins : " + levelS.getTotalWins(), skinSgx, "white");
+        labelsIsland.add(labelWins);
+        Label labelDefeats = new Label("Defeats : " + levelS.getTotalDefeats(), skinSgx, "white");
+        labelsIsland.add(labelDefeats);
+        Label labelMinTurns = new Label("Minimum number of turns : " + levelS.getMinTurns(), skinSgx, "white");
+        labelsIsland.add(labelMinTurns);
+        Label labelAvgTurns = new Label("Average number of turns : " + levelS.getAvgTurns(), skinSgx, "white");
+        labelsIsland.add(labelAvgTurns);
+        Label labelAvgLands = new Label("Average number of lands/turn : " + levelS.getAvgLandsTurn(), skinSgx, "white");
+        labelsIsland.add(labelAvgLands);
+        Label labelMaxLands = new Label("Maximum number of lands/turn : " + levelS.getMaxLandsTurn(), skinSgx, "white");
+        labelsIsland.add(labelMaxLands);
+        Label labelAvgTrees = new Label("Average number of cut trees : " + levelS.getAvgTrees(), skinSgx, "white");
+        labelsIsland.add(labelAvgTrees);
+        Label labelMaxTrees = new Label("Maximum number of cut trees : " + levelS.getMaxTrees(), skinSgx, "white");
+        labelsIsland.add(labelMaxTrees);
+        Label labelAvgMoney = new Label("Average amount of earned money : " + levelS.getAvgTotalMoney(), skinSgx, "white");
+        labelsIsland.add(labelAvgMoney);
+        Label labelMaxMoney = new Label("Maximum amount of earned money : " + levelS.getMaxTotalMoney(), skinSgx, "white");
+        labelsIsland.add(labelMaxMoney);
+        Label labelAvgSavings = new Label("Average amount of savings : " + levelS.getAvgSavings(), skinSgx, "white");
+        labelsIsland.add(labelAvgSavings);
+        Label labelMaxSavings = new Label("Maximum amount of savings : " + levelS.getTotalSavings(), skinSgx, "white");
+        labelsIsland.add(labelMaxSavings);
+        Label labelMinArmy = new Label("Minimum army value : " + levelS.getMinArmy(), skinSgx, "white");
+        labelsIsland.add(labelMinArmy);
+        Label labelAvgArmy = new Label("Average army value : " + levelS.getAvgArmy(), skinSgx, "white");
+        labelsIsland.add(labelAvgArmy);
+        Label labelMaxArmy = new Label("Maximum army value : " + levelS.getMaxArmy(), skinSgx, "white");
+        labelsIsland.add(labelMaxArmy);
+        Label labelAvgUnits = new Label("Average number of units : " + levelS.getAvgUnits(), skinSgx, "white");
+        labelsIsland.add(labelAvgUnits);
+        Label labelAvgL0 = new Label("Average number of units 0 : " + levelS.getAvgL0(), skinSgx, "white");
+        labelsIsland.add(labelAvgL0);
+        Label labelAvgL1 = new Label("Average number of units 1 : " + levelS.getAvgL1(), skinSgx, "white");
+        labelsIsland.add(labelAvgL1);
+        Label labelAvgL2 = new Label("Average number of units 2 : " + levelS.getAvgL2(), skinSgx, "white");
+        labelsIsland.add(labelAvgL2);
+        Label labelAvgL3 = new Label("Average number of units 3 : " + levelS.getAvgL3(), skinSgx, "white");
+        labelsIsland.add(labelAvgL3);
+        Label labelMaxUnits = new Label("Maximum number of units : " + levelS.getMaxUnits(), skinSgx, "white");
+        labelsIsland.add(labelMaxUnits);
+        Label labelMaxL0 = new Label("Maximum number of units 0 : " + levelS.getMaxL0(), skinSgx, "white");
+        labelsIsland.add(labelMaxL0);
+        Label labelMaxL1 = new Label("Maximum number of units 1 : " + levelS.getMaxL1(), skinSgx, "white");
+        labelsIsland.add(labelMaxL1);
+        Label labelMaxL2 = new Label("Maximum number of units 2 : " + levelS.getMaxL2(), skinSgx, "white");
+        labelsIsland.add(labelMaxL2);
+        Label labelMaxL3 = new Label("Maximum number of units 3 : " + levelS.getMaxL3(), skinSgx, "white");
+        labelsIsland.add(labelMaxL3);
+        Label labelAvgLostUnits = new Label("Average number of lost units : " + levelS.getAvgLostUnits(), skinSgx, "white");
+        labelsIsland.add(labelAvgLostUnits);
+        Label labelAvgLostL0 = new Label("Average number of lost units 0 : " + levelS.getAvgLostL0(), skinSgx, "white");
+        labelsIsland.add(labelAvgLostL0);
+        Label labelAvgLostL1 = new Label("Average number of lost units 1 : " + levelS.getAvgLostL1(), skinSgx, "white");
+        labelsIsland.add(labelAvgLostL1);
+        Label labelAvgLostL2 = new Label("Average number of lost units 2 : " + levelS.getAvgLostL2(), skinSgx, "white");
+        labelsIsland.add(labelAvgLostL2);
+        Label labelAvgLostL3 = new Label("Average number of lost units 3 : " + levelS.getAvgLostL3(), skinSgx, "white");
+        labelsIsland.add(labelAvgLostL3);
+        Label labelMaxLostUnits = new Label("Maximum number of lost units : " + levelS.getMaxUnits(), skinSgx, "white");
+        labelsIsland.add(labelMaxLostUnits);
+        Label labelMaxLostL0 = new Label("Maximum number of lost units 0 : " + levelS.getMaxLostL0(), skinSgx, "white");
+        labelsIsland.add(labelMaxLostL0);
+        Label labelMaxLostL1 = new Label("Maximum number of lost units 1 : " + levelS.getMaxLostL1(), skinSgx, "white");
+        labelsIsland.add(labelMaxLostL1);
+        Label labelMaxLostL2 = new Label("Maximum number of lost units 2 : " + levelS.getMaxLostL2(), skinSgx, "white");
+        labelsIsland.add(labelMaxLostL2);
+        Label labelMaxLostL3 = new Label("Maximum number of lost units 3 : " + levelS.getMaxLostL3(), skinSgx, "white");
+        labelsIsland.add(labelMaxLostL3);
+        Label labelAvgLeftUnits = new Label("Average number of left units : " + levelS.getAvgLeftUnits(), skinSgx, "white");
+        labelsIsland.add(labelAvgLeftUnits);
+        Label labelAvgLeftL0 = new Label("Average number of left units 0 : " + levelS.getAvgLeftL0(), skinSgx, "white");
+        labelsIsland.add(labelAvgLeftL0);
+        Label labelAvgLeftL1 = new Label("Average number of left units 1 : " + levelS.getAvgLeftL1(), skinSgx, "white");
+        labelsIsland.add(labelAvgLeftL1);
+        Label labelAvgLeftL2 = new Label("Average number of left units 2 : " + levelS.getAvgLeftL2(), skinSgx, "white");
+        labelsIsland.add(labelAvgLeftL2);
+        Label labelAvgLeftL3 = new Label("Average number of left units 3 : " + levelS.getAvgLeftL3(), skinSgx, "white");
+        labelsIsland.add(labelAvgLeftL3);
 
+        labelsGlobal = new ArrayList();
+        Label labelScrollG = new Label("", skinSgx, "white");
+        Label labelGamesG = new Label("Games : " + globalS.getTotalGames(), skinSgx, "white");
+        Label labelWinsG = new Label("Wins : " + globalS.getTotalWins(), skinSgx, "white");
+        labelsGlobal.add(labelWinsG);
+        Label labelDefeatsG = new Label("Defeats : " + globalS.getTotalDefeats(), skinSgx, "white");
+        labelsGlobal.add(labelDefeatsG);
+        Label labelMinTurnsG = new Label("Minimum number of turns : " + globalS.getMinTurns(), skinSgx, "white");
+        labelsGlobal.add(labelMinTurnsG);
+        Label labelAverTurnsG = new Label("Average number of turns : " + globalS.getAvgTurns(), skinSgx, "white");
+        labelsGlobal.add(labelAverTurnsG);
+        Label labelAverLandsG = new Label("Average number of lands/turn : " + globalS.getAvgLandsTurn(), skinSgx, "white");
+        labelsGlobal.add(labelAverLandsG);
+        Label labelMaxLandsG = new Label("Maximum number of lands/turn : " + globalS.getMaxLandsTurn(), skinSgx, "white");
+        labelsGlobal.add(labelMaxLandsG);
+        Label labelAverTreesG = new Label("Average number of cut trees : " + globalS.getAvgTrees(), skinSgx, "white");
+        labelsGlobal.add(labelAverTreesG);
+        Label labelMaxTreesG = new Label("Maximum number of cut trees : " + globalS.getMaxTrees(), skinSgx, "white");
+        labelsGlobal.add(labelMaxTreesG);
+        Label labelAverMoneyG = new Label("Average amount of earned money : " + globalS.getAvgTotalMoney(), skinSgx, "white");
+        labelsGlobal.add(labelAverMoneyG);
+        Label labelMaxMoneyG = new Label("Maximum amount of earned money : " + globalS.getMaxTotalMoney(), skinSgx, "white");
+        labelsGlobal.add(labelMaxMoneyG);
+        Label labelAverSavingG = new Label("Average amount of savings : " + globalS.getAvgSavings(), skinSgx, "white");
+        labelsGlobal.add(labelAverSavingG);
+        Label labelMaxSavingsG = new Label("Maximum amount of savings : " + globalS.getTotalSavings(), skinSgx, "white");
+        labelsGlobal.add(labelMaxSavingsG);
+        Label labelMinArmyG = new Label("Minimum army value : " + globalS.getMinArmy(), skinSgx, "white");
+        labelsGlobal.add(labelMinArmyG);
+        Label labelAvgArmyG = new Label("Average army value : " + globalS.getAvgArmy(), skinSgx, "white");
+        labelsGlobal.add(labelAvgArmyG);
+        Label labelMaxArmyG = new Label("Maximum army value : " + globalS.getMaxArmy(), skinSgx, "white");
+        labelsGlobal.add(labelMaxArmyG);
+        Label labelAvgUnitsG = new Label("Average number of units : " + globalS.getAvgUnits(), skinSgx, "white");
+        labelsGlobal.add(labelAvgUnitsG);
+        Label labelAvgL0G = new Label("Average number of units 0 : " + globalS.getAvgL0(), skinSgx, "white");
+        labelsGlobal.add(labelAvgL0G);
+        Label labelAvgL1G = new Label("Average number of units 1 : " + globalS.getAvgL1(), skinSgx, "white");
+        labelsGlobal.add(labelAvgL1G);
+        Label labelAvgL2G = new Label("Average number of units 2 : " + globalS.getAvgL2(), skinSgx, "white");
+        labelsGlobal.add(labelAvgL2G);
+        Label labelAvgL3G = new Label("Average number of units 3 : " + globalS.getAvgL3(), skinSgx, "white");
+        labelsGlobal.add(labelAvgL3G);
+        Label labelMaxUnitsG = new Label("Maximum number of units : " + globalS.getMaxUnits(), skinSgx, "white");
+        labelsGlobal.add(labelMaxUnitsG);
+        Label labelMaxL0G = new Label("Maximum number of units 0 : " + globalS.getMaxL0(), skinSgx, "white");
+        labelsGlobal.add(labelMaxL0G);
+        Label labelMaxL1G = new Label("Maximum number of units 1 : " + globalS.getMaxL1(), skinSgx, "white");
+        labelsGlobal.add(labelMaxL1G);
+        Label labelMaxL2G = new Label("Maximum number of units 2 : " + globalS.getMaxL2(), skinSgx, "white");
+        labelsGlobal.add(labelMaxL2G);
+        Label labelMaxL3G = new Label("Maximum number of units 3 : " + globalS.getMaxL3(), skinSgx, "white");
+        labelsGlobal.add(labelMaxL3G);
+        Label labelAvgLostUnitsG = new Label("Average number of lost units : " + globalS.getAvgLostUnits(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLostUnitsG);
+        Label labelAvgLostL0G = new Label("Average number of lost units 0 : " + globalS.getAvgLostL0(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLostL0G);
+        Label labelAvgLostL1G = new Label("Average number of lost units 1 : " + globalS.getAvgLostL1(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLostL1G);
+        Label labelAvgLostL2G = new Label("Average number of lost units 2 : " + globalS.getAvgLostL2(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLostL2G);
+        Label labelAvgLostL3G = new Label("Average number of lost units 3 : " + globalS.getAvgLostL3(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLostL3G);
+        Label labelMaxLostUnitsG = new Label("Maximum number of lost units : " + globalS.getMaxUnits(), skinSgx, "white");
+        labelsGlobal.add(labelMaxLostUnitsG);
+        Label labelMaxLostL0G = new Label("Maximum number of lost units 0 : " + globalS.getMaxLostL0(), skinSgx, "white");
+        labelsGlobal.add(labelMaxLostL0G);
+        Label labelMaxLostL1G = new Label("Maximum number of lost units 1 : " + globalS.getMaxLostL1(), skinSgx, "white");
+        labelsGlobal.add(labelMaxLostL1G);
+        Label labelMaxLostL2G = new Label("Maximum number of lost units 2 : " + globalS.getMaxLostL2(), skinSgx, "white");
+        labelsGlobal.add(labelMaxLostL2G);
+        Label labelMaxLostL3G = new Label("Maximum number of lost units 3 : " + globalS.getMaxLostL3(), skinSgx, "white");
+        labelsGlobal.add(labelMaxLostL3G);
+        Label labelAvgLeftUnitsG = new Label("Average number of left units : " + globalS.getAvgLeftUnits(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLeftUnitsG);
+        Label labelAvgLeftL0G = new Label("Average number of left units 0 : " + globalS.getAvgLeftL0(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLeftL0G);
+        Label labelAvgLeftL1G = new Label("Average number of left units 1 : " + globalS.getAvgLeftL1(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLeftL1G);
+        Label labelAvgLeftL2G = new Label("Average number of left units 2 : " + globalS.getAvgLeftL2(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLeftL2G);
+        Label labelAvgLeftL3G = new Label("Average number of left units 3 : " + globalS.getAvgLeftL3(), skinSgx, "white");
+        labelsGlobal.add(labelAvgLeftL3G);
 
-        // a rajouter aussi pour le global + faire le lien avec la classe Statistics :
-
-        Label labelMaxSavings = new Label("Maximum amount of savings : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMinArmy = new Label("Minimum army value : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgArmy = new Label("Average army value : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxArmy = new Label("Maximum army value : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgUnits = new Label("Average number of units : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgL0 = new Label("Average number of units 0 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgL1 = new Label("Average number of units 1 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgL2 = new Label("Average number of units 2 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgL3 = new Label("Average number of units 3 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxUnits = new Label("Maximum number of units : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxL0 = new Label("Maximum number of units 0 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxL1 = new Label("Maximum number of units 1 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxL2 = new Label("Maximum number of units 2 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxL3 = new Label("Maximum number of units 3 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLostUnits = new Label("Average number of lost units : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLostL0 = new Label("Average number of lost units 0 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLostL1 = new Label("Average number of lost units 1 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLostL2 = new Label("Average number of lost units 2 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLostL3 = new Label("Average number of lost units 3 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxLostUnits = new Label("Maximum number of lost units : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxLostL0 = new Label("Maximum number of lost units 0 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxLostL1 = new Label("Maximum number of lost units 1 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxLostL2 = new Label("Maximum number of lost units 2 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelMaxLostL3 = new Label("Maximum number of lost units 3 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLeftUnits = new Label("Average number of left units : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLeftL0 = new Label("Average number of left units 0 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLeftL1 = new Label("Average number of left units 1 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLeftL2 = new Label("Average number of left units 2 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-        Label labelAvgLeftL3 = new Label("Average number of left units 3 : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-
-
-        final Table tableIsland = new Table();
+        tableIsland = new Table();
         tableIsland.left();
         tableIsland.setBackground(backgroundGrey);
-        tableIsland.add(labelGames).left().padLeft(SCREEN_WIDTH * 2 / 100).padTop(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelWins).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelDefeats).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelAvgTurns).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelMinTurns).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelAvgLands).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelMaxLands).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelAvgTrees).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelMaxTrees).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelAvgMoney).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelMaxMoney).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row();
-        tableIsland.add(labelAvgSavings).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row().padTop(100);
+        tableIsland.add(labelGames).left().padLeft(SCREEN_WIDTH * 2 / 100).padTop(SCREEN_HEIGHT * 3 / 100);
+        addLabelToTableStat(tableIsland, labelsIsland);
+        tableIsland.row().padTop(buttonStatBack.getHeight() * 6 / 5);
         // affiche le scroll
         tableIsland.add(labelScroll).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableIsland.row().padTop(100);
-
-        tableButtonBack = new Table();
-        tableButtonBack.add(buttonStatBack).fill().width(SCREEN_HEIGHT * 70 / 100).height(Value.percentHeight(1.2f));
-        tableButtonBack.bottom();
 
         containerIsland = new Table(skinSgxTable);
         // no-bg pour afficher notre background, sinon il en rajoute un par dessus
@@ -600,50 +783,14 @@ public class LevelSelection implements Screen {
         containerIsland.setFillParent(true);
         containerIsland.add(paneIsland).fill().expand();
 
-        Label labelScrollG = new Label("", skinSgx, "white");
-        Label labelGamesG = new Label("Games : " + player1.getStatistics().getTotalGames(), skinSgx, "white");
-        Label labelWinsG = new Label("Wins : " + player1.getStatistics().getTotalWins(), skinSgx, "white");
-        Label labelDefeatsG = new Label("Defeats : " + player1.getStatistics().getTotalDefeats(), skinSgx, "white");
-        Label labelAverTurnsG = new Label("Average number of turns : " + player1.getStatistics().getAvgTurns(), skinSgx, "white");
-        Label labelMinTurnsG = new Label("Minimum number of turns : " + player1.getStatistics().getMinTurns(), skinSgx, "white");
-        Label labelAverLandsG = new Label("Average number of Lands/turns : " + player1.getStatistics().getAvgLandsTurn(), skinSgx, "white");
-        Label labelMaxLandsG = new Label("Maximum number of Lands/turns : " + player1.getStatistics().getMinLandsTurn(), skinSgx, "white");
-        Label labelAverTreesG = new Label("Average number of cut trees : " + player1.getStatistics().getAvgTrees(), skinSgx, "white");
-        Label labelMaxTreesG = new Label("Maximum number of cut trees : " + player1.getStatistics().getMaxTrees(), skinSgx, "white");
-        Label labelAverMoneyG = new Label("Average total amount of money : " + player1.getStatistics().getAvgTotalMoney(), skinSgx, "white");
-        Label labelMaxMoneyG = new Label("Maximum total amount of money : " + player1.getStatistics().getMaxTotalMoney(), skinSgx, "white");
-        Label labelAverSavingG = new Label("Average total savings : " + player1.getStatistics().getTotalSavings(), skinSgx, "white");
-
-        final Table tableGlobal = new Table();
+        tableGlobal = new Table();
         tableGlobal.left();
         tableGlobal.setBackground(backgroundGrey);
-        tableGlobal.add(labelGamesG).left().padLeft(SCREEN_WIDTH * 2 / 100).padTop(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelWinsG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelDefeatsG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelAverTurnsG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelMinTurnsG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelAverLandsG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelMaxLandsG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelAverTreesG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelMaxTreesG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelAverMoneyG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelMaxMoneyG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row();
-        tableGlobal.add(labelAverSavingG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row().padTop(100);
+        tableGlobal.add(labelGamesG).left().padLeft(SCREEN_WIDTH * 2 / 100).padTop(SCREEN_HEIGHT * 3 / 100);
+        addLabelToTableStat(tableGlobal, labelsGlobal);
+        tableGlobal.row().padTop(buttonStatBack.getHeight() * 6 / 5);
         // affiche le scroll
         tableGlobal.add(labelScrollG).left().padLeft(SCREEN_WIDTH * 2 / 100);
-        tableGlobal.row().padTop(100);
 
         containerGlobal = new Table(skinSgxTable);
         // no-bg pour afficher notre background, sinon il en rajoute un par dessus
@@ -651,15 +798,22 @@ public class LevelSelection implements Screen {
         containerGlobal.setFillParent(true);
         containerGlobal.add(paneGlobal).fill().expand();
 
-        content.addActor(containerGlobal);
-        content.addActor(containerIsland);
-        content.addActor(tableButtonBack);
+        tableButtonBack = new Table();
+        tableButtonBack.add(buttonStatBack).fill().width(SCREEN_HEIGHT * 70 / 100).height(Value.percentHeight(1.2f));
+        tableButtonBack.bottom();
 
-        mainTableStats.add(contentTop).size(SCREEN_HEIGHT * 70 / 100, labelStats.getHeight() + selectBoxPlayerStats.getHeight() + SCREEN_HEIGHT * 7 / 100);
-        mainTableStats.row();
-        mainTableStats.add(tableTabs);
-        mainTableStats.row();
-        mainTableStats.add(content).size(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100 - buttonIsland.getHeight() - (labelStats.getHeight() + selectBoxPlayerStats.getHeight() + SCREEN_HEIGHT * 7 / 100));
+        if (isInIsland) {
+            buttonIsland.setDisabled(true);
+            buttonGlobal.setDisabled(false);
+            content.addActor(containerGlobal);
+            content.addActor(containerIsland);
+        } else {
+            buttonIsland.setDisabled(false);
+            buttonGlobal.setDisabled(true);
+            content.addActor(containerIsland);
+            content.addActor(containerGlobal);
+        }
+        content.addActor(tableButtonBack);
 
         ChangeListener tab_listener = new ChangeListener() {
             @Override
@@ -677,6 +831,15 @@ public class LevelSelection implements Screen {
         tabs.setMaxCheckCount(1);
         tabs.add(buttonIsland);
         tabs.add(buttonGlobal);
+
+        return content;
+    }
+
+    private void addLabelToTableStat(Table table, ArrayList labels) {
+        for (int i = 0; i < labels.size(); i++) {
+            table.row();
+            table.add((Actor) labels.get(i)).left().padLeft(SCREEN_WIDTH * 2 / 100);
+        }
     }
 
     @Override
@@ -700,7 +863,6 @@ public class LevelSelection implements Screen {
         skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
         skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
         skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
-        stage.getViewport().setScreenBounds(0, 0, width, height);
     }
 
     @Override

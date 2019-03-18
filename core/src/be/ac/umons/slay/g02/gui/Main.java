@@ -13,9 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.I18NBundle;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import be.ac.umons.slay.g02.gui.screens.Menu;
+import be.ac.umons.slay.g02.players.StatsLoader;
 
 // gere les changements d'ecran
 public class Main extends Game {
@@ -42,6 +44,10 @@ public class Main extends Game {
     int xHotSpot;
     int yHotSpot;
 
+    private static boolean isStatsLoad = false;
+    public static ArrayList tabPlayers;
+
+//    public static Menu menu;
 
     // booleen temporaire, faudra peut-etre le mettre dans une autre classe, true par defaut
     public static boolean isAccountEnabled = true;
@@ -56,15 +62,13 @@ public class Main extends Game {
         lang = I18NBundle.createBundle(baseFileHandle, locale);
 
         prefs = Gdx.app.getPreferences("Slay");
-        isAccountEnabled = prefs.getBoolean("isAccountEnabled", true);
-
+        isAccountEnabled = prefs.getBoolean("isAccountEnabled", true);	
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();
 
         if (prefs.getBoolean("isFullScreenEnabled", false)) {
             Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-        }
-
+        }	 
         skinSgx = new Skin(Gdx.files.internal("skins/sgx/sgx-ui.json"));
         skinSgxTable = new Skin(Gdx.files.internal("skins/sgx-table/sgx-ui.json"));
 
@@ -83,7 +87,7 @@ public class Main extends Game {
         yHotSpot = 0;
         cursor = Gdx.graphics.newCursor(pm, xHotSpot, yHotSpot);
         Gdx.graphics.setCursor(cursor);
-
+        Gdx.graphics.setTitle("");
 
    /*
     // si besoin d'un labelstyle
@@ -101,8 +105,18 @@ public class Main extends Game {
        nomBouton.setColor(valeur/255f, valeur/255f, valeur/255f, 1); --> les valeurs sont des int
    */
 
+        // load Hall Of Fame (ca doit etre fait dans le menu)
+        if (!isStatsLoad) {
+            StatsLoader statsLoader = new StatsLoader();
+            tabPlayers = statsLoader.createTab();
+            isStatsLoad = true;
+        }
+
 
         this.setScreen(new Menu(this));
+
+        //     menu = new Menu(this);
+        //     setScreen(menu);
     }
 
     @Override
@@ -122,6 +136,18 @@ public class Main extends Game {
         skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
         // fixe le probleme de decalage en fenetre reduite
         stage.getViewport().setScreenBounds(0, 0, width, height);
+
+
+
+/*      // ne change pas la taille de la fenetre et ca bug (mais ca garde le ratio)
+
+        Vector2 size = Scaling.fit.apply(1920, 1080, width, height);
+        int viewportX = (int)(width - size.x) / 2;
+        int viewportY = (int)(height - size.y) / 2;
+        int viewportWidth = (int)size.x;
+        int viewportHeight = (int)size.y;
+        Gdx.gl.glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
+*/
     }
 
     @Override

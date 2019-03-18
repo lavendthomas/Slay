@@ -3,9 +3,8 @@ package be.ac.umons.slay.g02.players;
 
 public abstract class Player {
     String name;
+    String avatar;
     Colors color;
-    Statistics statistics;
-
 
     public Colors getColor() {
         return color;
@@ -23,12 +22,12 @@ public abstract class Player {
         this.color = color;
     }
 
-    public Statistics getStatistics() {
-        return statistics;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setStatistics(Statistics statistics) {
-        this.statistics = statistics;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     @Override

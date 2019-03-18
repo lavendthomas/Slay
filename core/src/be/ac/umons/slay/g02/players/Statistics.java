@@ -1,7 +1,5 @@
 package be.ac.umons.slay.g02.players;
 
-import java.util.List;
-
 public class Statistics {
 
     private int totalGames = 0;
@@ -10,23 +8,248 @@ public class Statistics {
     private int avgTurns = 0;
     private int minTurns = 0;
     private int avgLandsTurn = 0;
-    private int minLandsTurn = 0;
+    private int maxLandsTurn = 0;
     private int avgTrees = 0;
     private int maxTrees = 0;
     private int avgTotalMoney = 0;
     private int maxTotalMoney = 0;
     private int avgLostUnits = 0;
-    private int avgFullAmyValue = 0;
-    private int minFullAmyValue = 0;
+    private int maxLostUnits = 0;
+    private int maxUnits = 0;
+    private int avgUnits = 0;
+    private int avgLeftUnits = 0;
+    private int avgArmy = 0;
+    private int minArmy = 0;
+    private int maxArmy = 0;
+    private int avgSavings = 0;
     private int totalSavings = 0;
-    private List avgTotal;
-    private List avgLeftL;
+    private int maxL0 = 0;
+    private int maxL1 = 0;
+    private int maxL2 = 0;
+    private int maxL3 = 0;
+    private int maxLostL0 = 0;
+    private int maxLostL1 = 0;
+    private int maxLostL2 = 0;
+    private int maxLostL3 = 0;
+    private int avgLostL0 = 0;
+    private int avgLostL1 = 0;
+    private int avgLostL2 = 0;
+    private int avgLostL3 = 0;
+    private int avgL0 = 0;
+    private int avgL1 = 0;
+    private int avgL2 = 0;
+    private int avgL3 = 0;
+    private int avgLeftL0 = 0;
+    private int avgLeftL1 = 0;
+    private int avgLeftL2 = 0;
+    private int avgLeftL3 = 0;
+
+
+    public int getAvgLeftUnits() {
+        return avgLeftUnits;
+    }
+
+    public void setAvgLeftUnits(int avgLeftUnits) {
+        this.avgLeftUnits = avgLeftUnits;
+    }
+
+    public int getAvgSavings() {
+        return avgSavings;
+    }
+
+    public void setAvgSavings(int avgSavings) {
+        this.avgSavings = avgSavings;
+    }
+
+    public int getMaxLandsTurn() {
+        return maxLandsTurn;
+    }
+
+    public void setMaxLandsTurn(int maxLandsTurn) {
+        this.maxLandsTurn = maxLandsTurn;
+    }
+
+    public int getMaxLostUnits() {
+        return maxLostUnits;
+    }
+
+    public void setMaxLostUnits(int maxLostUnits) {
+        this.maxLostUnits = maxLostUnits;
+    }
+
+    public int getMaxUnits() {
+        return maxUnits;
+    }
+
+    public void setMaxUnits(int maxUnits) {
+        this.maxUnits = maxUnits;
+    }
+
+    public int getAvgUnits() {
+        return avgUnits;
+    }
+
+    public void setAvgUnits(int avgUnits) {
+        this.avgUnits = avgUnits;
+    }
+
+    public int getAvgArmy() {
+        return avgArmy;
+    }
+
+    public void setAvgArmy(int avgArmy) {
+        this.avgArmy = avgArmy;
+    }
+
+    public int getMinArmy() {
+        return minArmy;
+    }
+
+    public void setMinArmy(int minArmy) {
+        this.minArmy = minArmy;
+    }
+
+    public int getMaxArmy() {
+        return maxArmy;
+    }
+
+    public void setMaxArmy(int maxArmy) {
+        this.maxArmy = maxArmy;
+    }
+
+    public int getMaxL0() {
+        return maxL0;
+    }
+
+    public void setMaxL0(int maxL0) {
+        this.maxL0 = maxL0;
+    }
+
+    public int getMaxL1() {
+        return maxL1;
+    }
+
+    public void setMaxL1(int maxL1) {
+        this.maxL1 = maxL1;
+    }
+
+    public int getMaxL2() {
+        return maxL2;
+    }
+
+    public void setMaxL2(int maxL2) {
+        this.maxL2 = maxL2;
+    }
+
+    public int getMaxL3() {
+        return maxL3;
+    }
+
+    public void setMaxL3(int maxL3) {
+        this.maxL3 = maxL3;
+    }
+
+    public int getMaxLostL0() {
+        return maxLostL0;
+    }
+
+    public void setMaxLostL0(int maxLostL0) {
+        this.maxLostL0 = maxLostL0;
+    }
+
+    public int getMaxLostL1() {
+        return maxLostL1;
+    }
+
+    public void setMaxLostL1(int maxLostL1) {
+        this.maxLostL1 = maxLostL1;
+    }
+
+    public int getMaxLostL2() {
+        return maxLostL2;
+    }
+
+    public void setMaxLostL2(int maxLostL2) {
+        this.maxLostL2 = maxLostL2;
+    }
+
+    public int getMaxLostL3() {
+        return maxLostL3;
+    }
+
+    public void setMaxLostL3(int maxLostL3) {
+        this.maxLostL3 = maxLostL3;
+    }
+
+    public int getAvgLostL0() {
+        return avgLostL0;
+    }
+
+    public void setAvgLostL0(int avgLostL0) {
+        this.avgLostL0 = avgLostL0;
+    }
+
+    public int getAvgLostL1() {
+        return avgLostL1;
+    }
+
+    public void setAvgLostL1(int avgLostL1) {
+        this.avgLostL1 = avgLostL1;
+    }
+
+    public int getAvgLostL2() {
+        return avgLostL2;
+    }
+
+    public void setAvgLostL2(int avgLostL2) {
+        this.avgLostL2 = avgLostL2;
+    }
+
+    public int getAvgLostL3() {
+        return avgLostL3;
+    }
+
+    public void setAvgLostL3(int avgLostL3) {
+        this.avgLostL3 = avgLostL3;
+    }
+
+    public int getAvgL0() {
+        return avgL0;
+    }
+
+    public void setAvgL0(int avgL0) {
+        this.avgL0 = avgL0;
+    }
+
+    public int getAvgL1() {
+        return avgL1;
+    }
+
+    public void setAvgL1(int avgL1) {
+        this.avgL1 = avgL1;
+    }
+
+    public int getAvgL2() {
+        return avgL2;
+    }
+
+    public void setAvgL2(int avgL2) {
+        this.avgL2 = avgL2;
+    }
+
+    public int getAvgL3() {
+        return avgL3;
+    }
+
+    public void setAvgL3(int avgL3) {
+        this.avgL3 = avgL3;
+    }
 
     public int getTotalSavings() {
         return totalSavings;
     }
 
-    public void setTotalSavinds(int totalSavings) {
+    public void setTotalSavings(int totalSavings) {
         this.totalSavings = totalSavings;
     }
 
@@ -78,14 +301,6 @@ public class Statistics {
         this.avgLandsTurn = avgLandsTurn;
     }
 
-    public int getMinLandsTurn() {
-        return minLandsTurn;
-    }
-
-    public void setMinLandsTurn(int minLandsTurn) {
-        this.minLandsTurn = minLandsTurn;
-    }
-
     public int getAvgTrees() {
         return avgTrees;
     }
@@ -126,37 +341,36 @@ public class Statistics {
         this.avgLostUnits = avgLostUnits;
     }
 
-    public int getAvgFullAmyValue() {
-        return avgFullAmyValue;
+    public int getAvgLeftL0() {
+        return avgLeftL0;
     }
 
-    public void setAvgFullAmyValue(int avgFullAmyValue) {
-        this.avgFullAmyValue = avgFullAmyValue;
+    public void setAvgLeftL0(int avgLeftL0) {
+        this.avgLeftL0 = avgLeftL0;
     }
 
-    public int getMinFullAmyValue() {
-        return minFullAmyValue;
+    public int getAvgLeftL1() {
+        return avgLeftL1;
     }
 
-    public void setMinFullAmyValue(int minFullAmyValue) {
-        this.minFullAmyValue = minFullAmyValue;
+    public void setAvgLeftL1(int avgLeftL1) {
+        this.avgLeftL1 = avgLeftL1;
     }
 
-    public List getAvgTotal() {
-        return avgTotal;
+    public int getAvgLeftL2() {
+        return avgLeftL2;
     }
 
-    public void setAvgTotal(List avgTotal) {
-        this.avgTotal = avgTotal;
+    public void setAvgLeftL2(int avgLeftL2) {
+        this.avgLeftL2 = avgLeftL2;
     }
 
-    public List getAvgLeftL() {
-        return avgLeftL;
+    public int getAvgLeftL3() {
+        return avgLeftL3;
     }
 
-    public void setAvgLeftL(List avgLeftL) {
-        this.avgLeftL = avgLeftL;
+    public void setAvgLeftL3(int avgLeftL3) {
+        this.avgLeftL3 = avgLeftL3;
     }
-
 
 }
