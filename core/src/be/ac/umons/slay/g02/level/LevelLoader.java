@@ -161,23 +161,24 @@ public class LevelLoader {
                         case 0:
                             // Two AIs
                             difficulty = LevelSelection.difficulty;
-                            player = fromDifficulty (difficulty, color, "p" + p);
+                            player = fromDifficulty (difficulty, color, "P" + (p+1));
                             break;
                         case 1:
                             // One AI and One human player
                             if (countHuman == 0) {
                                 player = loadHumanPlayer(countHuman, color);
-                                countHuman ++;
+                                countHuman += 1;
                                 break;
                             } else {
                                 difficulty = LevelSelection.difficulty;
-                                player = fromDifficulty(difficulty, color, "p" + p);
+                                player = fromDifficulty(difficulty, color, "P" + (p+1));
                                 break;
                             }
 
                         default:
                             // Two human players
                             player = loadHumanPlayer(countHuman, color);
+                            countHuman += 1;
                             break;
                     }
 

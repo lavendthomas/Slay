@@ -43,6 +43,7 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.level.Coordinate;
+import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
@@ -670,7 +671,7 @@ public class GameScreen implements Screen {
         // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
         // au lieu de : LevelSelection.player1Name
 
-        Label labelP1 = new Label("P1", skinSgx, "title-white");
+        Label labelP1 = new Label(Level.getPlayers()[0].getName(), skinSgx, "title-white");
         labelP1.setFontScale(1.2f);
 
         // Player 2
@@ -686,7 +687,7 @@ public class GameScreen implements Screen {
         // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
         // au lieu de : LevelSelection.player2Name
 
-        Label labelP2 = new Label("P2", skinSgx, "title-white");
+        Label labelP2 = new Label(Level.getPlayers()[1].getName(), skinSgx, "title-white");
         labelP2.setFontScale(1.2f);
 
         // Territory's money
