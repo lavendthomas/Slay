@@ -225,15 +225,6 @@ public class Menu implements Screen {
     private int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
     private int buttonProfileHeight = VIRTUAL_HEIGHT * 10 / 100;
     private int windowSettingsWidth = Math.min(SCREEN_WIDTH, 700);
-    /*
-    private int buttonCenterWidth = 300;
-    private int buttonCenterHeight = 50;
-    private int buttonCenterGap = 25;
-    private int labelProfileWidth = 300;
-    private int tableCenterPositionX = VIRTUAL_WIDTH / 2;
-    private int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
-    private int buttonProfileHeight = 100    ;
-    private int windowSettingsWidth = Math.min(SCREEN_WIDTH, 700); */
 
 
     public Menu(Game aGame) {
@@ -246,10 +237,10 @@ public class Menu implements Screen {
         stage.clear();
 
         buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
-        buttonCenterWidth = VIRTUAL_WIDTH * 28 / 100;
+        buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
         buttonCenterHeight = VIRTUAL_HEIGHT * 5 / 100;
         buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
-        labelProfileWidth = buttonCenterWidth * 35 / 100;
+        //labelProfileWidth = buttonCenterWidth * 35 / 100;
         tableCenterPositionX = SCREEN_WIDTH / 2;
         tableCenterPositionY = SCREEN_HEIGHT / 3;
         buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
@@ -653,7 +644,6 @@ public class Menu implements Screen {
 
         buttonSettingsBack = new TextButton(lang.get("button_back"), skinSgx, "big");
         buttonSettingsBack.setWidth(buttonCenterWidth / 2);
-        buttonSettingsBack.setScale(1.2f);
         buttonSettingsBack.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -886,7 +876,6 @@ public class Menu implements Screen {
         messageErrorNoAvatar.setColor(Color.RED);
         buttonLogin = new TextButton(lang.get("text_log_in"), skinSgx, "big");
         buttonLogin.setWidth(buttonCenterWidth / 2);
-        buttonLogin.setScale(1.2f);
         buttonLogin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -920,7 +909,6 @@ public class Menu implements Screen {
         });
         buttonSignUp = new TextButton(lang.get("text_sign_up"), skinSgx, "big");
         buttonSignUp.setWidth(buttonCenterWidth / 2);
-        buttonSignUp.setScale(1.2f);
         buttonSignUp.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -974,7 +962,6 @@ public class Menu implements Screen {
         });
         TextButton buttonLoginCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
         buttonLoginCancel.setWidth(buttonCenterWidth / 2);
-        buttonLoginCancel.setScale(1.2f);
         buttonLoginCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -985,7 +972,6 @@ public class Menu implements Screen {
         });
         buttonSignUpCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
         buttonSignUpCancel.setWidth(buttonCenterWidth / 2);
-        buttonSignUpCancel.setScale(1.2f);
         buttonSignUpCancel.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
