@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -15,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
@@ -31,12 +33,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
+
+import be.ac.umons.slay.g02.players.Account;
 import be.ac.umons.slay.g02.players.Colors;
+import be.ac.umons.slay.g02.players.FileBuilder;
+import be.ac.umons.slay.g02.players.GlobalStats;
 import be.ac.umons.slay.g02.players.HumanPlayer;
-import be.ac.umons.slay.g02.players.Statistics;
-import be.ac.umons.slay.g02.players.StatsLoader;
+import be.ac.umons.slay.g02.players.LevelStats;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -45,6 +56,7 @@ import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.camera;
 import static be.ac.umons.slay.g02.gui.Main.cursor;
 import static be.ac.umons.slay.g02.gui.Main.isAccountEnabled;
+import static be.ac.umons.slay.g02.gui.Main.lang;
 import static be.ac.umons.slay.g02.gui.Main.pm;
 import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
@@ -53,51 +65,69 @@ import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.gui.Main.stage;
-import static be.ac.umons.slay.g02.gui.Main.lang;
+import static be.ac.umons.slay.g02.gui.Main.tabPlayers;
 
 /**
  * classe qui affiche le menu principal
  */
 public class Menu implements Screen {
-
-
-    public static Drawable imagePanda = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/panda.jpg"))));
-    public static Drawable imageYeti = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/yeti.jpg"))));
-    public static Drawable imageWorm = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/worm.png"))));
-    public static Drawable imageMustache = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/mustache.jpg"))));
-    public static Drawable imageBunny = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/bunny.jpg"))));
-    public static Drawable imageGirl = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/girl.jpg"))));
-    public static Drawable imageRobot = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/robot.jpg"))));
-    public static Drawable imagePenguin = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/penguin.jpg"))));
-    public static Drawable imageBird = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/bird.jpg"))));
-    public static Drawable imageSquid = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/squid.jpg"))));
-    public static Drawable imageAnonymous
-            = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/anonymous.png"))));
-    public static Drawable backgroundGrey
-            = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("backgrounds/background-gray.png"))));
-    public static ImageButton buttonEditAvatar = new ImageButton(imageAnonymous);
-    public static ImageButton buttonLoginAvatar = new ImageButton(imageAnonymous);
-    public static ImageButton pandaButton = new ImageButton(imagePanda);
-    public static ImageButton yetiButton = new ImageButton(imageYeti);
-    public static ImageButton wormButton = new ImageButton(imageWorm);
-    public static ImageButton mustacheButton = new ImageButton(imageMustache);
-    public static ImageButton bunnyButton = new ImageButton(imageBunny);
-    public static ImageButton girlButton = new ImageButton(imageGirl);
-    public static ImageButton robotButton = new ImageButton(imageRobot);
-    public static ImageButton penguinButton = new ImageButton(imagePenguin);
-    public static ImageButton birdButton = new ImageButton(imageBird);
-    public static ImageButton squidButton = new ImageButton(imageSquid);
-    public static ArrayList tabScore;
-
+    public final static String INCORRECT_PASSWORD = "Incorrect password";
+    public final static String USER_NAME_NOT_EXIST = "Username does not exist";
+    public final static String INCORRECT_LENGTH_PASSWORD = "Passwords must be at least 4 characters long";
+    public final static String INCORRECT_LENGTH_USER_NAME = "Usernames must be between 4 and 20 char.";
+    public final static String USER_NAME_NOT_AVAILABLE = "Username not available";
+    public final static String PASSWORDS_NOT_MATCH = "Passwords do not match";
+    public final static String NO_AVATAR = "Choose an avatar";
+    public static String pathImageRobot = "profile/robot.jpg";
+    public static String pathImageGirl = "profile/girl.jpg";
+    public static String pathImagePanda = "profile/panda.jpg";
+    public static String pathImagePink = "profile/pink.jpg";
+    public static String pathImageSquid = "profile/squid.jpg";
+    public static String pathImageBanana = "profile/banana.jpg";
+    public static String pathImageBurger = "profile/burger.jpg";
+    public static String pathImageBlue = "profile/blue.jpg";
+    public static String pathImageMustache = "profile/mustache.jpg";
+    public static String pathImagePenguin = "profile/penguin.jpg";
+    public static String pathImageProfile = "profile/anonymous.png";
+    public static String pathImageTmp = "profile/anonymous.png";
+    public static Drawable imageRobot = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImageRobot))));
+    public static Drawable imagePanda = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImagePanda))));
+    public static Drawable imageGirl = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImageGirl))));
+    public static Drawable imagePink = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImagePink))));
+    public static Drawable imageSquid = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImageSquid))));
+    public static Drawable imageBanana = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImageBanana))));
+    public static Drawable imageBurger = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImageBurger))));
+    public static Drawable imageBlue = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImageBlue))));
+    public static Drawable imageMustache = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImageMustache))));
+    public static Drawable imagePenguin = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(pathImagePenguin))));
+    public static Drawable imageAnonymous = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("profile/anonymous.png"))));
+    public static Drawable backgroundGrey = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("backgrounds/background-gray.png"))));
+    public static Drawable imageProfile = imageAnonymous;
+    public static Drawable imagePlayer1 = imageAnonymous;
+    public static Drawable imagePlayer2 = imageAnonymous;
+    public static Drawable imageTmp = imageAnonymous;
+    private static ImageButton buttonEditAvatar = new ImageButton(imageProfile);
+    private static ImageButton buttonSelectionAvatar = new ImageButton(imageProfile);
+    private static ImageButton buttonLoginAvatar = new ImageButton(imageAnonymous);
+    private static ImageButton pandaButton = new ImageButton(imagePanda);
+    private static ImageButton pinkButton = new ImageButton(imagePink);
+    private static ImageButton bananaButton = new ImageButton(imageBanana);
+    private static ImageButton mustacheButton = new ImageButton(imageMustache);
+    private static ImageButton burgerButton = new ImageButton(imageBurger);
+    private static ImageButton girlButton = new ImageButton(imageGirl);
+    private static ImageButton robotButton = new ImageButton(imageRobot);
+    private static ImageButton penguinButton = new ImageButton(imagePenguin);
+    private static ImageButton blueButton = new ImageButton(imageBlue);
+    private static ImageButton squidButton = new ImageButton(imageSquid);
     // pour les tests
-    public static boolean isPlayer1Logged = true;
+    public static boolean isPlayer1Logged = false;
     public static boolean isPlayer2Logged = false;
-    public static int playerRank = 4;
-    public static int totalNumberPlayers = 11;
-
-    public static HumanPlayer player1 = new HumanPlayer("toto", Colors.C1);
-    public static HumanPlayer player2 = new HumanPlayer("titi", Colors.C1);
-
+    private boolean hasImportedAvatar;
+    private static int playerRank = 0;
+    public static int totalNumberPlayers = 0;
+    private static int numPlayer = 0;
+    public static HumanPlayer player1 = new HumanPlayer("P1", Colors.C1);
+    public static HumanPlayer player2 = new HumanPlayer("P2", Colors.C1);
     private static Window windowExit = new Window(lang.get("text_exit"), skinSgx);
     private static Window windowSettings = new Window(lang.get("text_settings"), skinSgx);
     private static Window windowAlert = new Window(lang.get("text_disable_registration"), skinSgx);
@@ -107,10 +137,56 @@ public class Menu implements Screen {
     private static Window windowLogOut = new Window(lang.get("text_log_out"), skinSgx);
     private static Window windowDelete = new Window(lang.get("text_delete_account"), skinSgx);
     private static Table mainTableLogin = new Table();
-    public int buttonCenterWidth;
+    private static Table tableEdit;
+    private static Cell<ImageButton> cellAvatarSelect;
+    private static Cell<ImageButton> cellEdit;
+    private static Cell<ImageButton> cellSignUp;
+    private static Cell<ImageButton> cellProfileLeft;
+    private static Cell<ImageButton> cellProfileRight;
+    private static Cell<ImageButton> cellAvatarProfile;
+    private static Cell<Label> cellLabelProfileLeft;
+    private static Cell<Label> cellLabelProfileRight;
+    private static Cell<Label> cellLabelEditMessage1;
+    private static Cell<Label> cellLabelEditMessage2;
+    private static Cell<Label> cellLabelEditMessage3;
+    private static Cell<Label> cellErrorUsernameLogin;
+    private static Cell<Label> cellErrorPasswordLogin;
+    private static Cell<Label> cellErrorUsernameSignUp;
+    private static Cell<Label> cellErrorPasswordSignUp;
+    private static Cell<Label> cellErrorPassword2SignUp;
+    private static Cell<Label> cellErrorAvatarSignUp;
+    private boolean hasChangedAvatar = false;
+    Label noMessageError0 = new Label("", skinSgx);
+    Label noMessageError1 = new Label("", skinSgx);
+    Label noMessageError2 = new Label("", skinSgx);
+    Label noMessageError3 = new Label("", skinSgx);
+    Label noMessageError4 = new Label("", skinSgx);
+    Label noMessageError5 = new Label("", skinSgx);
+    Label noMessageError6 = new Label("", skinSgx);
+    Label noMessageError7 = new Label("", skinSgx);
+    Label noMessageError8 = new Label("", skinSgx);
+    Label messageErrorLoginPassword = new Label("*" + INCORRECT_PASSWORD, skinSgx, "white");
+    Label messageErrorUsername = new Label("*" + USER_NAME_NOT_EXIST, skinSgx, "white");
+    Label messageErrorLengthPassword = new Label("*" + INCORRECT_LENGTH_PASSWORD, skinSgx, "white");
+    Label messageErrorLengthUsername = new Label("*" + INCORRECT_LENGTH_USER_NAME, skinSgx, "white");
+    Label messageUsernameNotAvailable = new Label("*" + USER_NAME_NOT_AVAILABLE, skinSgx, "white");
+    Label messageErrorPasswordNotMatch = new Label("*" + PASSWORDS_NOT_MATCH, skinSgx, "white");
+    Label messageErrorNoAvatar = new Label("*" + NO_AVATAR, skinSgx, "white");
+    private static TextField fieldCurrentPassword = new TextField("", skinSgx);
+    private static TextField fieldNewPassword1 = new TextField("", skinSgx);
+    private static TextField fieldNewPassword2 = new TextField("", skinSgx);
+    private static TextField fieldNameSignUp = new TextField("", skinSgx);
+    private static TextField fieldPasswordLogin = new TextField("", skinSgx);
+    private static TextField fieldNameLogin = new TextField("", skinSgx);
+    private static TextField fieldPassword1SignUp = new TextField("", skinSgx);
+    private static TextField fieldPassword2SignUp = new TextField("", skinSgx);
+    private String messageErrorLogin = "";
+    private String messageErrorSignUp = "";
+    private String messageErrorEdit = "";
+    private int buttonCenterWidth;
     // pour savoir dans quel bouton le joueur s'identifie
-    public boolean isProfileLeft = false;
-    public boolean isProfileRight = false;
+    private boolean isProfileLeft = false;
+    private boolean isProfileRight = false;
     TextButton boutonNiveau;
     // doivent etre declares ici
     private Game game;
@@ -139,8 +215,11 @@ public class Menu implements Screen {
     private int buttonProfileHeight;
     private int windowSettingsWidth;
     private String playerName;
-    private boolean isInLogin = false;
+    private boolean isInLogIn = false;
+    private boolean isInSignUp = false;
     private boolean isInEdit = false;
+    private FileHandle sourceImage;
+    private File selectedFile;
 
 
     public Menu(Game aGame) {
@@ -184,20 +263,6 @@ public class Menu implements Screen {
         sprite = new Sprite(texture);
         sprite.setOrigin(0, 0);
         sprite.setPosition(-sprite.getWidth() / 2, -sprite.getHeight() / 2);
-
-        // load Hall Of Fame (ca doit etre fait dans le menu)
-        StatsLoader statsLoader = new StatsLoader();
-        tabScore = statsLoader.createTab();
-
-        // test remplissage  joueur1
-        Statistics statis = new Statistics();
-        statis.setAvgFullAmyValue(100);
-        statis.setAvgLostUnits(200);
-        statis.setAvgTotalMoney(5000);
-        statis.setAvgTrees(400);
-        statis.setMaxTrees(500);
-        statis.setMinLandsTurn(1000000);
-        player1.setStatistics(statis);
 
 
         Table tableCenter = new Table();
@@ -247,56 +312,34 @@ public class Menu implements Screen {
                 }
             });
 
-            final Label labelProfileLeft = new Label(lang.get("label_not_logged"), skinSgx, "title");
-            Label labelProfileRight = new Label(lang.get("label_not_logged"), skinSgx, "title");
-            labelProfileLeft.setFontScale(0.45f);
-            labelProfileRight.setFontScale(0.45f);
+            Label labelPlayer1 = new Label("Player 1", skinSgx, "title");
+            Label labelPlayer2 = new Label("Player 2", skinSgx, "title");
+
+            Label labelProfileLeft = new Label("Not Logged", skinSgx, "medium");
+            Label labelProfileRight = new Label("Not Logged", skinSgx, "medium");
+            labelPlayer1.setAlignment(1);
+            labelPlayer2.setAlignment(1);
+
             labelProfileLeft.setAlignment(1);
             labelProfileRight.setAlignment(1);
-            // image anonyme (profil) a mettre dans une methode
-            buttonProfileLeft = new ImageButton(imageAnonymous);
-            buttonProfileLeft.addListener(new ClickListener() {
-                public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
 
+            if (isPlayer1Logged) {
+                imageProfile = imagePlayer1;
+                labelProfileLeft = new Label("Logged", skinSgx, "medium");
+                labelProfileLeft.setAlignment(1);
+            } else {
+                imageProfile = imageAnonymous;
+            }
+            createButtonProfileLeft();
 
-                }
-
-                public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-
-
-                }
-
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    soundButton1.play(prefs.getFloat("volume", 0.2f));
-                    if (!isPlayer1Logged) {
-                        showLoginWindow();
-                        isProfileLeft = true;
-                    } else if (isPlayer1Logged)
-                        showProfile(1);
-                }
-            });
-            buttonProfileRight = new ImageButton(imageAnonymous);
-            buttonProfileRight.addListener(new ClickListener() {
-                public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-
-
-                }
-
-                public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-
-
-                }
-
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    soundButton1.play(prefs.getFloat("volume", 0.2f));
-                    if (!isPlayer2Logged)
-                        showLoginWindow();
-                    else if (isPlayer2Logged)
-                        showProfile(2);
-                }
-            });
+            if (isPlayer2Logged) {
+                imageProfile = imagePlayer2;
+                labelProfileRight = new Label("Logged", skinSgx, "medium");
+                labelProfileRight.setAlignment(1);
+            } else {
+                imageProfile = imageAnonymous;
+            }
+            createButtonProfileRight();
 
             tableCenter.add(buttonPlay).width(buttonCenterWidth).height(buttonCenterHeight);
             tableCenter.row().pad(buttonCenterGap, 0, buttonCenterGap, 0);
@@ -305,20 +348,23 @@ public class Menu implements Screen {
             tableCenter.add(buttonSettings).width(buttonCenterWidth).height(buttonCenterHeight);
             tableCenter.row();
             tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
-
-            tableProfile.add(labelProfileLeft).width(labelProfileWidth);
-            tableProfile.add(labelProfileRight).width(labelProfileWidth);
+            tableProfile.add(labelPlayer1).width(labelProfileWidth);
+            tableProfile.add(labelPlayer2).width(labelProfileWidth);
             tableProfile.row().pad(10, 0, 0, 0);
-
+            tableProfile.add(labelProfileLeft).width(labelProfileWidth).height(buttonProfileHeight / 5);
+            tableProfile.add(labelProfileRight).width(labelProfileWidth).height(buttonProfileHeight / 5);
+            tableProfile.row().pad(10, 0, 0, 0);
+            cellLabelProfileLeft = tableProfile.getCell(labelProfileLeft);
+            cellLabelProfileRight = tableProfile.getCell(labelProfileRight);
             tableProfile.add(buttonProfileLeft).width(buttonProfileHeight).height(buttonProfileHeight);
             tableProfile.add(buttonProfileRight).width(buttonProfileHeight).height(buttonProfileHeight);
             tableProfile.row();
-
+            cellProfileLeft = tableProfile.getCell(buttonProfileLeft);
+            cellProfileRight = tableProfile.getCell(buttonProfileRight);
             Label labelProfile = new Label("", skinSgx);
             tableProfile.add(labelProfile);
             tableProfile.add(labelProfile);
 
-            tableProfile.row();
             stage.addActor(tableProfile);
         } else {
             tableCenter.add(buttonPlay).width(buttonCenterWidth).height(buttonCenterHeight);
@@ -355,6 +401,31 @@ public class Menu implements Screen {
         for (SelectBox b : box) {
             b.setDisabled(false);
             b.setTouchable(Touchable.enabled);
+        }
+    }
+
+    public static void disableField(TextField... field) {
+        for (TextField f : field) {
+            f.setDisabled(true);
+        }
+    }
+
+    public static void enableField(TextField... field) {
+        for (TextField f : field) {
+            f.setDisabled(false);
+        }
+    }
+
+    public static void resetField(TextField... field) {
+        for (TextField f : field) {
+            f.setText("");
+        }
+    }
+
+    public static void setPasswordMode(TextField... field) {
+        for (TextField f : field) {
+            f.setPasswordCharacter('*');
+            f.setPasswordMode(true);
         }
     }
 
@@ -409,7 +480,7 @@ public class Menu implements Screen {
         stage.dispose();
     }
 
-    public void showSettings() {
+    private void showSettings() {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
@@ -438,7 +509,6 @@ public class Menu implements Screen {
             @Override
             public void drag(InputEvent event, float x, float y, int coordinatesPointer) {
                 sliderVolume.setRange(0, sliderVolume.getWidth());
-
                 prefs.putFloat("volume", Math.min(1f, Math.max(0f, x / sliderVolume.getWidth())));
                 prefs.flush();
 
@@ -463,8 +533,6 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!Gdx.graphics.isFullscreen()) {
-                    prefs.putBoolean("isFullScreenEnabled", true);
-                    prefs.flush();
                     soundButton2.play(prefs.getFloat("volume", 0.2f));
                     Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
                 } else {
@@ -511,14 +579,10 @@ public class Menu implements Screen {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 if (switchRegistration.isChecked()) {
                     isAccountEnabled = true;
-                    prefs.putBoolean("isAccountEnabled", true);
-                    prefs.flush();
                     stage.clear();
                     game.setScreen(new Menu(game));
                 } else if (!switchRegistration.isChecked()) {
                     isAccountEnabled = false;
-                    prefs.putBoolean("isAccountEnabled", false);
-                    prefs.flush();
                     stage.clear();
                     game.setScreen(new Menu(game));
                 }
@@ -531,7 +595,7 @@ public class Menu implements Screen {
         stage.addActor(windowSettings);
     }
 
-    public void showAlertSettings() {
+    private void showAlertSettings() {
         disableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
         windowAlert.clear();
         windowAlert.setSize(windowSettingsWidth, windowSettingsWidth);
@@ -583,22 +647,36 @@ public class Menu implements Screen {
         stage.addActor(windowAlert);
     }
 
-    public void showLoginWindow() {
-        disableButton(buttonPlay, buttonSettings, buttonExit);
-        if (isAccountEnabled)
-            disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+    private void showLoginWindow() {
+        disableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
         mainTableLogin.clear();
         stage.addActor(mainTableLogin);
         mainTableLogin.setFillParent(true);
 
+        imageProfile = imageAnonymous;
+
         buttonTabLogin = new TextButton(lang.get("text_log_in"), skinSgx, "number");
-        buttonTabLogin.setDisabled(true);
         buttonTabLogin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
                 buttonTabLogin.setDisabled(true);
                 buttonTabSignUp.setDisabled(false);
+                resetField(fieldNameSignUp, fieldPassword1SignUp, fieldPassword2SignUp);
+                disableField(fieldNameSignUp, fieldPassword1SignUp, fieldPassword2SignUp);
+                enableField(fieldNameLogin, fieldPasswordLogin);
+                stage.setKeyboardFocus(fieldNameLogin);
+                imageProfile = imageAnonymous;
+                hasChangedAvatar = false;
+                cellErrorAvatarSignUp.clearActor();
+                cellErrorUsernameSignUp.clearActor();
+                cellErrorPasswordSignUp.clearActor();
+                cellErrorPassword2SignUp.clearActor();
+                cellErrorAvatarSignUp.setActor(noMessageError0);
+                cellErrorUsernameSignUp.setActor(noMessageError1);
+                cellErrorPasswordSignUp.setActor(noMessageError2);
+                cellErrorPassword2SignUp.setActor(noMessageError3);
+
             }
         });
         buttonTabSignUp = new TextButton(lang.get("text_sign_up"), skinSgx, "number");
@@ -608,8 +686,43 @@ public class Menu implements Screen {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
                 buttonTabLogin.setDisabled(false);
                 buttonTabSignUp.setDisabled(true);
+                resetField(fieldNameLogin, fieldPasswordLogin);
+                disableField(fieldNameLogin, fieldPasswordLogin);
+                enableField(fieldNameSignUp, fieldPassword1SignUp, fieldPassword2SignUp);
+                stage.setKeyboardFocus(fieldNameSignUp);
+                cellSignUp.clearActor();
+                cellErrorUsernameLogin.clearActor();
+                cellErrorPasswordLogin.clearActor();
+                cellErrorUsernameLogin.setActor(noMessageError4);
+                cellErrorPasswordLogin.setActor(noMessageError5);
+                buttonLoginAvatar = new ImageButton(imageAnonymous);
+                buttonLoginAvatar.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        isInSignUp = true;
+                        showAvatarSelectionWindow();
+                    }
+                });
+                cellSignUp.setActor(buttonLoginAvatar);
             }
         });
+
+        // pour distinguer si on est dans LogIn ou SignUp
+        if (!isInSignUp) {
+            stage.setKeyboardFocus(fieldNameLogin);
+            buttonTabLogin.setDisabled(true);
+            disableField(fieldNameSignUp, fieldPassword1SignUp, fieldPassword2SignUp);
+            enableField(fieldNameLogin, fieldPasswordLogin);
+            stage.setKeyboardFocus(fieldNameLogin);
+        } else {
+            stage.setKeyboardFocus(fieldNameSignUp);
+            buttonTabSignUp.setDisabled(true);
+            buttonTabSignUp.setChecked(true);
+            isInSignUp = false;
+            disableField(fieldNameLogin, fieldPasswordLogin);
+            enableField(fieldNameSignUp, fieldPassword1SignUp, fieldPassword2SignUp);
+            stage.setKeyboardFocus(fieldNameSignUp);
+        }
 
         Table tableButtons = new Table();
         tableButtons.add(buttonTabLogin).width((SCREEN_HEIGHT * 70 / 100) / 2);
@@ -621,22 +734,20 @@ public class Menu implements Screen {
 
         Stack content = new Stack();
 
-        buttonLoginAvatar.setSize(SCREEN_WIDTH * 7 / 100, SCREEN_WIDTH * 7 / 100);
         buttonLoginAvatar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonLoginAvatar = new ImageButton(imageAnonymous);
-                isInLogin = true;
+                isInSignUp = true;
                 showAvatarSelectionWindow();
             }
         });
-
+        Label labelUserNameLogin = new Label(lang.get("label_username"), skinSgx, "white");
         Label labelUserName = new Label(lang.get("label_username"), skinSgx, "white");
         Label labelNewPassword1 = new Label(lang.get("label_password"), skinSgx, "white");
         Label labelNewPassword2 = new Label(lang.get("label_password_again"), skinSgx, "white");
 
-        TextField fieldUserName = new TextField("", skinSgx);
-        fieldUserName.setTextFieldListener(new TextField.TextFieldListener() {
+        resetField(fieldNameSignUp);
+        fieldNameSignUp.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
                 if ((key == '\r' || key == '\n')) {
@@ -644,10 +755,8 @@ public class Menu implements Screen {
                 }
             }
         });
-        System.out.print("username " + labelUserName);
-        TextField fieldNewPassword1 = new TextField("", skinSgx);
-
-        fieldNewPassword1.setTextFieldListener(new TextField.TextFieldListener() {
+        resetField(fieldPassword1SignUp);
+        fieldPassword1SignUp.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
                 if ((key == '\r' || key == '\n')) {
@@ -655,9 +764,8 @@ public class Menu implements Screen {
                 }
             }
         });
-        TextField fieldNewPassword2 = new TextField("", skinSgx);
-
-        fieldNewPassword2.setTextFieldListener(new TextField.TextFieldListener() {
+        resetField(fieldPassword2SignUp);
+        fieldPassword2SignUp.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
                 if ((key == '\r' || key == '\n')) {
@@ -665,12 +773,10 @@ public class Menu implements Screen {
                 }
             }
         });
+        Label labelCurrentPasswordLogin = new Label(lang.get("label_password"), skinSgx, "white");
 
-        Label labelCurrentPasswordLogin = new Label(lang.get("label_username"), skinSgx, "white");
-        Label labelNewPassword1Login = new Label(lang.get("label_password"), skinSgx, "white");
-
-        TextField fieldCurrentPasswordLogin = new TextField("", skinSgx);
-        fieldCurrentPasswordLogin.setTextFieldListener(new TextField.TextFieldListener() {
+        resetField(fieldNameLogin);
+        fieldNameLogin.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
                 if ((key == '\r' || key == '\n')) {
@@ -678,9 +784,8 @@ public class Menu implements Screen {
                 }
             }
         });
-        TextField fieldNewPassword1Login = new TextField("", skinSgx);
-
-        fieldNewPassword1Login.setTextFieldListener(new TextField.TextFieldListener() {
+        resetField(fieldPasswordLogin);
+        fieldPasswordLogin.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
                 if ((key == '\r' || key == '\n')) {
@@ -688,14 +793,16 @@ public class Menu implements Screen {
                 }
             }
         });
+        setPasswordMode(fieldPassword1SignUp, fieldPassword2SignUp, fieldPasswordLogin);
 
-        Label messageError = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
-        messageError.setColor(Color.RED);
-        Label messageErrorLoginPassword = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
+        Label noMessage = new Label("", skinSgx);
         messageErrorLoginPassword.setColor(Color.RED);
-        Label messageErrorUsername = new Label(lang.get("label_username_inexistant"), skinSgx, "white");
         messageErrorUsername.setColor(Color.RED);
-
+        messageErrorLengthPassword.setColor(Color.RED);
+        messageErrorLengthUsername.setColor(Color.RED);
+        messageUsernameNotAvailable.setColor(Color.RED);
+        messageErrorPasswordNotMatch.setColor(Color.RED);
+        messageErrorNoAvatar.setColor(Color.RED);
         buttonLogin = new TextButton(lang.get("text_log_in"), skinSgx, "big");
         buttonLogin.setWidth(buttonCenterWidth / 2);
         buttonLogin.setScale(1.2f);
@@ -703,15 +810,31 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
-                // find player
-                //     player1=getStatisticsPlayer(fieldUserName,fieldCurrentPasswordLogin);
-                // gerer messages d'erreurs avec exceptions
 
-                // si tout va bien :
+                messageErrorLogin = getPlayer(fieldNameLogin.getText(), fieldPasswordLogin.getText());
 
-                mainTableLogin.remove();
-                // a modifier
-                showProfile(2);
+
+                if (!(messageErrorLogin.equals(""))) {
+                    cellErrorUsernameLogin.clearActor();
+                    cellErrorPasswordLogin.clearActor();
+
+                    if (messageErrorLogin.equals(USER_NAME_NOT_EXIST)) {
+                        cellErrorUsernameLogin.setActor(messageErrorUsername);
+                        cellErrorPasswordLogin.setActor(noMessageError7);
+
+                    } else if (messageErrorLogin.equals(INCORRECT_PASSWORD)) {
+                        cellErrorUsernameLogin.setActor(noMessageError8);
+                        cellErrorPasswordLogin.setActor(messageErrorLoginPassword);
+
+                    }
+                } else {
+                    mainTableLogin.remove();
+                    if (isProfileLeft)
+                        isPlayer1Logged = true;
+                    else
+                        isPlayer2Logged = true;
+                    showProfile(numPlayer);
+                }
             }
         });
         buttonSignUp = new TextButton(lang.get("text_sign_up"), skinSgx, "big");
@@ -722,13 +845,50 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
 
-                // gerer messages d'erreurs avec exceptions
+                if (!hasChangedAvatar) {
+                    messageErrorSignUp = NO_AVATAR;
+                } else {
+                    messageErrorSignUp = validatePlayer(fieldNameSignUp.getText(), fieldPassword1SignUp.getText(), fieldPassword2SignUp.getText());
+                }
+                if (!(messageErrorSignUp.equals(""))) {
+                    isInSignUp = true;
+                    cellErrorAvatarSignUp.clearActor();
+                    cellErrorUsernameSignUp.clearActor();
+                    cellErrorPasswordSignUp.clearActor();
+                    cellErrorPassword2SignUp.clearActor();
+                    cellErrorAvatarSignUp.setActor(noMessageError0);
+                    cellErrorUsernameSignUp.setActor(noMessageError1);
+                    cellErrorPasswordSignUp.setActor(noMessageError2);
+                    cellErrorPassword2SignUp.setActor(noMessageError3);
 
-                // si tout va bien :
+                    if (messageErrorSignUp.equals(NO_AVATAR)) {
+                        cellErrorAvatarSignUp.setActor(messageErrorNoAvatar);
+                    } else if (messageErrorSignUp.equals(USER_NAME_NOT_AVAILABLE)) {
+                        cellErrorUsernameSignUp.setActor(messageUsernameNotAvailable);
+                    } else if (messageErrorSignUp.equals(INCORRECT_LENGTH_USER_NAME)) {
+                        cellErrorUsernameSignUp.setActor(messageErrorLengthUsername);
+                    } else if (messageErrorSignUp.equals(INCORRECT_LENGTH_PASSWORD)) {
+                        cellErrorPasswordSignUp.setActor(messageErrorLengthPassword);
+                    } else if (messageErrorSignUp.equals(PASSWORDS_NOT_MATCH)) {
+                        cellErrorPassword2SignUp.setActor(messageErrorPasswordNotMatch);
+                    }
 
-                mainTableLogin.remove();
-                // a modifier
-                showProfile(2);
+                } else {
+                    mainTableLogin.remove();
+                    initializeStatsPlayer(fieldNameSignUp.getText(), fieldPassword1SignUp.getText(), pathImageProfile);
+                    if (isProfileLeft) {
+                        isPlayer1Logged = true;
+                        numPlayer = 1;
+                        player1.getGlobalStats().setScore(10000);
+                        changeAvatar(player1);
+                    } else {
+                        isPlayer2Logged = true;
+                        player2.getGlobalStats().setScore(25000);
+                        numPlayer = 2;
+                        changeAvatar(player2);
+                    }
+                    showProfile(numPlayer);
+                }
             }
         });
         TextButton buttonLoginCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
@@ -739,9 +899,7 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 mainTableLogin.remove();
-                enableButton(buttonPlay, buttonSettings, buttonExit);
-                if (isAccountEnabled)
-                    enableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+                enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
             }
         });
         buttonSignUpCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
@@ -752,9 +910,19 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 mainTableLogin.remove();
-                enableButton(buttonPlay, buttonSettings, buttonExit);
-                if (isAccountEnabled)
-                    enableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+                enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
+                cellSignUp.clearActor();
+                buttonLoginAvatar = new ImageButton(imageAnonymous);
+                cellSignUp.setActor(buttonLoginAvatar);
+                buttonLoginAvatar.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        isInSignUp = true;
+                        showAvatarSelectionWindow();
+                    }
+                });
+                hasChangedAvatar = false;
+
             }
         });
 
@@ -763,75 +931,101 @@ public class Menu implements Screen {
 
         final Table tableSignUp = new Table();
         tableSignUp.setBackground(backgroundGrey);
-
+        tableSignUp.padTop(SCREEN_WIDTH * 1 / 100);
         Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
         avatarLabel.setAlignment(1);
-        tableSignUp.add(avatarLabel).colspan(2).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 2 / 100);
+        tableSignUp.add(avatarLabel).colspan(2).padBottom(SCREEN_HEIGHT * 2 / 100);
         tableSignUp.row();
 
-        tableSignUp.add(buttonLoginAvatar).height(Value.percentHeight(1f)).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 4 / 100).colspan(2);
+        tableSignUp.add(buttonLoginAvatar).width(SCREEN_WIDTH * 7 / 100).height(SCREEN_WIDTH * 7 / 100).padBottom(SCREEN_HEIGHT * 1 / 100).colspan(2);
         tableSignUp.row();
 
+        cellSignUp = tableSignUp.getCell(buttonLoginAvatar);
+        messageErrorNoAvatar.setAlignment(1);
+        messageErrorLengthUsername.setAlignment(1);
+        messageErrorPasswordNotMatch.setAlignment(1);
+        messageErrorLengthPassword.setAlignment(1);
+        tableSignUp.add(noMessageError0).center().padBottom(SCREEN_HEIGHT * 20 / 1000).colspan(2);
+        tableSignUp.row();
+        cellErrorAvatarSignUp = tableSignUp.getCell(noMessageError0);
         labelUserName.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldUserName.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        fieldNameSignUp.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
         labelUserName.setAlignment(1);
         tableSignUp.add(labelUserName).fill();
-        tableSignUp.add(fieldUserName).fill().left().width(Value.percentWidth(1f));
+        tableSignUp.add(fieldNameSignUp).fill().left().width(Value.percentWidth(1f));
         tableSignUp.row();
-        tableSignUp.add(messageError).left().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
+
+
+        tableSignUp.add(noMessageError1).center().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
         tableSignUp.row();
+        cellErrorUsernameSignUp = tableSignUp.getCell(noMessageError1);
         labelNewPassword1.setAlignment(1);
         labelNewPassword1.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldNewPassword1.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        fieldPassword1SignUp.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
         tableSignUp.add(labelNewPassword1);
-        tableSignUp.add(fieldNewPassword1).fill().width(Value.percentWidth(1f));
+        tableSignUp.add(fieldPassword1SignUp).fill().width(Value.percentWidth(1f));
         tableSignUp.row();
-        tableSignUp.add(messageError).left().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
+
+        tableSignUp.add(noMessageError2).center().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
         tableSignUp.row();
+        cellErrorPasswordSignUp = tableSignUp.getCell(noMessageError2);
         labelNewPassword2.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldNewPassword2.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        fieldPassword2SignUp.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
         labelNewPassword2.setAlignment(1);
         tableSignUp.add(labelNewPassword2).width(Value.percentWidth(1f)).fill();//.padRight(SCREEN_WIDTH * 2 / 100);
-        tableSignUp.add(fieldNewPassword2).fill();
+        tableSignUp.add(fieldPassword2SignUp).fill();
         tableSignUp.row();
-        messageError.setAlignment(1);
-        tableSignUp.add(messageError).padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
+
+        tableSignUp.add(noMessageError3).center().colspan(2);
         tableSignUp.row().padTop(SCREEN_HEIGHT * 70 / 100 * 4 / 100);
+        cellErrorPassword2SignUp = tableSignUp.getCell(noMessageError3);
         buttonSignUpCancel.setWidth(SCREEN_HEIGHT * 70 / 100 * 21 / 100);
         buttonSignUp.setWidth(buttonSignUpCancel.getWidth());
 
-        tableSignUp.add(buttonSignUpCancel).width(Value.percentWidth(1f)).left().padLeft(SCREEN_WIDTH * 9 / 100);
-        tableSignUp.add(buttonSignUp).width(Value.percentWidth(1f)).right().padRight(SCREEN_WIDTH * 9 / 100);
+        tableSignUp.add(buttonSignUpCancel).width(Value.percentWidth(1f)).left().padLeft(SCREEN_WIDTH * 9 / 100).padBottom(SCREEN_HEIGHT * 2 / 100);
+        tableSignUp.add(buttonSignUp).width(Value.percentWidth(1f)).right().padRight(SCREEN_WIDTH * 9 / 100).padBottom(SCREEN_HEIGHT * 2 / 100);
+        tableSignUp.row();
 
-//       Login
+//       Login :
 
         final Table tableLogin = new Table();
         tableLogin.setBackground(backgroundGrey);
 
-        labelCurrentPasswordLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldCurrentPasswordLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        labelUserNameLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
+        fieldNameLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        labelUserNameLogin.setAlignment(1);
+        tableLogin.add(labelUserNameLogin).fill();
+        tableLogin.add(fieldNameLogin).fill().left().width(Value.percentWidth(1f));
+        tableLogin.row();
+
+        if (messageErrorLogin.equals(USER_NAME_NOT_EXIST)) {
+            messageErrorUsername.setAlignment(1);
+            tableLogin.add(messageErrorUsername).left().padBottom(SCREEN_HEIGHT * 6 / 100).colspan(2);
+        } else tableLogin.add(noMessageError4).left().padBottom(SCREEN_HEIGHT * 6 / 100).colspan(2);
+        tableLogin.row();
+
+        cellErrorUsernameLogin = tableLogin.getCell(noMessageError4);
+
         labelCurrentPasswordLogin.setAlignment(1);
-        tableLogin.add(labelCurrentPasswordLogin).fill();
-        tableLogin.add(fieldCurrentPasswordLogin).fill().left().width(Value.percentWidth(1f));
+        labelCurrentPasswordLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
+        fieldPasswordLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        tableLogin.add(labelCurrentPasswordLogin);
+        tableLogin.add(fieldPasswordLogin).fill().width(Value.percentWidth(1f));
         tableLogin.row();
-        messageErrorUsername.setAlignment(1);
-        tableLogin.add(messageErrorUsername).left().padBottom(SCREEN_HEIGHT * 6 / 100).colspan(2);
+
+        if (messageErrorLogin.equals(INCORRECT_PASSWORD)) {
+            messageErrorLoginPassword.setAlignment(1);
+            tableLogin.add(messageErrorLoginPassword).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
+        } else tableLogin.add(noMessageError5).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
         tableLogin.row();
-        labelNewPassword1Login.setAlignment(1);
-        labelNewPassword1Login.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldNewPassword1Login.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
-        tableLogin.add(labelNewPassword1Login);
-        tableLogin.add(fieldNewPassword1Login).fill().width(Value.percentWidth(1f));
-        tableLogin.row();
-        messageErrorLoginPassword.setAlignment(1);
-        tableLogin.add(messageErrorLoginPassword).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
-        tableLogin.row();
+        cellErrorPasswordLogin = tableLogin.getCell(noMessageError5);
 
         buttonLoginCancel.setWidth(SCREEN_HEIGHT * 70 / 100 * 21 / 100);
         buttonLogin.setWidth(buttonLoginCancel.getWidth());
 
         tableLogin.add(buttonLoginCancel).width(Value.percentWidth(1f)).left().padLeft(SCREEN_HEIGHT * 70 / 100 * 15 / 100);
         tableLogin.add(buttonLogin).width(Value.percentWidth(1f)).right().padRight(SCREEN_HEIGHT * 70 / 100 * 15 / 100);
+
 
         content.addActor(tableLogin);
         content.addActor(tableSignUp);
@@ -856,13 +1050,174 @@ public class Menu implements Screen {
         tabs.add(buttonTabSignUp);
     }
 
+    /**
+     * initialisation d'une joueur
+     *
+     * @param username:     username du joueur
+     * @param password      : password du joueur
+     * @param avatar:avatar du joueur
+     */
+    private void initializeStatsPlayer(String username, String password, String avatar) {
+
+        Account account = new Account();
+        account.setUsername(username);
+        account.setPassword(password);
+        GlobalStats globalStats = initializeGlobalStats();
+        ArrayList listLevelStats = initializeLevelStatsPlayer();
+
+        if (isProfileLeft) {
+            player1.setName(username);
+            player1.setAvatar(avatar);
+
+            player1.setAccount(account);
+            player1.setGlobalStats(globalStats);
+            player1.setListLevelStats(listLevelStats);
+        } else {
+            player2.setName(username);
+            player2.setAvatar(avatar);
+            player2.setAccount(account);
+            player2.setGlobalStats(globalStats);
+            player2.setListLevelStats(listLevelStats);
+        }
+
+    }
+
+    /**
+     * initialise les statistiques des 10 niveaux
+     *
+     * @return listLevelStats
+     */
+    private ArrayList initializeLevelStatsPlayer() {
+        ArrayList listLevelStats = new ArrayList();
+        for (int i = 0; i < 10; i++) {
+            LevelStats levelStats = new LevelStats();
+            levelStats.setLevel(i + 1);
+            listLevelStats.add(levelStats);
+        }
+        return listLevelStats;
+    }
+
+    /**
+     * initialise les statistiques globales
+     *
+     * @return globalStats
+     */
+
+    private GlobalStats initializeGlobalStats() {
+        GlobalStats globalStats = new GlobalStats();
+        return globalStats;
+    }
+
+    private void reset(String userName, String currentPasswordLogin) {
+
+    }
+
+    /**
+     * récupération du joueur dans la table des joueurs
+     *
+     * @param userName
+     * @param currentPasswordLogin
+     * @return message d'anomalie
+     */
+    private String getPlayer(String userName, String currentPasswordLogin) {
+        String messageError = "";
+
+        Iterator iter = tabPlayers.iterator();
+        while (iter.hasNext()) {
+            HumanPlayer player = (HumanPlayer) iter.next();
+
+            if (player.getName().equals(userName)) {
+                if (player.getAccount().getPassword().equals(currentPasswordLogin)) {
+                    createPlayer(player);
+                    return messageError;
+                } else {
+                    return INCORRECT_PASSWORD;
+                }
+            }
+        }
+        return USER_NAME_NOT_EXIST;
+    }
+
+    /**
+     * création d'un joueur à partir du joueur 1 ou joueur 2
+     *
+     * @param player joueur 1 ou joueur 2
+     */
+    private void createPlayer(HumanPlayer player) {
+
+        Account account = new Account();
+        account = player.getAccount();
+        GlobalStats globalStats = new GlobalStats();
+        globalStats = player.getGlobalStats();
+        ArrayList listLevelStats = getLevelStatsPlayer(player);
+
+        if (isProfileLeft) {
+            player1.setName(player.getName());
+            player1.setAvatar(player.getAvatar());
+            player1.setAccount(account);
+            player1.setGlobalStats(globalStats);
+            player1.setListLevelStats(listLevelStats);
+        } else {
+            player2.setName(player.getName());
+            player2.setAvatar(player.getAvatar());
+            player2.setAccount(account);
+            player2.setGlobalStats(globalStats);
+            player2.setListLevelStats(listLevelStats);
+        }
+
+    }
+
+    /**
+     * récupération des 10 niveaux de statistique d'un joueur
+     *
+     * @param player
+     * @return liste des 10 niveaux de statistique
+     */
+    private ArrayList getLevelStatsPlayer(HumanPlayer player) {
+
+        ArrayList listLevelStats = new ArrayList();
+        for (int i = 0; i < 10; i++) {
+            listLevelStats.add(player.getListLevelStats().get(i));
+        }
+        return listLevelStats;
+    }
+
+    /**
+     * Validation de la saisie
+     *
+     * @param userName
+     * @param newPassword1
+     * @param newPassword2
+     * @return message d'anomalie
+     */
+    public String validatePlayer(String userName, String newPassword1, String newPassword2) {
+        String messageError = "";
+        if (userName.length() < 4 || userName.length() > 20) {
+            return INCORRECT_LENGTH_USER_NAME;
+        }
+
+        Iterator iter = tabPlayers.iterator();
+        while (iter.hasNext()) {
+            HumanPlayer statis = (HumanPlayer) iter.next();
+
+            if (statis.getName().equals(userName)) {
+                return USER_NAME_NOT_AVAILABLE;
+            }
+
+        }
+        if (newPassword1.length() < 4) {
+            return INCORRECT_LENGTH_PASSWORD;
+        }
+
+        if (!(newPassword1.equals(newPassword2))) {
+            return PASSWORDS_NOT_MATCH;
+        }
+        return messageError;
+    }
+
     // int player --> 1 si c'est le joueur du bouton gauche, 2 sinon
-    public void showProfile(int player) {
-        // en supprimant un compte, il faudra recreer un menu avec l'image anonyme
-        // donc pas besoin de detruire la fenetre ou de s'occuper de reactiver les boutons quand tu supprimes
-        disableButton(buttonPlay, buttonSettings, buttonExit);
-        if (isAccountEnabled)
-            disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+    private void showProfile(int player) {
+        disableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
         windowProfile.clear();
         windowProfile.setSize(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100);
         windowProfile.setPosition(SCREEN_WIDTH / 2 - windowProfile.getWidth() / 2, SCREEN_HEIGHT / 2 - windowProfile.getHeight() / 2);
@@ -876,32 +1231,61 @@ public class Menu implements Screen {
         table.setFillParent(true);
         table.bottom().padTop(SCREEN_HEIGHT * 6 / 100);
         table.setSize(windowProfile.getWidth(), windowProfile.getHeight());
+        ImageButton imageAvatar;
 
+        isInSignUp = false;
 
-        if (player == 1)
-            playerName = LevelSelection.player1Name;
-        else if (player == 2)
-            playerName = LevelSelection.player2Name;
+        if (player == 1) {
+            playerName = player1.getName();
+            playerRank = player1.getGlobalStats().getRank();
 
+            imagePlayer1 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(player1.getAvatar()))));
+            imageProfile = imagePlayer1;
+            imageAvatar = new ImageButton(imagePlayer1);
+            cellProfileLeft.clearActor();
+            createButtonProfileLeft();
+            cellProfileLeft.setActor(buttonProfileLeft);
+            cellLabelProfileLeft.clearActor();
+            Label labelProfileLeft = new Label("Logged", skinSgx, "medium");
+            labelProfileLeft.setAlignment(1);
+            cellLabelProfileLeft.setActor(labelProfileLeft);
+        } else if (player == 2) {
+            playerName = player2.getName();
+            playerRank = player2.getGlobalStats().getRank();
+            imagePlayer2 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(player2.getAvatar()))));
+            imageProfile = imagePlayer2;
+            imageAvatar = new ImageButton(imagePlayer2);
+            cellProfileRight.clearActor();
+            createButtonProfileRight();
+            cellProfileRight.setActor(buttonProfileRight);
+            cellLabelProfileRight.clearActor();
+            Label labelProfileRight = new Label("Logged", skinSgx, "medium");
+            labelProfileRight.setAlignment(1);
+            cellLabelProfileRight.setActor(labelProfileRight);
+        } else {
+            imageAvatar = new ImageButton(imageAnonymous);
+        }
 
-        Label labelWelcome = new Label(lang.format("label_welcome", playerName), skinSgx, "title-white");
-
-        ImageButton imageAvatar = new ImageButton(imageAnonymous);
+        Label labelWelcome = new Label("Welcome " + playerName + " !", skinSgx, "title-white");
 
         disableButton(imageAvatar);
 
         Label labelRank = new Label(lang.format("label_rank", playerRank, totalNumberPlayers), skinSgx, "white");
-
+        Label labelNew = new Label("Rank : none ", skinSgx, "white");
         labelWelcome.setHeight(SCREEN_HEIGHT * 10 / 100);
         table.add(labelWelcome).height(Value.percentHeight(1f));
         table.row();
 
-        imageAvatar.setSize(buttonProfileHeight, buttonProfileHeight);
-        table.add(imageAvatar).height(Value.percentHeight(1f)).width(Value.percentWidth(1f));
+        table.add(imageAvatar).height(buttonProfileHeight).width(buttonProfileHeight);
         table.row();
-
-        labelRank.setHeight(SCREEN_HEIGHT * 10 / 100);
-        table.add(labelRank).height(Value.percentHeight(1f));
+        cellAvatarProfile = table.getCell(imageAvatar);
+        if (playerRank == 0) {
+            labelNew.setHeight(SCREEN_HEIGHT * 10 / 100);
+            table.add(labelNew).height(Value.percentHeight(1f));
+        } else {
+            labelRank.setHeight(SCREEN_HEIGHT * 10 / 100);
+            table.add(labelRank).height(Value.percentHeight(1f));
+        }
         table.row();
         table.top();
 
@@ -936,9 +1320,8 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 windowProfile.remove();
-                enableButton(buttonPlay, buttonSettings, buttonExit);
-                if (isAccountEnabled)
-                    enableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
+                enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
+                imageProfile = imageAnonymous;
             }
         });
 
@@ -959,7 +1342,7 @@ public class Menu implements Screen {
         stage.addActor(windowProfile);
     }
 
-    public void showEdit() {
+    private void showEdit() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
         windowEdit.clear();
         windowEdit.setSize(windowProfile.getWidth(), windowProfile.getHeight());
@@ -968,23 +1351,18 @@ public class Menu implements Screen {
         // place le titre de la fenetre au milieu
         windowEdit.getTitleTable().padLeft(windowEdit.getWidth() / 2 - windowEdit.getTitleLabel().getWidth() / 2);
 
-        Table table = new Table();
-        windowEdit.addActor(table);
-        table.setFillParent(true);
+        hasChangedAvatar = false;
 
-        table.left().padTop(windowEdit.getHeight() * 6 / 100);
-        table.setSize(windowProfile.getWidth(), windowProfile.getWidth());
+        tableEdit = new Table();
+        windowEdit.addActor(tableEdit);
+        tableEdit.setFillParent(true);
 
-        buttonEditAvatar.setSize(windowEdit.getHeight() * 14 / 100, windowEdit.getHeight() * 14 / 100);
-        buttonEditAvatar.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                soundButton1.play(prefs.getFloat("volume", 0.2f));
-                buttonEditAvatar = new ImageButton(imageAnonymous);
-                isInEdit = true;
-                showAvatarSelectionWindow();
-            }
-        });
+        tableEdit.left().padTop(windowEdit.getHeight() * 6 / 100);
+        tableEdit.setSize(windowProfile.getWidth(), windowProfile.getWidth());
+
+        float widthImage = windowEdit.getHeight() * 14 / 100;
+        float heightImage = windowEdit.getHeight() * 14 / 100;
+
         buttonEditCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
         buttonEditCancel.addListener(new ClickListener() {
             @Override
@@ -999,10 +1377,57 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+                if (isProfileLeft) {
+                    messageErrorEdit = validateEdit(fieldCurrentPassword, player1, fieldNewPassword1, fieldNewPassword2);
+                } else {
+                    messageErrorEdit = validateEdit(fieldCurrentPassword, player2, fieldNewPassword1, fieldNewPassword2);
+                }
+                // message d'anomalie
+                if (!(messageErrorEdit.equals(""))) {
+                    isInSignUp = false;
+                    cellLabelEditMessage1.clearActor();
+                    cellLabelEditMessage2.clearActor();
+                    cellLabelEditMessage3.clearActor();
+                    if (messageErrorEdit.equals(INCORRECT_PASSWORD)) {
+                        cellLabelEditMessage1.setActor(messageErrorLoginPassword);
+                        cellLabelEditMessage2.setActor(noMessageError1);
+                        cellLabelEditMessage3.setActor(noMessageError1);
+                    } else if (messageErrorEdit.equals(INCORRECT_LENGTH_PASSWORD)) {
+                        cellLabelEditMessage2.setActor(messageErrorLengthPassword);
+                        cellLabelEditMessage1.setActor(noMessageError1);
+                        cellLabelEditMessage3.setActor(noMessageError1);
+                    } else if (messageErrorEdit.equals(PASSWORDS_NOT_MATCH)) {
+                        cellLabelEditMessage3.setActor(messageErrorPasswordNotMatch);
+                        cellLabelEditMessage1.setActor(noMessageError1);
+                        cellLabelEditMessage2.setActor(noMessageError1);
+                    }
+                } else {
+                    // mise à jour de l'avatar dans le profil
+                    windowEdit.remove();
+                    enableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
+                    cellAvatarProfile.clearActor();
+                    imageProfile = imageTmp;
+                    ImageButton imageAvatar = new ImageButton(imageProfile);
+                    cellAvatarProfile.setActor(imageAvatar);
+                    // mise à jour avatar gauche dans le menu
+                    if (isProfileLeft) {
+                        isPlayer1Logged = true;
+                        imagePlayer1 = imageProfile;
+                        cellProfileLeft.clearActor();
+                        createButtonProfileLeft();
+                        cellProfileLeft.setActor(buttonProfileLeft);
+                        changeAvatar(player1);
 
-
-                //  a faire
-
+                    } else {
+                        //mise à jour avatar droit dans le menu
+                        isPlayer2Logged = true;
+                        imagePlayer2 = imageProfile;
+                        cellProfileRight.clearActor();
+                        createButtonProfileRight();
+                        cellProfileRight.setActor(buttonProfileRight);
+                        changeAvatar(player2);
+                    }
+                }
             }
         });
 
@@ -1010,7 +1435,7 @@ public class Menu implements Screen {
         Label labelNewPassword1 = new Label(lang.get("label_new_password"), skinSgx, "white");
         Label labelNewPassword2 = new Label(lang.get("label_new_password_again"), skinSgx, "white");
 
-        TextField fieldCurrentPassword = new TextField("", skinSgx);
+        resetField(fieldCurrentPassword);
         fieldCurrentPassword.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
@@ -1019,8 +1444,7 @@ public class Menu implements Screen {
                 }
             }
         });
-        TextField fieldNewPassword1 = new TextField("", skinSgx);
-
+        resetField(fieldNewPassword1);
         fieldNewPassword1.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
@@ -1029,8 +1453,7 @@ public class Menu implements Screen {
                 }
             }
         });
-        TextField fieldNewPassword2 = new TextField("", skinSgx);
-
+        resetField(fieldNewPassword2);
         fieldNewPassword2.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
@@ -1039,60 +1462,152 @@ public class Menu implements Screen {
                 }
             }
         });
+        setPasswordMode(fieldCurrentPassword, fieldNewPassword1, fieldNewPassword2);
+        stage.setKeyboardFocus(fieldCurrentPassword);
 
-        Label messageError = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
-        messageError.setColor(Color.RED);
-        Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
+        float heightImageEdit = windowEdit.getHeight() * 14 / 100;
+
+
+        Label noMessageError1 = new Label("", skinSgx, "white");
+        Label noMessageError2 = new Label("", skinSgx, "white");
+        Label noMessageError3 = new Label("", skinSgx, "white");
+        messageErrorLoginPassword.setColor(Color.RED);
+        messageErrorLoginPassword.setAlignment(1);
+        messageErrorLengthPassword.setColor(Color.RED);
+        messageErrorLengthPassword.setAlignment(1);
+        messageErrorPasswordNotMatch.setColor(Color.RED);
+        messageErrorPasswordNotMatch.setAlignment(1);
+
+        Label avatarLabel = new Label("Click on the image to change it", skinSgx);
         avatarLabel.setAlignment(1);
-        table.add(avatarLabel).colspan(2).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 2 / 100);
-        table.row();
-        table.add(buttonEditAvatar).height(Value.percentHeight(1f)).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 4 / 100).colspan(2);
-        table.row();
+        tableEdit.add(avatarLabel).colspan(2).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 2 / 100);
+        tableEdit.row();
+        tableEdit.add(buttonEditAvatar).width(heightImageEdit).height(heightImageEdit).padBottom(SCREEN_HEIGHT * 4 / 100).colspan(2);
+        tableEdit.row();
         labelCurrentPassword.setWidth(windowEdit.getWidth() * 55 / 100);
         fieldCurrentPassword.setWidth(windowEdit.getWidth() * 45 / 100);
         labelCurrentPassword.setAlignment(1);
-        table.add(labelCurrentPassword).fill();
-        table.add(fieldCurrentPassword).fill().left().width(Value.percentWidth(1f));
-        table.row();
-        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
-        table.row();
-        labelNewPassword1.setAlignment(1);
+        tableEdit.add(labelCurrentPassword).fill();
+        tableEdit.add(fieldCurrentPassword).fill().left().width(Value.percentWidth(1f));
+        tableEdit.row();
+        tableEdit.add(noMessageError1).left().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2).center();
+        cellLabelEditMessage1 = tableEdit.getCell(noMessageError1);
+        tableEdit.row();
         labelNewPassword1.setWidth(windowEdit.getWidth() * 55 / 100);
         fieldNewPassword1.setWidth(windowEdit.getWidth() * 45 / 100);
-        table.add(labelNewPassword1);
-        table.add(fieldNewPassword1).fill().width(Value.percentWidth(1f));
-        table.row();
-        table.add(messageError).left().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
-        table.row();
+        tableEdit.add(labelNewPassword1);
+        tableEdit.add(fieldNewPassword1).fill().width(Value.percentWidth(1f));
+        tableEdit.row();
+        tableEdit.add(noMessageError2).left().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2).center();
+        cellLabelEditMessage2 = tableEdit.getCell(noMessageError2);
+        tableEdit.row();
         labelNewPassword2.setWidth(windowEdit.getWidth() * 55 / 100);
         fieldNewPassword2.setWidth(windowEdit.getWidth() * 45 / 100);
         labelNewPassword2.setAlignment(1);
-        table.add(labelNewPassword2).width(Value.percentWidth(1f)).fill();//.padRight(SCREEN_WIDTH * 2 / 100);
-        table.add(fieldNewPassword2).fill();
-        table.row();
-        messageError.setAlignment(1);
-        table.add(messageError).padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
-        table.row().padTop(windowEdit.getHeight() * 4 / 100);
+        tableEdit.add(labelNewPassword2).width(Value.percentWidth(1f)).fill();//.padRight(SCREEN_WIDTH * 2 / 100);
+        tableEdit.add(fieldNewPassword2).fill();
+        tableEdit.row();
+        tableEdit.add(noMessageError3).padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2).center();
+        cellLabelEditMessage3 = tableEdit.getCell(noMessageError3);
+        tableEdit.row().padTop(windowEdit.getHeight() * 4 / 100);
         buttonEditCancel.setWidth(windowEdit.getWidth() * 21 / 100);
         buttonEditSave.setWidth(buttonEditCancel.getWidth());
+        tableEdit.add(buttonEditCancel).width(Value.percentWidth(1f)).left().padLeft(windowEdit.getWidth() * 15 / 100);
+        tableEdit.add(buttonEditSave).width(Value.percentWidth(1f)).right().padRight(windowEdit.getWidth() * 15 / 100);
 
-        table.add(buttonEditCancel).width(Value.percentWidth(1f)).left().padLeft(windowEdit.getWidth() * 15 / 100);
-        table.add(buttonEditSave).width(Value.percentWidth(1f)).right().padRight(windowEdit.getWidth() * 15 / 100);
+        cellEdit = tableEdit.getCell(buttonEditAvatar);
 
-        windowEdit.add(table);
-
+        cellEdit.clearActor();
+        buttonEditAvatar = new ImageButton(imageProfile);
+        buttonEditAvatar.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(prefs.getFloat("volume", 0.2f));
+                isInEdit = true;
+                showAvatarSelectionWindow();
+            }
+        });
+        cellEdit.setActor(buttonEditAvatar);
+        cellEdit.setActor(buttonEditAvatar);
+        windowEdit.add(tableEdit);
         stage.addActor(windowEdit);
     }
 
-    public void showAvatarSelectionWindow() {
+    private void createButtonProfileRight() {
+        buttonProfileRight = new ImageButton(imageProfile);
+        buttonProfileRight.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(prefs.getFloat("volume", 0.2f));
+                numPlayer = 2;
+                isProfileLeft = false;
+                if (!isPlayer2Logged)
+                    showLoginWindow();
+                else
+                    showProfile(numPlayer);
+            }
+        });
+    }
+
+    private void createButtonProfileLeft() {
+        buttonProfileLeft = new ImageButton(imageProfile);
+        buttonProfileLeft.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton1.play(prefs.getFloat("volume", 0.2f));
+                numPlayer = 1;
+                isProfileLeft = true;
+                if (!isPlayer1Logged)
+                    showLoginWindow();
+                else
+                    showProfile(numPlayer);
+            }
+        });
+    }
+
+    private void changeAvatar(HumanPlayer player) {
+        if (hasImportedAvatar) {
+            if (player.getAvatar().substring(0, player.getAvatar().length() - 5).equals("profile/" + "_" + player.getName()))
+                Gdx.files.local(player.getAvatar()).delete();
+            String extension = selectedFile.getName().substring(selectedFile.getName().length() - 4, selectedFile.getName().length());
+            pathImageProfile = "profile/" + "_" + player.getName() + extension;
+            sourceImage.copyTo(Gdx.files.local(pathImageProfile));
+        }
+        player.setAvatar(pathImageProfile);
+        if (hasChangedAvatar) {
+            if (isPlayerInTabStats(player.getName()))
+                updateAvatar(player.getName());
+        }
+
+    }
+
+    private String validateEdit(TextField fieldCurrentPassword, HumanPlayer player, TextField fieldNewPassword1, TextField fieldNewPassword2) {
+        String messageErrorEdit = "";
+
+
+        if (fieldCurrentPassword.getText().equals("") && fieldNewPassword1.getText().equals("") && fieldNewPassword2.getText().equals(""))
+            return messageErrorEdit;
+        if (fieldCurrentPassword.getText() == null)
+            return INCORRECT_PASSWORD;
+        if (!fieldCurrentPassword.getText().equals(player.getAccount().getPassword()))
+            return INCORRECT_PASSWORD;
+        if (fieldNewPassword1.getText().length() < 4)
+            return INCORRECT_LENGTH_PASSWORD;
+        if (!(fieldNewPassword1.getText().equals(fieldNewPassword2.getText())))
+            return PASSWORDS_NOT_MATCH;
+
+        player.getAccount().setPassword(fieldNewPassword1.getText());
+        return messageErrorEdit;
+    }
+
+    private void showAvatarSelectionWindow() {
         if (isInEdit)
             disableButton(buttonEditAvatar, buttonEditSave, buttonEditCancel);
-        else if (isInLogin) {
+        else if (isInSignUp) {
             disableButton(buttonSignUpCancel, buttonSignUp, buttonLoginAvatar);
             buttonTabLogin.setTouchable(Touchable.disabled);
             buttonTabSignUp.setTouchable(Touchable.disabled);
         }
-
         windowAvatarSelection.clear();
         windowAvatarSelection.setSize(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100);
         windowAvatarSelection.setPosition(SCREEN_WIDTH / 2 - windowAvatarSelection.getWidth() / 2, SCREEN_HEIGHT / 2 - windowAvatarSelection.getHeight() / 2);
@@ -1100,40 +1615,122 @@ public class Menu implements Screen {
         // place le titre de la fenetre au milieu
         windowAvatarSelection.getTitleTable().padLeft(windowAvatarSelection.getWidth() / 2 - windowAvatarSelection.getTitleLabel().getWidth() / 2);
 
-        Table table = new Table();
-        windowAvatarSelection.addActor(table);
-        table.setFillParent(true);
-        table.top().padTop(windowAvatarSelection.getHeight() * 13 / 100);
+        final Table tableSelection = new Table();
+        windowAvatarSelection.addActor(tableSelection);
+        tableSelection.setFillParent(true);
+        tableSelection.top().padTop(windowAvatarSelection.getHeight() * 13 / 100);
+
+        hasImportedAvatar = false;
+        pathImageTmp = pathImageProfile;
+        imageTmp = imageProfile;
+        buttonSelectionAvatar = new ImageButton(imageProfile);
+
+        float widthImageSelect = windowAvatarSelection.getWidth() * 2 / 15;
+        float heightImageSelect = windowAvatarSelection.getWidth() * 2 / 10;
+
+        tableSelection.add(robotButton).width(widthImageSelect).height(heightImageSelect).padRight(heightImageSelect / 5);
+        tableSelection.add(bananaButton).width(widthImageSelect).height(heightImageSelect);
+        tableSelection.add(burgerButton).width(widthImageSelect).height(heightImageSelect);
+        tableSelection.add(penguinButton).width(widthImageSelect).height(heightImageSelect).padRight(heightImageSelect / 5);
+        tableSelection.add(squidButton).width(widthImageSelect).height(heightImageSelect);
+        tableSelection.row();
+        tableSelection.add(pinkButton).width(widthImageSelect).height(heightImageSelect).padRight(heightImageSelect / 5);
+        tableSelection.add(pandaButton).width(widthImageSelect).height(heightImageSelect);
+        tableSelection.add(blueButton).width(widthImageSelect).height(heightImageSelect);
+        tableSelection.add(girlButton).width(widthImageSelect).height(heightImageSelect).padRight(heightImageSelect / 5);
+        tableSelection.add(mustacheButton).width(widthImageSelect).height(heightImageSelect);
+        tableSelection.row().padTop(windowAvatarSelection.getHeight() * 7 / 100);
 
         TextButton buttonImport = new TextButton(lang.get("button_import"), skinSgx, "big");
         buttonImport.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
+                JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+                JFrame f = new JFrame();
+                f.setVisible(true);
+                f.toFront();
+                f.setVisible(false);
+                f.dispose();
 
-                // chercher une image sur le pc et remplacer l'image de l'avatar actuel par cette image
+                fc.setDialogTitle("Select an image");
+                fc.setAcceptAllFileFilterUsed(false);
+                fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG and GIF images", "png", "jpg", "jpeg", "gif");
+                fc.addChoosableFileFilter(filter);
+
+
+                // affichage de la fenetre pour choisir l'image et teste si le bouton ok est presse
+
+                int returnValue = fc.showOpenDialog(f);
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    selectedFile = fc.getSelectedFile();
+                    Drawable imageImport = new TextureRegionDrawable(new TextureRegion(new Texture(selectedFile.getAbsolutePath())));
+                    cellAvatarSelect.clearActor();
+                    imageTmp = imageImport;
+                    pathImageTmp = selectedFile.getAbsolutePath();
+                    buttonSelectionAvatar = new ImageButton(imageTmp);
+                    cellAvatarSelect.setActor(buttonSelectionAvatar);
+                    hasChangedAvatar = true;
+                    hasImportedAvatar = true;
+                    sourceImage = Gdx.files.absolute(pathImageTmp);
+                }
             }
         });
+
+
+        buttonImport.setWidth(windowAvatarSelection.getWidth() * 23 / 100);
+        tableSelection.add(buttonImport).colspan(2).width(Value.percentWidth(1f)).left();
+        tableSelection.add(buttonSelectionAvatar).width(heightImageSelect).height(heightImageSelect);
+
+        cellAvatarSelect = tableSelection.getCell(buttonSelectionAvatar);
+
         TextButton buttonSave = new TextButton(lang.get("button_save"), skinSgx, "big");
         buttonSave.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
 
-                // enregistrer le nouvel avatar (sauvegarder l'image dans le dossier des avatars si
-                // elle est importee + modifier le chemin de l'image dans le fichier ou la classe)
-
+                tableSelection.remove();
                 windowAvatarSelection.remove();
+                pathImageProfile = pathImageTmp;
 
                 if (isInEdit) {
-                    enableButton(buttonEditAvatar, buttonEditSave, buttonEditCancel);
+                    enableButton(buttonEditSave, buttonEditCancel);
                     isInEdit = false;
-                    showEdit();
-                } else if (isInLogin) {
-                    enableButton(buttonSignUpCancel, buttonSignUp, buttonLoginAvatar);
+                    cellEdit.clearActor();
+                    buttonEditAvatar = new ImageButton(imageTmp);
+                    buttonEditAvatar.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            soundButton1.play(prefs.getFloat("volume", 0.2f));
+                            isInEdit = true;
+                            showAvatarSelectionWindow();
+                        }
+                    });
+                    cellEdit.setActor(buttonEditAvatar);
+
+                } else if (isInSignUp) {
+                    enableButton(buttonSignUpCancel, buttonSignUp);
                     buttonTabLogin.setTouchable(Touchable.enabled);
                     buttonTabSignUp.setTouchable(Touchable.enabled);
-                    isInLogin = false;
+                    messageErrorSignUp = "";
+
+                    imageProfile = imageTmp;
+                    cellSignUp.clearActor();
+                    buttonLoginAvatar = new ImageButton(imageProfile);
+                    buttonLoginAvatar.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            soundButton1.play(0.2f);
+                            isInSignUp = true;
+                            showAvatarSelectionWindow();
+                        }
+                    });
+                    cellSignUp.setActor(buttonLoginAvatar);
+                    cellErrorAvatarSignUp.clearActor();
+                    cellErrorAvatarSignUp.setActor(noMessageError1);
                 }
             }
         });
@@ -1142,116 +1739,148 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+
+                tableSelection.remove();
                 windowAvatarSelection.remove();
+                imageTmp = imageProfile;
+                hasImportedAvatar = false;
 
                 if (isInEdit) {
                     enableButton(buttonEditAvatar, buttonEditSave, buttonEditCancel);
                     isInEdit = false;
-                } else if (isInLogin) {
+                    hasChangedAvatar = false;
+                } else if (isInSignUp) {
                     enableButton(buttonSignUpCancel, buttonSignUp, buttonLoginAvatar);
                     buttonTabLogin.setTouchable(Touchable.enabled);
                     buttonTabSignUp.setTouchable(Touchable.enabled);
-                    isInLogin = false;
                 }
             }
         });
         pandaButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imagePanda);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imagePanda;
+                pathImageTmp = pathImagePanda;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+                hasChangedAvatar = true;
             }
         });
-        yetiButton.addListener(new ClickListener() {
+        pinkButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageYeti);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imagePink;
+                pathImageTmp = pathImagePink;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+                hasChangedAvatar = true;
             }
         });
-        wormButton.addListener(new ClickListener() {
+        bananaButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageWorm);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imageBanana;
+                pathImageTmp = pathImageBanana;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+
+                hasChangedAvatar = true;
             }
         });
         mustacheButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageMustache);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imageMustache;
+                pathImageTmp = pathImageMustache;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+
+                hasChangedAvatar = true;
             }
         });
-        bunnyButton.addListener(new ClickListener() {
+        burgerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageBunny);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imageBurger;
+                pathImageTmp = pathImageBurger;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+
+                hasChangedAvatar = true;
             }
         });
         girlButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageGirl);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imageGirl;
+                pathImageTmp = pathImageGirl;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+                hasChangedAvatar = true;
             }
         });
         robotButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageRobot);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imageRobot;
+                pathImageTmp = pathImageRobot;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+                hasChangedAvatar = true;
             }
         });
         penguinButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imagePenguin);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imagePenguin;
+                pathImageTmp = pathImagePenguin;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+
+                hasChangedAvatar = true;
             }
         });
-        birdButton.addListener(new ClickListener() {
+        blueButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageBird);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imageBlue;
+                pathImageTmp = pathImageBlue;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+
+                hasChangedAvatar = true;
             }
         });
         squidButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonEditAvatar = new ImageButton(imageSquid);
-                showAvatarSelectionWindow();
+                cellAvatarSelect.clearActor();
+                imageTmp = imageSquid;
+                pathImageTmp = pathImageSquid;
+                buttonSelectionAvatar = new ImageButton(imageTmp);
+                cellAvatarSelect.setActor(buttonSelectionAvatar);
+
+                hasChangedAvatar = true;
             }
         });
-
-        float widthImage = windowAvatarSelection.getWidth() * 2 / 15;
-        float heightImage = windowAvatarSelection.getWidth() * 2 / 10;
-
-        table.add(pandaButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
-        table.add(yetiButton).width(widthImage).height(heightImage);
-        table.add(wormButton).width(widthImage).height(heightImage);
-        table.add(mustacheButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
-        table.add(bunnyButton).width(widthImage).height(heightImage);
-        table.row();
-        table.add(girlButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
-        table.add(robotButton).width(widthImage).height(heightImage);
-        table.add(penguinButton).width(widthImage).height(heightImage);
-        table.add(birdButton).width(widthImage).height(heightImage).padRight(heightImage / 5);
-        table.add(squidButton).width(widthImage).height(heightImage);
-        table.row().padTop(windowAvatarSelection.getHeight() * 7 / 100);
-        buttonImport.setWidth(windowAvatarSelection.getWidth() * 23 / 100);
-        table.add(buttonImport).colspan(2).width(Value.percentWidth(1f)).left();
-        table.add(buttonEditAvatar).width(heightImage).height(heightImage);
         buttonSave.setWidth(buttonImport.getWidth());
-        table.add(buttonSave).colspan(2).width(Value.percentWidth(1f)).right();
-        table.row().padTop(windowAvatarSelection.getHeight() * 8 / 100);
+        tableSelection.add(buttonSave).colspan(2).width(Value.percentWidth(1f)).right();
+        tableSelection.row().padTop(windowAvatarSelection.getHeight() * 8 / 100);
         buttonCancel.setWidth(buttonImport.getWidth());
-        table.add(buttonCancel).colspan(5).width(Value.percentWidth(1f));
+        tableSelection.add(buttonCancel).colspan(5).width(Value.percentWidth(1f));
 
         stage.addActor(windowAvatarSelection);
     }
+
 
     private void showLogOut() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
@@ -1274,11 +1903,39 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+                if (numPlayer == 1) {
+                    // remettre l'image anonyme dans le bouton du menu qui est concerne
+                    cellProfileLeft.clearActor();
+                    imageProfile = imageAnonymous;
+                    createButtonProfileLeft();
+                    cellProfileLeft.setActor(buttonProfileLeft);
+                    cellLabelProfileLeft.clearActor();
+                    Label labelProfileLeft = new Label("Not logged", skinSgx, "medium");
+                    labelProfileLeft.setAlignment(1);
+                    cellLabelProfileLeft.setActor(labelProfileLeft);
+                    isPlayer1Logged = false;
 
-                // remettre l'image anonyme dans le bouton du menu qui est concerne
+                    saveStatsPlayer(player1);
+                    isProfileLeft = false;
+                    player1.setName("");
+                    // remettre l'avatar à anonymous
+                } else {
+                    cellProfileRight.clearActor();
+                    imageProfile = imageAnonymous;
+                    createButtonProfileRight();
+                    isPlayer2Logged = false;
+                    cellProfileRight.setActor(buttonProfileRight);
+                    Label labelProfileRight = new Label("Not logged", skinSgx, "medium");
+                    labelProfileRight.setAlignment(1);
+                    cellLabelProfileRight.setActor(labelProfileRight);
+                    saveStatsPlayer(player2);
+                    isProfileRight = false;
+                    player2.setName("");
+                }
 
-                stage.clear();
-                new Menu(game);
+                windowLogOut.remove();
+                windowProfile.remove();
+                enableButton(buttonPlay, buttonHall, buttonSettings, buttonExit, buttonProfileLeft, buttonProfileRight);
             }
         });
 
@@ -1300,6 +1957,140 @@ public class Menu implements Screen {
         table.add(buttonNo).width(Value.percentWidth(1f));
 
         stage.addActor(windowLogOut);
+    }
+
+    private void saveStatsPlayer(HumanPlayer player) {
+        // lire la table
+        boolean isFound = isPlayerInTabStats(player.getName());
+        if (isFound) {
+            deletePlayer(player);
+        } else totalNumberPlayers++;
+        HumanPlayer player3 = new HumanPlayer(player.getName(), player.getColor());
+        Account account3 = new Account();
+        account3.setPassword(player.getAccount().getPassword());
+        account3.setUsername(player.getAccount().getUsername());
+        player3.setAccount(account3);
+        GlobalStats globalStats3 = setGlobalStats(player);
+        player3.setGlobalStats(globalStats3);
+        ArrayList listLevelStats3 = getLevelStatsPlayer(player);
+        player3.setListLevelStats(listLevelStats3);
+        player3.setAvatar(player.getAvatar());
+        storePlayer(player3);
+    }
+
+    private GlobalStats setGlobalStats(HumanPlayer player) {
+
+        GlobalStats globalStats = new GlobalStats();
+        globalStats.setScore(player.getGlobalStats().getScore());
+        globalStats.setRank(player.getGlobalStats().getRank());
+        globalStats.setTotalSavings(player.getGlobalStats().getTotalSavings());
+        globalStats.setTotalWins(player.getGlobalStats().getTotalWins());
+        globalStats.setTotalGames(player.getGlobalStats().getTotalGames());
+        globalStats.setTotalDefeats(player.getGlobalStats().getTotalDefeats());
+        globalStats.setMinTurns(player.getGlobalStats().getMinTurns());
+        globalStats.setMaxTrees(player.getGlobalStats().getMaxTrees());
+        globalStats.setMaxTotalMoney(player.getGlobalStats().getMaxTotalMoney());
+        globalStats.setAvgTurns(player.getGlobalStats().getAvgTurns());
+        globalStats.setAvgTrees(player.getGlobalStats().getAvgTrees());
+        globalStats.setAvgTotalMoney(player.getGlobalStats().getAvgTotalMoney());
+        globalStats.setAvgLostUnits(player.getGlobalStats().getAvgLostUnits());
+        globalStats.setAvgLandsTurn(player.getGlobalStats().getAvgLandsTurn());
+        globalStats.setMaxLandsTurn(player.getGlobalStats().getMaxLandsTurn());
+        globalStats.setAvgArmy(player.getGlobalStats().getAvgArmy());
+        globalStats.setMaxArmy(player.getGlobalStats().getMaxArmy());
+        globalStats.setMinArmy(player.getGlobalStats().getMinArmy());
+        globalStats.setAvgL0(player.getGlobalStats().getAvgL0());
+        globalStats.setAvgL1(player.getGlobalStats().getAvgL1());
+        globalStats.setAvgL2(player.getGlobalStats().getAvgL2());
+        globalStats.setAvgL3(player.getGlobalStats().getAvgL3());
+        globalStats.setAvgLeftL0(player.getGlobalStats().getAvgLeftL0());
+        globalStats.setAvgLeftL1(player.getGlobalStats().getAvgLeftL1());
+        globalStats.setAvgLeftL2(player.getGlobalStats().getAvgLeftL2());
+        globalStats.setAvgLeftL3(player.getGlobalStats().getAvgLeftL3());
+        globalStats.setAvgLostL0(player.getGlobalStats().getAvgLostL0());
+        globalStats.setAvgLostL1(player.getGlobalStats().getAvgLostL1());
+        globalStats.setAvgLostL2(player.getGlobalStats().getAvgLostL2());
+        globalStats.setAvgLostL3(player.getGlobalStats().getAvgLostL3());
+        globalStats.setAvgLeftUnits(player.getGlobalStats().getAvgLeftUnits());
+        globalStats.setAvgUnits(player.getGlobalStats().getAvgUnits());
+        globalStats.setMaxL0(player.getGlobalStats().getMaxL0());
+        globalStats.setMaxL1(player.getGlobalStats().getMaxL1());
+        globalStats.setMaxL2(player.getGlobalStats().getMaxL2());
+        globalStats.setMaxL3(player.getGlobalStats().getMaxL3());
+        globalStats.setAvgSavings(player.getGlobalStats().getAvgSavings());
+        globalStats.setMaxLostL0(player.getGlobalStats().getMaxLostL0());
+        globalStats.setMaxLostL1(player.getGlobalStats().getMaxLostL1());
+        globalStats.setMaxLostL2(player.getGlobalStats().getMaxLostL2());
+        globalStats.setMaxLostL3(player.getGlobalStats().getMaxLostL3());
+        globalStats.setMaxLostUnits(player.getGlobalStats().getMaxLostUnits());
+        globalStats.setMaxUnits(player.getGlobalStats().getMaxUnits());
+        return globalStats;
+
+
+    }
+
+    private void updateAvatar(String name) {
+
+        Iterator iter = tabPlayers.iterator();
+        while (iter.hasNext()) {
+            HumanPlayer player = (HumanPlayer) iter.next();
+            if (player.getName().equals(name)) {
+                player.setAvatar(pathImageProfile);
+            }
+        }
+    }
+
+    private boolean isPlayerInTabStats(String name) {
+
+        Iterator iter = tabPlayers.iterator();
+        while (iter.hasNext()) {
+            HumanPlayer player = (HumanPlayer) iter.next();
+            if (player.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void storePlayer(HumanPlayer player) {
+
+        boolean isFound = false;
+        int i = 0;
+        while (i < tabPlayers.size() && !isFound) {
+            HumanPlayer playerTab = (HumanPlayer) tabPlayers.get(i);
+
+            if (playerTab.getGlobalStats().getScore() > player.getGlobalStats().getScore()) {
+                i++;
+            } else
+                isFound = true;
+        }
+
+        player.getGlobalStats().setRank(i + 1);
+        tabPlayers.add(i, player);
+        int j = i + 1;
+        while (j < tabPlayers.size()) {
+            HumanPlayer playerTab = (HumanPlayer) tabPlayers.get(j);
+            playerTab.getGlobalStats().setRank(j + 1);
+            j++;
+        }
+
+    }
+
+    private void deletePlayer(HumanPlayer player) {
+        int i = 0;
+        boolean isFound = false;
+        while (i < tabPlayers.size() && !isFound) {
+            HumanPlayer playerT = (HumanPlayer) tabPlayers.get(i);
+
+            if (playerT.getName().equals(player.getName())) {
+                //   if (playerT.getAccount().getPassword().equals(player.getAccount().getPassword())) {
+                tabPlayers.remove(i);
+                isFound = true;
+                //  }
+
+            }
+            i++;
+        }
     }
 
     private void showExit() {
@@ -1324,6 +2115,13 @@ public class Menu implements Screen {
         buttonYes.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+
+                if (isPlayer1Logged)
+                    saveStatsPlayer(player1);
+                if (isPlayer2Logged)
+                    saveStatsPlayer(player2);
+                FileBuilder fileBuilder = new FileBuilder();
+                fileBuilder.createFile();
                 dispose();
                 Gdx.app.exit();
             }
@@ -1378,6 +2176,8 @@ public class Menu implements Screen {
                 }
             }
         });
+        setPasswordMode(fieldPassword);
+        stage.setKeyboardFocus(fieldPassword);
 
         TextButton buttonConfirm = new TextButton(lang.get("button_confirm"), skinSgx, "big");
         buttonConfirm.addListener(new ClickListener() {
@@ -1425,3 +2225,5 @@ public class Menu implements Screen {
         stage.addActor(windowDelete);
     }
 }
+
+

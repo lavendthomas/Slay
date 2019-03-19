@@ -74,6 +74,14 @@ public class HexManagement {
         return new Coordinate(col, row);
     }
 
+    /**
+     * Method to round to the nearest hexagon in system of cube coordinate
+     *
+     * @param x Coordinate x of cube to be rounded
+     * @param y Coordinate y of cube to be rounded
+     * @param z Coordinate z of cube to be rounded
+     * @return  The nearest cube
+     */
 
     private static Cube cubeRound (double x, double y, double z) {
         int rx = (int) round(x);

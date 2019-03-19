@@ -33,31 +33,31 @@ public class Tile {
     boolean buy(Entity e, Tile to) {
         if (territory.buy(e)) {
             if (hasSameOwner(to)) {
-                // Dans son propre territoire
+                // In his own territory
                 if (to.getEntity() != null) {
-                    // Entité déjà présente
+                    // Entity already present
                     if (to.getEntity() instanceof Soldier) {
-                        // Place dans mon territoire et il y a déjà un soldat
+                        // Place in my territory and there is already a soldier
                         int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                         int fromLvl = ((Soldier) e).getSoldierLevel().getLevel();
                         int newLvl = toLvl + fromLvl + 1;
                         to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), ((Soldier) to.getEntity()).getMoved()));
                         return true;
                     } else if (to.getEntity() == StaticEntity.CAPITAL) {
-                        // Empêche de se placer sur sa capitale
+                        // Prevents from placing oneself on one's capital
                         return false;
                     } else {
-                        // Cas résiduel (arbre ou tombe)
+                        // Residual case (tree or grave)
                         to.setEntity(e);
                         return true;
                     }
                 } else {
-                    // pas d'entité
+                    // No entity
                     to.setEntity(e);
                     return true;
                 }
             } else {
-                // territoire ennemie ou neutre
+                // Enemy territory or neutral
                 to.setEntity(e);
                 ((Soldier) to.getEntity()).setMoved(true);
                 to.setTerritory(territory);

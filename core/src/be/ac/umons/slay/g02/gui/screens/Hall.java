@@ -20,7 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import java.util.Iterator;
 
-import be.ac.umons.slay.g02.players.Statis;
+import be.ac.umons.slay.g02.players.HumanPlayer;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -30,6 +30,7 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.skinSgxTable;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.stage;
+import static be.ac.umons.slay.g02.gui.Main.tabPlayers;
 
 public class Hall implements Screen {
     private Game game;
@@ -144,7 +145,7 @@ public class Hall implements Screen {
 
         int j = 0;
 
-        Iterator iter = Menu.tabScore.iterator();
+        Iterator iter = tabPlayers.iterator();
         ImageButton avatarButton;
         TextureRegionDrawable imageAvatar;
 
@@ -163,9 +164,10 @@ public class Hall implements Screen {
                 isNext = true;
             }
 
-            Statis stats = (Statis) iter.next();
+            HumanPlayer statis = (HumanPlayer) iter.next();
+
             j++;
-            cell = new TextButton(String.valueOf(stats.getRank()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getRank()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setWidth(SCREEN_WIDTH * 5 / 100);
@@ -174,12 +176,12 @@ public class Hall implements Screen {
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
 
-            imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(stats.getAvatar()))));
+            imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(statis.getAvatar()))));
             avatarButton = new ImageButton(imageAvatar);
             avatarButton.setSize(cellHeight, cell.getHeight() * 95 / 100);
             cell.setColor(currentColor);
             tableHall.add(avatarButton).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getName()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getName()), skinSgxTable);
             // coupe le nom s'il est trop long
             cell.setClip(true);
             cell.setColor(currentColor);
@@ -187,42 +189,42 @@ public class Hall implements Screen {
             cell.setHeight(cellHeight);
             cell.setWidth(SCREEN_WIDTH * 35 / 100 - cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f));
-            cell = new TextButton(String.valueOf(stats.getWins()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getTotalWins()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getGames()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getTotalGames()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getTurns()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgTurns()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getLands()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgLandsTurn()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getTrees()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgTrees()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getLosses()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgLostUnits()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getArmy()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgArmy()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
             tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(stats.getScore()), skinSgxTable);
+            cell = new TextButton(String.valueOf(statis.getGlobalStats().getScore()), skinSgxTable);
             cell.setColor(currentColor);
             cell.getLabel().setColor(colorLabel);
             cell.setHeight(cellHeight);
@@ -289,14 +291,10 @@ public class Hall implements Screen {
     @Override
     public void render(float delta) {
         batch.begin();
-
         // place le background correctement dans la fenetre
         batch.setProjectionMatrix(camera.combined);
-
         sprite.draw(batch);
-
         batch.end();
-
         stage.draw();
         stage.act();
     }
