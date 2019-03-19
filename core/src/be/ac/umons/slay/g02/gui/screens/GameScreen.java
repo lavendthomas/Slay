@@ -18,6 +18,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,12 +26,15 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -49,6 +53,7 @@ import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 import be.ac.umons.slay.g02.level.TileSetManagement;
 import be.ac.umons.slay.g02.players.AI;
+import be.ac.umons.slay.g02.players.AIMethods;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -57,6 +62,7 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.gui.screens.Menu.pathImagePink;
 import static be.ac.umons.slay.g02.level.Level.getPlayers;
 import static java.lang.Math.round;
@@ -79,6 +85,8 @@ public class GameScreen implements Screen {
     private ImageButton buttonL2;
     private ImageButton buttonL3;
     private ImageButton buttonChest;
+
+
 
     private CheckBox checkboxPlayer1;
     private CheckBox checkboxPlayer2;
@@ -549,7 +557,91 @@ public class GameScreen implements Screen {
     }
 
     private void loadButtons() {
+        hudCam = new OrthographicCamera();
+        hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
 
+        if (LevelSelection.numberHumans == 0) {
+
+            //Charge boutton 3ème vitesse
+            TextButton buttonSpeed3 = new TextButton("3", skinSgx, "big");
+            buttonSpeed3.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    AIMethods.setSpeed(200);
+                }
+            });
+            buttonSpeed3.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
+            float offsetW = buttonSpeed3.getWidth();
+            buttonSpeed3.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed3.getHeight());
+
+
+            //Charge boutton 2ème vitesse
+            TextButton buttonSpeed2 = new TextButton("2", skinSgx, "big");
+            buttonSpeed2.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    AIMethods.setSpeed(350);
+                }
+            });
+            buttonSpeed2.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
+            offsetW += buttonSpeed2.getWidth() + 10;
+            buttonSpeed2.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed2.getHeight());
+
+
+            //Charge boutton 1ère vitesse
+            TextButton buttonSpeed1 = new TextButton("1", skinSgx, "big");
+            buttonSpeed1.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    AIMethods.setSpeed(500);
+                }
+            });
+            buttonSpeed1.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
+            offsetW += buttonSpeed1.getWidth() + 10;
+            buttonSpeed1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed1.getHeight());
+
+
+            //Charge boutton vitesse 0
+            TextButton buttonSpeed0 = new TextButton("0", skinSgx, "big");
+            buttonSpeed0.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    AIMethods.setSpeed(650);
+                }
+            });
+            buttonSpeed0.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
+            offsetW += buttonSpeed0.getWidth() + 10;
+            buttonSpeed0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed0.getHeight());
+
+
+            hud.addActor(buttonSpeed3);
+            hud.addActor(buttonSpeed2);
+            hud.addActor(buttonSpeed1);
+            hud.addActor(buttonSpeed0);
+
+        } else {
+            TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
+            buttonNext = new ImageButton(imageNext);
+            buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+            buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() / 2);
+            buttonNext.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!windowPause.isVisible()) {
+                        level.nextTurn();
+                        click = ClickState.NOTHING_SELECTED;
+                        EffectsManagement.eraseCells(effects);
+                        showEffects(previousClick);
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    }
+                }
+            });
+            hud.addActor(buttonNext);
+        }
         // Add buttons Pause and Next
 
         TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/dots.png"))));
@@ -565,25 +657,9 @@ public class GameScreen implements Screen {
                 }
             }
         });
-        TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
-        buttonNext = new ImageButton(imageNext);
-        buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
-        buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() / 2);
-        buttonNext.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!windowPause.isVisible()) {
-                    level.nextTurn();
-                    click = ClickState.NOTHING_SELECTED;
-                    EffectsManagement.eraseCells(effects);
-                    showEffects(previousClick);
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
-                }
-            }
-        });
 
-        hudCam = new OrthographicCamera();
-        hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
+
+
 
         // Add entity market
 
@@ -755,7 +831,6 @@ public class GameScreen implements Screen {
         screenTableMarket.addActor(labelCoins);
         screenTableMarket.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
 
-        hud.addActor(buttonNext);
         hud.addActor(buttonPause);
         hud.addActor(screenTableMarket);
         hud.addActor(screenTableIncome);

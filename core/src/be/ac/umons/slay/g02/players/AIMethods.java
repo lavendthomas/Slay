@@ -7,7 +7,8 @@ import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 
-class AIMethods {
+public class AIMethods {
+    private static int speed = 400;
 
     static List<List<Coordinate>> loadTerritories (Playable level) {
         List<List<Coordinate>> allTerritories = new ArrayList<List<Coordinate>>();
@@ -31,10 +32,14 @@ class AIMethods {
     }
     static void sleep() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(speed);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void setSpeed (int sp) {
+        speed = sp;
     }
 
 
