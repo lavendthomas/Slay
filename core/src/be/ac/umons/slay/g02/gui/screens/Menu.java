@@ -225,6 +225,15 @@ public class Menu implements Screen {
     private int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
     private int buttonProfileHeight = VIRTUAL_HEIGHT * 10 / 100;
     private int windowSettingsWidth = Math.min(SCREEN_WIDTH, 700);
+    /*
+    private int buttonCenterWidth = 300;
+    private int buttonCenterHeight = 50;
+    private int buttonCenterGap = 25;
+    private int labelProfileWidth = 300;
+    private int tableCenterPositionX = VIRTUAL_WIDTH / 2;
+    private int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
+    private int buttonProfileHeight = 100    ;
+    private int windowSettingsWidth = Math.min(SCREEN_WIDTH, 700); */
 
 
     public Menu(Game aGame) {
@@ -237,6 +246,14 @@ public class Menu implements Screen {
         stage.clear();
 
         buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
+        buttonCenterWidth = VIRTUAL_WIDTH * 28 / 100;
+        buttonCenterHeight = VIRTUAL_HEIGHT * 5 / 100;
+        buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
+        labelProfileWidth = buttonCenterWidth * 35 / 100;
+        tableCenterPositionX = SCREEN_WIDTH / 2;
+        tableCenterPositionY = SCREEN_HEIGHT / 3;
+        buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
+        windowSettingsWidth = buttonCenterWidth * 3 / 4;
 
         // background
         batch = new SpriteBatch();
@@ -464,6 +481,7 @@ public class Menu implements Screen {
     @Override
     public void resize(int width, int height) {
         init();
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -495,7 +513,12 @@ public class Menu implements Screen {
         if (isAccountEnabled)
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
         windowSettings.clear();
-        windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
+        } else {
+            windowSettings.setSize(windowSettingsWidth, 2 * windowSettingsWidth);
+        }
+
         windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 - windowSettings.getHeight() / 2);
         windowSettings.setMovable(false);
         // place le titre de la fenetre au milieu
