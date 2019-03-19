@@ -25,9 +25,9 @@ public class AIEasy extends Player implements AI {
 
     @Override
     public void play() {
+        AIMethods.sleep();
         level = GameScreen.getLevel();
         List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level);
-
         for (List<Coordinate> territory : allTerritories) {
             // Pour chaque territoire
             tryToAddUnit(territory);
@@ -49,10 +49,8 @@ public class AIEasy extends Player implements AI {
 
         // finir son tour
         level.nextTurn();
-
-
-
     }
+
 
     private void moveSoldier (Soldier soldier, Coordinate coordinate) {
         for (Coordinate c : level.getMoves(coordinate, 4)) {
@@ -102,7 +100,7 @@ public class AIEasy extends Player implements AI {
                 Tile current = level.get(c);
                 if (current.getTerritory() != null
                     && current.getTerritory().getOwner().equals(this)
-                    && current.getEntity() == null) {
+                    && (current.getEntity() == null || current.getEntity() == StaticEntity.GRAVE)) {
                     level.move(coordinate, c);
                 }
             }

@@ -17,11 +17,7 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
-        if (GameScreen.getLevel().getCurrentPlayer() instanceof AI) { // TODO C'est bien ainsi ?
-            ((AI) GameScreen.getLevel().getCurrentPlayer()).play();
-        } else {
-            game.onTap(x,y);
-        }
+        game.onTap(x,y);
         return false;
     }
 

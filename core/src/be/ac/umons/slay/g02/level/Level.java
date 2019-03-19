@@ -11,6 +11,8 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.players.AI;
+import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 
 public class Level implements Playable {
@@ -587,7 +589,7 @@ public class Level implements Playable {
                         Tile[] tilesArray = new Tile[tilesInTerritory.size()];
                         tilesInTerritory.toArray(tilesArray);
                         for (Tile t : tilesArray) {
-                            if (!tiles.contains(t)) {
+                            if (!tiles.contains(t) && t != null) {
                                 t.getTerritory().remove(t);
                                 t.setTerritory(newTerr);
                             }

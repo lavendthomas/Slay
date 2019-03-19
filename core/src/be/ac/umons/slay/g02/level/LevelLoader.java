@@ -26,6 +26,7 @@ import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.LevelSelection;
+import be.ac.umons.slay.g02.gui.screens.Menu;
 import be.ac.umons.slay.g02.players.AIAdvanced;
 import be.ac.umons.slay.g02.players.AIEasy;
 import be.ac.umons.slay.g02.players.AIMedium;
@@ -158,14 +159,14 @@ public class LevelLoader {
 
                     switch (numberHumans) {
                         case 0:
-                            // Two IAs
+                            // Two AIs
                             difficulty = LevelSelection.difficulty;
                             player = fromDifficulty (difficulty, color, "p" + p);
                             break;
                         case 1:
-                            // One IA and One human player
+                            // One AI and One human player
                             if (countHuman == 0) {
-                                player = new HumanPlayer("p" + p, color); //TODO Modifier pour avoir le bon nom quand enregistré
+                                player = loadHumanPlayer(countHuman, color);
                                 countHuman ++;
                                 break;
                             } else {
@@ -176,7 +177,7 @@ public class LevelLoader {
 
                         default:
                             // Two human players
-                            player = new HumanPlayer("p" + p, color); //TODO Modifier pour avoir le bon nom quand enregistré
+                            player = loadHumanPlayer(countHuman, color);
                             break;
                     }
 
@@ -185,6 +186,26 @@ public class LevelLoader {
             }
 
         }
+    }
+
+    private static Player loadHumanPlayer (int countHuman, Colors color) {
+        Player player;
+        if (countHuman == 0) {
+            if (Menu.isPlayer1Logged) {
+                player = Menu.player1;
+                player.setColor(color);
+            } else {
+                player = new HumanPlayer("P1", color);
+            }
+        } else {
+            if (Menu.isPlayer2Logged) {
+                player = Menu.player2;
+                player.setColor(color);
+            } else {
+                player = new HumanPlayer("P2", color);
+            }
+        }
+        return player;
     }
 
     /**

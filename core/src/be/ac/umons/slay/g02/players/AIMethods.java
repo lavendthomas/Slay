@@ -29,6 +29,13 @@ class AIMethods {
         }
         return allTerritories;
     }
+    static void sleep() {
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }

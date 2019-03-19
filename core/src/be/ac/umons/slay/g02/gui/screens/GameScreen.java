@@ -47,6 +47,7 @@ import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 import be.ac.umons.slay.g02.level.TileSetManagement;
+import be.ac.umons.slay.g02.players.AI;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -472,6 +473,10 @@ public class GameScreen implements Screen {
      * Reload the visual of the level according to the changes made in the logic
      */
     private void loadLevel() {
+       showNextTurnEffects();
+        if (level.getCurrentPlayer() instanceof AI) {
+            ((AI) level.getCurrentPlayer()).play();
+        }
         for (int i = 0; i < level.width(); i++) {
             for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique
                 Tile tile = level.get(i, j);
@@ -567,9 +572,9 @@ public class GameScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if (!windowPause.isVisible()) {
                     level.nextTurn();
-                    showNextTurnEffects();
                     click = ClickState.NOTHING_SELECTED;
                     EffectsManagement.eraseCells(effects);
+                    showEffects(previousClick);
                     soundButton3.play(prefs.getFloat("volume", 0.1f));
                 }
             }
@@ -756,6 +761,9 @@ public class GameScreen implements Screen {
                 if (keycode == Input.Keys.ENTER && !windowPause.isVisible()) {
                     level.nextTurn();
                     showNextTurnEffects();
+                    click = ClickState.NOTHING_SELECTED;
+                    EffectsManagement.eraseCells(effects);
+                    showEffects(previousClick);
                     soundButton3.play(prefs.getFloat("volume", 0.1f));
                 } else if (keycode == Input.Keys.ESCAPE && !windowPause.isVisible()) {
                     soundButton1.play(prefs.getFloat("volume", 0.2f));
@@ -787,9 +795,6 @@ public class GameScreen implements Screen {
             checkboxPlayer2.setChecked(true);
             checkboxPlayer2.getImage().setColor(getPlayers()[1].getColor().toColor());
         }
-        click = ClickState.NOTHING_SELECTED;
-        showEffects(previousClick);
-        EffectsManagement.eraseCells(effects);
     }
 
     /**
