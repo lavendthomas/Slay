@@ -57,6 +57,7 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.gui.screens.Menu.pathImagePink;
 import static be.ac.umons.slay.g02.level.Level.getPlayers;
 import static java.lang.Math.round;
 import static java.lang.StrictMath.sqrt;
@@ -666,8 +667,9 @@ public class GameScreen implements Screen {
         checkboxPlayer1.setChecked(true);
         checkboxPlayer1.getImage().setColor(getPlayers()[0].getColor().toColor());
 
-        ImageButton avatarP1 = new ImageButton(Menu.imagePink); // (player1.getAvatar());
-
+        ImageButton avatarP1 = new ImageButton(new TextureRegionDrawable(
+                new TextureRegion(new Texture(
+                        Gdx.files.internal(Level.getPlayers()[0].getAvatar())))));
         // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
         // au lieu de : LevelSelection.player1Name
 
@@ -682,7 +684,10 @@ public class GameScreen implements Screen {
         checkboxPlayer2.setChecked(false);
         checkboxPlayer2.getImage().setColor(Color.WHITE);
 
-        ImageButton avatarP2 = new ImageButton(Menu.imagePanda); // (player2.getAvatar());
+
+        ImageButton avatarP2 = new ImageButton(new TextureRegionDrawable(
+                new TextureRegion(new Texture(
+                        Gdx.files.internal(Level.getPlayers()[1].getAvatar())))));
 
         // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
         // au lieu de : LevelSelection.player2Name

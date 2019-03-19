@@ -41,6 +41,7 @@ public class LevelLoader {
 
     private static Player[] players;
     /**
+     * .
      * Returns a Map object from the the following files :
      *  - assets/world/filename.tmx
      *  - assets/world/filename.xml
@@ -195,15 +196,19 @@ public class LevelLoader {
             if (Menu.isPlayer1Logged) {
                 player = Menu.player1;
                 player.setColor(color);
+                player.setAvatar(Menu.player1.getAvatar());
             } else {
                 player = new HumanPlayer("P1", color);
+                player.setAvatar("profile" + File.separator + "anonymous.png");
             }
         } else {
             if (Menu.isPlayer2Logged) {
                 player = Menu.player2;
                 player.setColor(color);
+                player.setAvatar(Menu.player2.getAvatar());
             } else {
                 player = new HumanPlayer("P2", color);
+                player.setAvatar("profile" + File.separator + "anonymous.png");
             }
         }
         return player;

@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.players;
 
+import java.io.File;
 import java.util.List;
 
 import be.ac.umons.slay.g02.entities.Soldier;
@@ -18,7 +19,7 @@ public class AIAdvanced extends Player implements AI {
     public AIAdvanced (Colors color, String name) {
         this.name = name;
         this.color = color;
-    }
+        avatar = "profile" + File.separator + "ai_advanced.png";    }
     @Override
     public void play() {
         level = GameScreen.getLevel();

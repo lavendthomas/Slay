@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.players;
 
+import java.io.File;
 import java.util.List;
 
 import be.ac.umons.slay.g02.entities.Soldier;
@@ -18,6 +19,7 @@ public class AIRandom extends Player implements AI {
     public AIRandom (Colors color, String name) {
         this.name = name;
         this.color = color;
+        avatar = "profile" + File.separator + "ai_random.png";
     }
     @Override
     public void play() {

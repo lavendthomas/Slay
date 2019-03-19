@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.players;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class AIEasy extends Player implements AI {
     public AIEasy (Colors color, String name) {
         this.color = color;
         this.name = name;
+        avatar = "profile/" +
+                "" + File.separator + "ai_easy.png";
     }
 
     @Override

@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.players;
 
+import java.io.File;
 import java.util.List;
 
 import be.ac.umons.slay.g02.entities.Soldier;
@@ -18,6 +19,7 @@ public class AIMedium extends Player implements AI {
     public AIMedium (Colors color, String name) {
         this.name = name;
         this.color = color;
+        avatar = "profile" + File.separator + "ai_medium.png";
     }
 
     @Override
