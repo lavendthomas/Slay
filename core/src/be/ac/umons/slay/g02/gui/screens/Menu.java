@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -39,6 +40,8 @@ import be.ac.umons.slay.g02.players.StatsLoader;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
+import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
+import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.camera;
 import static be.ac.umons.slay.g02.gui.Main.cursor;
 import static be.ac.umons.slay.g02.gui.Main.isAccountEnabled;
@@ -143,6 +146,17 @@ public class Menu implements Screen {
     public Menu(Game aGame) {
         game = aGame;
 
+        init();
+
+    }
+
+    public void init() {
+
+        Gdx.gl.glClearColor( 0, 0, 0, 1 );
+        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT );
+
+        stage.clear();
+        /*
         buttonCenterWidth = SCREEN_WIDTH * 28 / 100;
         int buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
         int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
@@ -151,6 +165,17 @@ public class Menu implements Screen {
         int tableCenterPositionY = SCREEN_HEIGHT / 3;
         buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
         windowSettingsWidth = buttonCenterWidth * 3 / 4;
+        */
+
+
+        buttonCenterWidth = VIRTUAL_WIDTH * 28 / 100;
+        int buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
+        int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
+        int labelProfileWidth = buttonCenterWidth * 35 / 100;
+        int tableCenterPositionX = VIRTUAL_WIDTH / 2;
+        int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
+        buttonProfileHeight = VIRTUAL_HEIGHT * 10 / 100;
+        windowSettingsWidth = Math.min(SCREEN_WIDTH, 700);
 
         // background
         batch = new SpriteBatch();
@@ -302,8 +327,8 @@ public class Menu implements Screen {
             tableCenter.row();
             tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
         }
-
     }
+
 
     public static void disableButton(Button... button) {
         for (Button b : button) {
@@ -352,36 +377,12 @@ public class Menu implements Screen {
         stage.draw();
         stage.act();
 
-
-        // affichage rectangle,
-/*
-        ShapeRenderer shapeRenderer = new ShapeRenderer();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.identity();
-        shapeRenderer.setColor(1, 1, 1, 1);
-        shapeRenderer.rect(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, 500, 500);
-        shapeRenderer.end();
-*/
-/*
-        shape.begin(ShapeRenderer.ShapeType.Line);
-        shape.rect(100, 100, 100, 100);
-        shape.end();
-*/
-/*
-        ShapeRenderer shapeRenderer = new ShapeRenderer();
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(1, 1, 0, 1);
-        shapeRenderer.line(50, 500, 1000, 1000);
-        shapeRenderer.rect(500, 600, 1000, 1000);
-        shapeRenderer.circle(200, 300, 200);
-        shapeRenderer.end();
-*/
     }
 
     @Override
     public void resize(int width, int height) {
+        Gdx.app.log("", width + " " + height);
+        init();
     }
 
     @Override
@@ -414,7 +415,8 @@ public class Menu implements Screen {
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
         windowSettings.clear();
         windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
-        windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 - windowSettings.getHeight() / 2);
+        Gdx.app.log("", SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2 + " screen width: " + SCREEN_WIDTH + " settw: " + windowSettingsWidth);
+        windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 /*- windowSettings.getWidth() / 2*/);
         windowSettings.setMovable(false);
         // place le titre de la fenetre au milieu
         windowSettings.getTitleTable().padLeft(windowSettings.getWidth() / 2 - windowSettings.getTitleLabel().getWidth() / 2);

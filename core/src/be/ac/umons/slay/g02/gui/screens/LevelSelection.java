@@ -97,7 +97,7 @@ public class LevelSelection implements Screen {
     // permet de savoir s'il faut creer des IA au debut du jeu
     public static int numberHumans = 0;
     // permet de selectionner le bon type d'IA, on peut mettre autre chose que int, par defaut c'est Easy = 1 (Medium = 2 ...)
-    public static int difficulty = 1;
+    public static int difficulty = 1; // TODO -> to improve
 
     // il faudra les recuperer dans Players
     public static String player1Name = "P1";
@@ -106,7 +106,19 @@ public class LevelSelection implements Screen {
 
     public LevelSelection(Game aGame) {
         game = aGame;
-        resize(SCREEN_WIDTH, SCREEN_HEIGHT);
+
+        init();
+    }
+
+    private void init() {
+
+        stage.clear();
+
+        skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
+        skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
+        skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
+        stage.getViewport().setScreenBounds(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+
 
         int buttonGapY = SCREEN_HEIGHT * 6 / 100;
         cellHeight = SCREEN_HEIGHT * 6 / 100;
@@ -293,12 +305,14 @@ public class LevelSelection implements Screen {
             tableStats.right().top();
             tableStats.setClip(true);
 
-            Label labelTitle = new Label("\nHall Of Fame", skinSgxTable, "title-white");
-            labelTitle.setHeight(SCREEN_HEIGHT * 15 / 100);
-            labelTitle.setWidth(SCREEN_HEIGHT * 30 / 100);
-            labelTitle.setAlignment(1);
-            tableStats.add(labelTitle).colspan(4).width(Value.percentWidth(1f)).height(Value.percentHeight(1f));
-            tableStats.row();
+            if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+                Label labelTitle = new Label("\nHall Of Fame", skinSgxTable, "title-white");
+                labelTitle.setHeight(SCREEN_HEIGHT * 15 / 100);
+                labelTitle.setWidth(SCREEN_HEIGHT * 30 / 100);
+                labelTitle.setAlignment(1);
+                tableStats.add(labelTitle).colspan(4).width(Value.percentWidth(1f)).height(Value.percentHeight(1f));
+                tableStats.row();
+            }
 
             Color colorViolet = new Color(195 / 255f, 195 / 255f, 251 / 255f, 1);
             Color colorBlack = new Color(Color.BLACK);
@@ -306,27 +320,29 @@ public class LevelSelection implements Screen {
             Color colorGray = new Color(229 / 255f, 229 / 255f, 229 / 255f, 1);
             Color colorGreen = new Color(178 / 255f, 220 / 255f, 189 / 255f, 1);
 
-            TextButton cell = new TextButton("Rank", skinSgxTable);
-            cell.getLabel().setColor(Color.BLACK);
-            cell.setColor(colorViolet);
-            cell.setWidth(SCREEN_WIDTH * 5 / 100);
-            cell.setHeight(cellHeight);
-            tableStats.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+            if (SCREEN_HEIGHT > SCREEN_HEIGHT) {
+                TextButton cell = new TextButton("Rank", skinSgxTable);
+                cell.getLabel().setColor(Color.BLACK);
+                cell.setColor(colorViolet);
+                cell.setWidth(SCREEN_WIDTH * 5 / 100);
+                cell.setHeight(cellHeight);
+                tableStats.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
 
-            cell = new TextButton("Player", skinSgxTable);
-            cell.getLabel().setColor(Color.BLACK);
-            cell.setColor(colorViolet);
-            cell.setWidth(SCREEN_WIDTH * 16 / 100);
-            cell.setHeight(SCREEN_HEIGHT * 6 / 100);
-            tableStats.add(cell).height(Value.percentHeight(1.2f)).colspan(2).center().fill();
+                cell = new TextButton("Player", skinSgxTable);
+                cell.getLabel().setColor(Color.BLACK);
+                cell.setColor(colorViolet);
+                cell.setWidth(SCREEN_WIDTH * 16 / 100);
+                cell.setHeight(SCREEN_HEIGHT * 6 / 100);
+                tableStats.add(cell).height(Value.percentHeight(1.2f)).colspan(2).center().fill();
 
-            cell = new TextButton("SCORE", skinSgxTable);
-            cell.getLabel().setColor(Color.BLACK);
-            cell.setColor(colorViolet);
-            cell.setWidth(SCREEN_WIDTH * 7 / 100);
-            cell.setHeight(cellHeight);
-            tableStats.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-            tableStats.row();
+                cell = new TextButton("SCORE", skinSgxTable);
+                cell.getLabel().setColor(Color.BLACK);
+                cell.setColor(colorViolet);
+                cell.setWidth(SCREEN_WIDTH * 7 / 100);
+                cell.setHeight(cellHeight);
+                tableStats.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+                tableStats.row();
+            }
 
             Iterator iter = Menu.tabScore.iterator();
 
@@ -358,10 +374,13 @@ public class LevelSelection implements Screen {
             tableStats.row();
             tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
             tableStats.row();
-            label0 = new Label("Current Players\n", skinSgxTable, "title-white");
-            label0.setAlignment(1);
-            tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
-            tableStats.row();
+
+            if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+                label0 = new Label("Current Players\n", skinSgxTable, "title-white");
+                label0.setAlignment(1);
+                tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
+                tableStats.row();
+            }
             Statis statsPlayer = searchPlayer(name);
             if (null != statsPlayer) {
                 tableStats = displayHall(statsPlayer, tableStats, colorGreen, colorLabel);
@@ -393,32 +412,35 @@ public class LevelSelection implements Screen {
 
     // rajoute une ligne dans le hall of fame
     private Table displayHall(Statis stats, Table tableStats, Color currentColor, Color colorLabel) {
-        TextButton cell;
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            TextButton cell;
 
-        cell = new TextButton(String.valueOf(stats.getRank()), skinSgxTable);
-        cell.getLabel().setColor(colorLabel);
-        tableStats.add(cell).fill();
-        cell.setColor(currentColor);
+            cell = new TextButton(String.valueOf(stats.getRank()), skinSgxTable);
+            cell.getLabel().setColor(colorLabel);
+            tableStats.add(cell).fill();
+            cell.setColor(currentColor);
 
-        TextureRegionDrawable imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(stats.getAvatar()))));
-        ImageButton avatarButton = new ImageButton(imageAvatar);
-        avatarButton.setSize(SCREEN_HEIGHT * 6 / 100, SCREEN_HEIGHT * (6 / 100) * 95 / 100);
-        cell.setColor(currentColor);
-        tableStats.add(avatarButton).height(Value.percentHeight(1.27f)).width(Value.percentWidth(1.24f)).fill();
-        cell = new TextButton(String.valueOf(stats.getName()), skinSgxTable);
-        // coupe le nom s'il est trop long
-        cell.setClip(true);
-        cell.setColor(currentColor);
-        cell.getLabel().setColor(colorLabel);
-        cell.setHeight(cellHeight);
-        tableStats.add(cell).height(Value.percentHeight(1.3f)).width(SCREEN_WIDTH * 16 / 100).fill();
-        cell = new TextButton(String.valueOf(stats.getScore()), skinSgxTable);
-        cell.setColor(currentColor);
-        cell.getLabel().setColor(colorLabel);
-        cell.setHeight(cellHeight);
-        tableStats.add(cell).height(Value.percentHeight(1.3f)).fill();
-        tableStats.row();
-        tableStats.setClip(true);
+            TextureRegionDrawable imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(stats.getAvatar()))));
+            ImageButton avatarButton = new ImageButton(imageAvatar);
+            avatarButton.setSize(SCREEN_HEIGHT * 6 / 100, SCREEN_HEIGHT * (6 / 100) * 95 / 100);
+            cell.setColor(currentColor);
+            tableStats.add(avatarButton).height(Value.percentHeight(1.27f)).width(Value.percentWidth(1.24f)).fill();
+            cell = new TextButton(String.valueOf(stats.getName()), skinSgxTable);
+            // coupe le nom s'il est trop long
+            cell.setClip(true);
+            cell.setColor(currentColor);
+            cell.getLabel().setColor(colorLabel);
+            cell.setHeight(cellHeight);
+            tableStats.add(cell).height(Value.percentHeight(1.3f)).width(SCREEN_WIDTH * 16 / 100).fill();
+            cell = new TextButton(String.valueOf(stats.getScore()), skinSgxTable);
+            cell.setColor(currentColor);
+            cell.getLabel().setColor(colorLabel);
+            cell.setHeight(cellHeight);
+            tableStats.add(cell).height(Value.percentHeight(1.3f)).fill();
+            tableStats.row();
+            tableStats.setClip(true);
+            return tableStats;
+        }
         return tableStats;
     }
 
@@ -517,7 +539,7 @@ public class LevelSelection implements Screen {
         Label labelDefeats = new Label("Defeats : " + player1.getStatistics().getTotalDefeats(), skinSgx, "white");
         Label labelMinTurns = new Label("Minimum number of turns : " + player1.getStatistics().getMinTurns(), skinSgx, "white");
         Label labelAvgTurns = new Label("Average number of turns : " + player1.getStatistics().getAvgTurns(), skinSgx, "white");
-        Label labelAvgLands = new Label("Average number of lands/turn : " + player1.getStatistics().getAvgLandsTurn(), skinSgx, "white");
+        Label labelAvgLands = new Label("Awidthverage number of lands/turn : " + player1.getStatistics().getAvgLandsTurn(), skinSgx, "white");
         Label labelMaxLands = new Label("Maximum number of lands/turn : " + player1.getStatistics().getMinLandsTurn(), skinSgx, "white");
         Label labelAvgTrees = new Label("Average number of cut trees : " + player1.getStatistics().getAvgTrees(), skinSgx, "white");
         Label labelMaxTrees = new Label("Maximum number of cut trees : " + player1.getStatistics().getMaxTrees(), skinSgx, "white");
@@ -697,10 +719,7 @@ public class LevelSelection implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
-        skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
-        skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
-        stage.getViewport().setScreenBounds(0, 0, width, height);
+        init();
     }
 
     @Override
