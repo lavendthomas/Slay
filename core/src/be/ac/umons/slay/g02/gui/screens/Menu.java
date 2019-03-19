@@ -50,6 +50,8 @@ import be.ac.umons.slay.g02.players.LevelStats;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
+import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
+import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.camera;
 import static be.ac.umons.slay.g02.gui.Main.cursor;
 import static be.ac.umons.slay.g02.gui.Main.isAccountEnabled;
@@ -180,7 +182,6 @@ public class Menu implements Screen {
     private String messageErrorLogin = "";
     private String messageErrorSignUp = "";
     private String messageErrorEdit = "";
-    private int buttonCenterWidth;
     // pour savoir dans quel bouton le joueur s'identifie
     private boolean isProfileLeft = false;
     private boolean isProfileRight = false;
@@ -209,8 +210,6 @@ public class Menu implements Screen {
     private Button switchFullscreen;
     private ImageButton buttonProfileLeft;
     private ImageButton buttonProfileRight;
-    private int buttonProfileHeight;
-    private int windowSettingsWidth;
     private String playerName;
     private boolean isInLogIn = false;
     private boolean isInSignUp = false;
@@ -218,18 +217,26 @@ public class Menu implements Screen {
     private FileHandle sourceImage;
     private File selectedFile;
 
+    private int buttonCenterWidth = VIRTUAL_WIDTH * 28 / 100;
+    private int buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
+    private int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
+    private int labelProfileWidth = buttonCenterWidth * 35 / 100;
+    private int tableCenterPositionX = VIRTUAL_WIDTH / 2;
+    private int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
+    private int buttonProfileHeight = VIRTUAL_HEIGHT * 10 / 100;
+    private int windowSettingsWidth = Math.min(SCREEN_WIDTH, 700);
+
 
     public Menu(Game aGame) {
         game = aGame;
 
-        buttonCenterWidth = SCREEN_WIDTH * 28 / 100;
-        int buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
-        int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
-        int labelProfileWidth = buttonCenterWidth * 35 / 100;
-        int tableCenterPositionX = SCREEN_WIDTH / 2;
-        int tableCenterPositionY = SCREEN_HEIGHT / 3;
-        buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
-        windowSettingsWidth = buttonCenterWidth * 3 / 4;
+        init();
+    }
+    public void init() {
+
+        stage.clear();
+
+        buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
 
         // background
         batch = new SpriteBatch();
@@ -270,7 +277,6 @@ public class Menu implements Screen {
             }
         });
 
-
         if (isAccountEnabled) {
 
             Table tableProfile = new Table();
@@ -297,7 +303,6 @@ public class Menu implements Screen {
 
             labelProfileLeft.setAlignment(1);
             labelProfileRight.setAlignment(1);
-
             if (isPlayer1Logged) {
                 imageProfile = imagePlayer1;
                 labelProfileLeft = new Label("Logged", skinSgx, "medium");
@@ -323,24 +328,30 @@ public class Menu implements Screen {
             tableCenter.add(buttonSettings).width(buttonCenterWidth).height(buttonCenterHeight);
             tableCenter.row();
             tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
-            tableProfile.add(labelPlayer1).width(labelProfileWidth);
-            tableProfile.add(labelPlayer2).width(labelProfileWidth);
-            tableProfile.row().pad(10, 0, 0, 0);
-            tableProfile.add(labelProfileLeft).width(labelProfileWidth).height(buttonProfileHeight / 5);
-            tableProfile.add(labelProfileRight).width(labelProfileWidth).height(buttonProfileHeight / 5);
-            tableProfile.row().pad(10, 0, 0, 0);
-            cellLabelProfileLeft = tableProfile.getCell(labelProfileLeft);
-            cellLabelProfileRight = tableProfile.getCell(labelProfileRight);
-            tableProfile.add(buttonProfileLeft).width(buttonProfileHeight).height(buttonProfileHeight);
-            tableProfile.add(buttonProfileRight).width(buttonProfileHeight).height(buttonProfileHeight);
-            tableProfile.row();
-            cellProfileLeft = tableProfile.getCell(buttonProfileLeft);
-            cellProfileRight = tableProfile.getCell(buttonProfileRight);
-            Label labelProfile = new Label("", skinSgx);
-            tableProfile.add(labelProfile);
-            tableProfile.add(labelProfile);
+            if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+                tableProfile.add(labelPlayer1).width(labelProfileWidth);
+                tableProfile.add(labelPlayer2).width(labelProfileWidth);
+                tableProfile.row().pad(10, 0, 0, 0);
+                tableProfile.add(labelProfileLeft).width(labelProfileWidth).height(buttonProfileHeight / 5);
+                tableProfile.add(labelProfileRight).width(labelProfileWidth).height(buttonProfileHeight / 5);
+                tableProfile.row().pad(10, 0, 0, 0);
+                cellLabelProfileLeft = tableProfile.getCell(labelProfileLeft);
+                cellLabelProfileRight = tableProfile.getCell(labelProfileRight);
+
+                tableProfile.add(buttonProfileLeft).width(buttonProfileHeight).height(buttonProfileHeight);
+                tableProfile.add(buttonProfileRight).width(buttonProfileHeight).height(buttonProfileHeight);
+                tableProfile.row();
+
+                cellProfileLeft = tableProfile.getCell(buttonProfileLeft);
+                cellProfileRight = tableProfile.getCell(buttonProfileRight);
+                Label labelProfile = new Label("", skinSgx);
+                tableProfile.add(labelProfile);
+                tableProfile.add(labelProfile);
+            }
 
             stage.addActor(tableProfile);
+
+
         } else {
             tableCenter.add(buttonPlay).width(buttonCenterWidth).height(buttonCenterHeight);
             tableCenter.row().pad(buttonCenterGap, 0, buttonCenterGap, 0);
@@ -452,6 +463,7 @@ public class Menu implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        init();
     }
 
     @Override
@@ -566,6 +578,55 @@ public class Menu implements Screen {
         table.add(labelRegistration).height(Value.percentHeight(1f)).padRight(windowSettingsWidth * 7 / 200);
         table.add(switchRegistration);
         table.row();
+
+        if (isAccountEnabled && SCREEN_WIDTH<= SCREEN_HEIGHT) {
+            Label labelPlayer1 = new Label("Player 1", skinSgx, "title");
+            Label labelPlayer2 = new Label("Player 2", skinSgx, "title");
+
+            Label labelProfileLeft = new Label("Not Logged", skinSgx, "medium");
+            Label labelProfileRight = new Label("Not Logged", skinSgx, "medium");
+            labelPlayer1.setAlignment(1);
+            labelPlayer2.setAlignment(1);
+
+            labelProfileLeft.setAlignment(1);
+            labelProfileRight.setAlignment(1);
+            if (isPlayer1Logged) {
+                imageProfile = imagePlayer1;
+                labelProfileLeft = new Label("Logged", skinSgx, "medium");
+                labelProfileLeft.setAlignment(1);
+            } else {
+                imageProfile = imageAnonymous;
+            }
+            createButtonProfileLeft();
+
+            if (isPlayer2Logged) {
+                imageProfile = imagePlayer2;
+                labelProfileRight = new Label("Logged", skinSgx, "medium");
+                labelProfileRight.setAlignment(1);
+            } else {
+                imageProfile = imageAnonymous;
+            }
+            createButtonProfileRight();
+            table.add(labelPlayer1).width(labelProfileWidth);
+            table.add(labelPlayer2).width(labelProfileWidth);
+            table.row().pad(10, 0, 0, 0);
+            table.add(labelProfileLeft).width(labelProfileWidth).height(buttonProfileHeight / 5);
+            table.add(labelProfileRight).width(labelProfileWidth).height(buttonProfileHeight / 5);
+            table.row().pad(10, 0, 0, 0);
+            cellLabelProfileLeft = table.getCell(labelProfileLeft);
+            cellLabelProfileRight = table.getCell(labelProfileRight);
+
+            table.add(buttonProfileLeft).width(buttonProfileHeight).height(buttonProfileHeight);
+            table.add(buttonProfileRight).width(buttonProfileHeight).height(buttonProfileHeight);
+            table.row();
+
+            cellProfileLeft = table.getCell(buttonProfileLeft);
+            cellProfileRight = table.getCell(buttonProfileRight);
+            Label labelProfile = new Label("", skinSgx);
+            table.add(labelProfile);
+            table.add(labelProfile);
+
+        }
 
         buttonSettingsBack = new TextButton(lang.get("button_back"), skinSgx, "big");
         buttonSettingsBack.setWidth(buttonCenterWidth / 2);
