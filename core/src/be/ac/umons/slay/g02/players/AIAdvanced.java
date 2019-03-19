@@ -22,6 +22,7 @@ public class AIAdvanced extends Player implements AI {
         avatar = "profile" + File.separator + "ai_advanced.png";    }
     @Override
     public void play() {
+        AIMethods.sleep();
         level = GameScreen.getLevel();
         List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level);
 

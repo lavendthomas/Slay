@@ -23,6 +23,7 @@ public class AIRandom extends Player implements AI {
     }
     @Override
     public void play() {
+        AIMethods.sleep();
         level = GameScreen.getLevel();
         List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level);
 

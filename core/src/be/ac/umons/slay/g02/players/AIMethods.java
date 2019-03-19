@@ -31,7 +31,7 @@ class AIMethods {
     }
     static void sleep() {
         try {
-            Thread.sleep(200);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

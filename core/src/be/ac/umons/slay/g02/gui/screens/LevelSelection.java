@@ -83,7 +83,8 @@ public class LevelSelection implements Screen {
     private TextButton buttonBack;
     private TextButton buttonPlay;
     private TextButton buttonStats;
-    private SelectBox<String> selectBoxDifficulty;
+    private SelectBox<String> selectBoxDifficulty1;
+    private SelectBox<String> selectBoxDifficulty2;
     private SelectBox<String> selectBoxPlayer;
     private SelectBox<Integer> selectBoxIsland;
     private SelectBox<Integer> selectBoxNumber;
@@ -115,7 +116,9 @@ public class LevelSelection implements Screen {
     // permet de savoir s'il faut creer des IA au debut du jeu
     public static int numberHumans = 0;
     // permet de selectionner le bon type d'IA, on peut mettre autre chose que int, par defaut c'est Easy = 1 (Medium = 2 ...)
-    public static int difficulty = 1;
+    public static int difficulty1 = 1;
+    public static int difficulty2 = 1;
+
 
 
     public LevelSelection(Game aGame) {
@@ -202,12 +205,13 @@ public class LevelSelection implements Screen {
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
 
-                if (selectBoxNumber.getSelected() == 1 /* et qu'au moins une personne est connectee ! - A RAJOUTER */)
-                    enableBox(selectBoxDifficulty, selectBoxPlayer);
-                else if (selectBoxNumber.getSelected() == 2) {
-                    disableBox(selectBoxDifficulty, selectBoxPlayer);
+                if (selectBoxNumber.getSelected() == 1 /* et qu'au moins une personne est connectee ! - A RAJOUTER */) {
+                    enableBox(selectBoxDifficulty1, selectBoxPlayer);
+                    disableBox(selectBoxDifficulty2);
+                } else if (selectBoxNumber.getSelected() == 2) {
+                    disableBox(selectBoxDifficulty1, selectBoxDifficulty2, selectBoxPlayer);
                 } else {
-                    enableBox(selectBoxDifficulty);
+                    enableBox(selectBoxDifficulty1, selectBoxDifficulty2);
                     disableBox(selectBoxPlayer);
                 }
                 numberHumans = selectBoxNumber.getSelected();
@@ -236,18 +240,30 @@ public class LevelSelection implements Screen {
             selectBoxPlayer.addListener(selectBoxPlayerListener);
             disableBox(selectBoxPlayer);
         }
-        selectBoxDifficulty = new SelectBox<String>(skinSgx);
+        selectBoxDifficulty1 = new SelectBox<String>(skinSgx);
         Array<String> difficultyDegrees = new Array<String>();
-        difficultyDegrees.add("EASY", "MEDIUM", "ADVANCED");
-        selectBoxDifficulty.setItems(difficultyDegrees);
-        ChangeListener selectBoxDifficultyListener = new ChangeListener() {
+        difficultyDegrees.add("EASY", "MEDIUM", "ADVANCED", "RANDOM");
+        selectBoxDifficulty1.setItems(difficultyDegrees);
+        ChangeListener selectBoxDifficultyListener1 = new ChangeListener() {
             @Override
             public void changed(ChangeListener.ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
-                difficulty = selectBoxDifficulty.getSelectedIndex() + 1;
+                difficulty1 = selectBoxDifficulty1.getSelectedIndex() + 1;
             }
         };
-        selectBoxDifficulty.addListener(selectBoxDifficultyListener);
+        selectBoxDifficulty1.addListener(selectBoxDifficultyListener1);
+
+        selectBoxDifficulty2 = new SelectBox<String>(skinSgx);
+        selectBoxDifficulty2.setItems(difficultyDegrees);
+        ChangeListener selectBoxDifficultyListener2 = new ChangeListener() {
+            @Override
+            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+                soundButton1.play(prefs.getFloat("volume", 0.2f));
+                difficulty2 = selectBoxDifficulty2.getSelectedIndex() + 1;
+            }
+        };
+        selectBoxDifficulty2.addListener(selectBoxDifficultyListener2);
+
 
         buttonBack = new TextButton("Back", skinSgx, "big");
         buttonBack.addListener(new ClickListener() {
@@ -287,7 +303,9 @@ public class LevelSelection implements Screen {
         } else table.add(labelBoxPlayer).colspan(3).padLeft(SCREEN_WIDTH * 5 / 100);
         table.row().pad(SCREEN_HEIGHT * 17 / 100, 0, 0, 0);
         table.add(labelDifficulty);
-        table.add(selectBoxDifficulty).left().colspan(2);
+        table.add(selectBoxDifficulty1).left().colspan(2);
+        table.add(selectBoxDifficulty2).left().colspan(2);
+
         cellPreview = table.getCell(levelPreview);
 
 
@@ -456,7 +474,7 @@ public class LevelSelection implements Screen {
 
     private void showStats() {
         Menu.disableButton(buttonBack, buttonPlay, buttonStats);
-        Menu.disableBox(selectBoxIsland, selectBoxDifficulty, selectBoxPlayer, selectBoxNumber);
+        Menu.disableBox(selectBoxIsland, selectBoxDifficulty1, selectBoxDifficulty2, selectBoxPlayer, selectBoxNumber);
 
         Stack contentBack = new Stack();
         final Table tableBack = new Table();
@@ -589,12 +607,13 @@ public class LevelSelection implements Screen {
                 Menu.enableButton(buttonBack, buttonPlay, buttonStats);
                 enableBox(selectBoxIsland, selectBoxNumber);
 
-                if (selectBoxNumber.getSelected() == 1 /* et qu'au moins une personne est connectee ! - A RAJOUTER */)
-                    enableBox(selectBoxDifficulty, selectBoxPlayer);
-                else if (selectBoxNumber.getSelected() == 2) {
-                    disableBox(selectBoxDifficulty, selectBoxPlayer);
+                if (selectBoxNumber.getSelected() == 1 /* et qu'au moins une personne est connectee ! - A RAJOUTER */) {
+                    enableBox(selectBoxDifficulty1, selectBoxPlayer);
+                    disableBox(selectBoxDifficulty2);
+                } else if (selectBoxNumber.getSelected() == 2) {
+                    disableBox(selectBoxDifficulty1, selectBoxDifficulty2, selectBoxPlayer);
                 } else {
-                    enableBox(selectBoxDifficulty);
+                    enableBox(selectBoxDifficulty1, selectBoxDifficulty2);
                     disableBox(selectBoxPlayer);
                 }
             }

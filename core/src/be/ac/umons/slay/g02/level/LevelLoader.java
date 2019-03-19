@@ -146,6 +146,7 @@ public class LevelLoader {
                 int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
                 players = new Player[nbPlayers];
                 int countHuman = 0;
+                int countAI = 0;
                 int numberHumans = LevelSelection.numberHumans;
                 for (int p = 0; p < players.length; p++) {
                     int rand = new Random().nextInt(8);
@@ -161,7 +162,12 @@ public class LevelLoader {
                     switch (numberHumans) {
                         case 0:
                             // Two AIs
-                            difficulty = LevelSelection.difficulty;
+                            if (countAI == 0) {
+                                difficulty = LevelSelection.difficulty1;
+                                countAI ++;
+                            } else {
+                                difficulty = LevelSelection.difficulty2;
+                            }
                             player = fromDifficulty (difficulty, color, "P" + (p+1));
                             break;
                         case 1:
@@ -171,7 +177,7 @@ public class LevelLoader {
                                 countHuman += 1;
                                 break;
                             } else {
-                                difficulty = LevelSelection.difficulty;
+                                difficulty = LevelSelection.difficulty1;
                                 player = fromDifficulty(difficulty, color, "P" + (p+1));
                                 break;
                             }
