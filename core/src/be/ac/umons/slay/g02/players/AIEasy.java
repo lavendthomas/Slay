@@ -22,8 +22,7 @@ public class AIEasy extends Player implements AI {
     public AIEasy (Colors color, String name) {
         this.color = color;
         this.name = name;
-        avatar = "profile/" +
-                "" + File.separator + "ai_easy.png";
+        avatar = "profile" + File.separator + "ai_easy.png";
     }
 
     @Override

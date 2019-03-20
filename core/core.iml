@@ -35,8 +35,16 @@
     <orderEntry type="library" exported="" name="Gradle: byte-buddy-1.8.21" level="project" />
     <orderEntry type="library" exported="" name="Gradle: byte-buddy-agent-1.8.21" level="project" />
     <orderEntry type="library" exported="" name="Gradle: objenesis-2.6" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="Gradle: mockito-core-2.25.0" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="Gradle: mockito-core-2.25.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: byte-buddy-1.9.7" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="Gradle: byte-buddy-agent-1.9.7" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
+    <orderEntry type="library" exported="" name="core.core-1.0" level="project" />
   </component>
 </module>

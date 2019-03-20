@@ -18,7 +18,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileSet;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -26,15 +25,12 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -62,8 +58,6 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
-import static be.ac.umons.slay.g02.gui.Main.stage;
-import static be.ac.umons.slay.g02.gui.screens.Menu.pathImagePink;
 import static be.ac.umons.slay.g02.level.Level.getPlayers;
 import static java.lang.Math.round;
 import static java.lang.StrictMath.sqrt;
@@ -127,6 +121,7 @@ public class GameScreen implements Screen {
     private int translateX;
     private int translateY;
     private int nbreH;
+    private boolean AIisPaused = false;
 
     GameScreen(Game aGame, String levelName) {
         game = aGame;
@@ -232,6 +227,7 @@ public class GameScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+                AIisPaused = false;
                 windowPause.remove();
                 windowPause.setVisible(false);
             }
@@ -484,7 +480,7 @@ public class GameScreen implements Screen {
      */
     private void loadLevel() {
        showNextTurnEffects();
-        if (level.getCurrentPlayer() instanceof AI) {
+        if (level.getCurrentPlayer() instanceof AI && !AIisPaused) {
             ((AI) level.getCurrentPlayer()).play();
         }
         for (int i = 0; i < level.width(); i++) {
@@ -567,13 +563,16 @@ public class GameScreen implements Screen {
             buttonSpeed3.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
-                    AIMethods.setSpeed(200);
+                    if (!windowPause.isVisible()) {
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIMethods.setSpeed(200);
+                    }
                 }
             });
             buttonSpeed3.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
-            float offsetW = buttonSpeed3.getWidth();
-            buttonSpeed3.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed3.getHeight());
+            float offsetW = 10;
+            float offsetH = buttonSpeed3.getHeight();
+            buttonSpeed3.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
 
             //Charge boutton 2ème vitesse
@@ -581,13 +580,15 @@ public class GameScreen implements Screen {
             buttonSpeed2.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
-                    AIMethods.setSpeed(350);
+                    if (!windowPause.isVisible()) {
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIMethods.setSpeed(350);
+                    }
                 }
             });
             buttonSpeed2.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
             offsetW += buttonSpeed2.getWidth() + 10;
-            buttonSpeed2.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed2.getHeight());
+            buttonSpeed2.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
 
             //Charge boutton 1ère vitesse
@@ -595,13 +596,15 @@ public class GameScreen implements Screen {
             buttonSpeed1.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
-                    AIMethods.setSpeed(500);
+                    if (!windowPause.isVisible()) {
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIMethods.setSpeed(500);
+                    }
                 }
             });
             buttonSpeed1.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
             offsetW += buttonSpeed1.getWidth() + 10;
-            buttonSpeed1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed1.getHeight());
+            buttonSpeed1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
 
             //Charge boutton vitesse 0
@@ -609,21 +612,62 @@ public class GameScreen implements Screen {
             buttonSpeed0.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    soundButton3.play(prefs.getFloat("volume", 0.1f));
-                    AIMethods.setSpeed(650);
+                    if (!windowPause.isVisible()) {
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIMethods.setSpeed(650);
+                    }
                 }
             });
             buttonSpeed0.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
             offsetW += buttonSpeed0.getWidth() + 10;
-            buttonSpeed0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonSpeed0.getHeight());
+            buttonSpeed0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+
+            // Charge boutton pause
+            TextureRegionDrawable imageStop = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/pause.png"))));
+            ImageButton buttonStop = new ImageButton(imageStop);
+            buttonStop.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!windowPause.isVisible()) {
+                        AIisPaused = true;
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    }
+                }
+            });
+            buttonStop.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
+            offsetW = 10;
+            offsetH += buttonStop.getHeight() + 10;
+            buttonStop.setPosition((SCREEN_WIDTH) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+
+
+            // Charge boutton play
+            TextureRegionDrawable imagePlay = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/play.png"))));
+            ImageButton buttonPlay = new ImageButton(imagePlay);
+            buttonPlay.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!windowPause.isVisible()) {
+                        AIisPaused = false;
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                    }
+                }
+            });
+            buttonPlay.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
+            offsetW += buttonPlay.getWidth() + 10;
+            buttonPlay.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+
 
 
             hud.addActor(buttonSpeed3);
             hud.addActor(buttonSpeed2);
             hud.addActor(buttonSpeed1);
             hud.addActor(buttonSpeed0);
+            hud.addActor(buttonStop);
+            hud.addActor(buttonPlay);
 
         } else {
+            // Add button Next
+
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
             buttonNext = new ImageButton(imageNext);
             buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
@@ -642,7 +686,7 @@ public class GameScreen implements Screen {
             });
             hud.addActor(buttonNext);
         }
-        // Add buttons Pause and Next
+        // Add button Pause
 
         TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/dots.png"))));
         buttonPause = new ImageButton(imageDots);
@@ -654,6 +698,7 @@ public class GameScreen implements Screen {
                 if (!windowPause.isVisible()) {
                     soundButton1.play(prefs.getFloat("volume", 0.2f));
                     showPauseWindow();
+                    AIisPaused = true;
                 }
             }
         });
