@@ -255,7 +255,7 @@ public class Level implements Playable {
                 int fromLvl = ((Soldier) entity).getSoldierLevel().getLevel();
 
                 // Soldiers can fusion ?
-                if (toLvl + fromLvl < 3) {
+                if (toLvl == fromLvl && toLvl + fromLvl < 3) {
                     visited.add(terr);
                 }
             } else {
@@ -396,7 +396,7 @@ public class Level implements Playable {
                     int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
 
                     // Soldier can fusion ?
-                    return toLvl + fromLvl < 3;
+                    return toLvl == fromLvl && toLvl + fromLvl < 3;
 
                 }
                 return true;
@@ -599,7 +599,7 @@ public class Level implements Playable {
                         Tile[] tilesArray = new Tile[tilesInTerritory.size()];
                         tilesInTerritory.toArray(tilesArray);
                         for (Tile t : tilesArray) {
-                            if (!tiles.contains(t) && t != null) {
+                            if (!tiles.contains(t) && t != null && t.getTerritory() != null) {
                                 t.getTerritory().remove(t);
                                 t.setTerritory(newTerr);
                             }
