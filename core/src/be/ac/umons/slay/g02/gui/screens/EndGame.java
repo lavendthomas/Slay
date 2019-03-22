@@ -41,6 +41,7 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 
+import be.ac.umons.slay.g02.players.AI;
 import be.ac.umons.slay.g02.players.Account;
 import be.ac.umons.slay.g02.players.Colors;
 import be.ac.umons.slay.g02.players.FileBuilder;
@@ -77,24 +78,27 @@ public class EndGame implements Screen {
     private Sprite sprite;
 
     private SpriteBatch batch;
-    private TextButton buttonHall;
-    private TextButton buttonExit;
-    private TextButton buttonMenu;
 
-    private int buttonCenterWidth = VIRTUAL_WIDTH * 28 / 100;
-    private int buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
-    private int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
-    private int tableCenterPositionX = VIRTUAL_WIDTH / 2;
-    private int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
-    private int buttonProfileHeight = VIRTUAL_HEIGHT * 10 / 100;
-    private int windowSettingsWidth = Math.min(SCREEN_WIDTH, 700);
-    Label labelwinner;
-
-
-    public EndGame(Game aGame, Player winner) {
+    EndGame(Game aGame, Player winner, int numberHuman) {
         game = aGame;
 
-        labelwinner = new Label("THE WINNER IS " + winner.getName(), skinSgx);
+        int buttonCenterWidth = VIRTUAL_WIDTH * 28 / 100;
+        int buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
+        int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
+        int tableCenterPositionX = VIRTUAL_WIDTH / 2;
+        int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
+
+        Label labelwinner;
+
+        if (numberHuman == 1) {
+            if (winner instanceof AI) {
+                labelwinner = new Label("Too bad you lost, you'll do better next time", skinSgx);
+            } else {
+                labelwinner = new Label("Congratulation ! You have won", skinSgx);
+            }
+        } else {
+                labelwinner = new Label("The winner is " + winner.getName(), skinSgx);
+        }
         Table table = new Table();
         table.setFillParent(true);
         table.center().center();
@@ -102,15 +106,11 @@ public class EndGame implements Screen {
         stage.addActor(table);
 
 
-        buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
         buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
         buttonCenterHeight = VIRTUAL_HEIGHT * 5 / 100;
         buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
-        //labelProfileWidth = buttonCenterWidth * 35 / 100;
         tableCenterPositionX = SCREEN_WIDTH / 2;
         tableCenterPositionY = SCREEN_HEIGHT / 3;
-        buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
-        windowSettingsWidth = buttonCenterWidth * 3 / 4;
 
         // background
         batch = new SpriteBatch();
@@ -125,7 +125,7 @@ public class EndGame implements Screen {
         tableCenter.setPosition(tableCenterPositionX, tableCenterPositionY);
         stage.addActor(tableCenter);
 
-        buttonExit = new TextButton(lang.get("button_exit"), skinSgx, "big");
+        TextButton buttonExit = new TextButton(lang.get("button_exit"), skinSgx, "big");
         buttonExit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -134,11 +134,19 @@ public class EndGame implements Screen {
             }
         });
 
-            tableCenter.row().pad(buttonCenterGap, 0, buttonCenterGap, 0);
-            tableCenter.add(buttonHall).width(buttonCenterWidth).height(buttonCenterHeight);
-            tableCenter.row().pad(0, 0, buttonCenterGap, 0);
-            tableCenter.row();
-            tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
+        TextButton buttonMenu = new TextButton("menu", skinSgx, "big");
+        buttonMenu.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton2.play(prefs.getFloat("volume", 0.2f));
+                game.setScreen(new Menu(game));
+            }
+        });
+
+        tableCenter.add(buttonMenu).width(buttonCenterWidth).height(buttonCenterHeight);
+        tableCenter.row().pad(buttonCenterGap, 0, buttonCenterGap, 0);
+        tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
+
     }
 
     @Override

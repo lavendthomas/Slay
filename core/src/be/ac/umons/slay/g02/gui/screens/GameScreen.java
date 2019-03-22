@@ -128,6 +128,7 @@ public class GameScreen implements Screen {
     private boolean AIisPaused = false;
     private boolean endPlay = false; // partie continue tant que faux
 
+
     GameScreen(Game aGame, String levelName) {
         game = aGame;
         click = ClickState.NOTHING_SELECTED;
@@ -323,7 +324,7 @@ public class GameScreen implements Screen {
             Player winner = level.hasWon();
             Gdx.graphics.setContinuousRendering(false);
             hud.clear();
-            game.setScreen(new EndGame(game, winner));
+            game.setScreen(new EndGame(game, winner, LevelSelection.numberHumans));
 
 
         }

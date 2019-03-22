@@ -200,8 +200,6 @@ public class Level implements Playable {
             }
             return true;
         } else { // Il y a un gagnant
-            System.out.println(hasWon().getName() + " " + hasWon().getColor().getName());
-
             return false;
 
         }
