@@ -3,9 +3,11 @@ package be.ac.umons.slay.g02.level;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
@@ -162,38 +164,46 @@ public class Level implements Playable {
     }
 
     @Override
-    public void nextTurn() {
-        List<Territory> processed = new LinkedList<Territory>();
+    public boolean nextTurn() {
 
-        turn = (turn + 1) % players.length;
-        currentPlayer = players[turn];
+        if ( hasWon() == null) { // Pas de gagnant
+            List<Territory> processed = new LinkedList<Territory>();
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                Coordinate c = new Coordinate(i, j);
-                Tile t = get(i, j);
-                Territory terr = t.getTerritory();
+            turn = (turn + 1) % players.length;
+            currentPlayer = players[turn];
 
-
-                if (terr != null && !processed.contains(terr)) {
-                    // Adds funds and kills soldier for all territories
-                    t.getTerritory().nextTurn();
-                    processed.add(terr);
-                }
-
-                // Spawn trees
-                if (canSpawnTree(c)) {
-                    t.setEntity(StaticEntity.TREE);
-                }
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    Coordinate c = new Coordinate(i, j);
+                    Tile t = get(i, j);
+                    Territory terr = t.getTerritory();
 
 
+                    if (terr != null && !processed.contains(terr)) {
+                        // Adds funds and kills soldier for all territories
+                        t.getTerritory().nextTurn();
+                        processed.add(terr);
+                    }
 
-                if (t.getTerritory() != null && t.getTerritory().getOwner().equals(currentPlayer)) {
-                    if (t.getEntity() != null && t.getEntity() instanceof Soldier) {
-                        ((Soldier) t.getEntity()).setMoved(false);
+                    // Spawn trees
+                    if (canSpawnTree(c)) {
+                        t.setEntity(StaticEntity.TREE);
+                    }
+
+
+                    if (t.getTerritory() != null && t.getTerritory().getOwner().equals(currentPlayer)) {
+                        if (t.getEntity() != null && t.getEntity() instanceof Soldier) {
+                            ((Soldier) t.getEntity()).setMoved(false);
+                        }
                     }
                 }
             }
+            return true;
+        } else { // Il y a un gagnant
+            System.out.println(hasWon().getName() + " " + hasWon().getColor().getName());
+
+            return false;
+
         }
     }
 
@@ -653,19 +663,17 @@ public class Level implements Playable {
         }
     }
 
-    public int countTerritories() {
-        List<Territory> territories = new LinkedList<Territory>();
+    public int countTerritories(Player player) {
+        int count = 0;
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
-                Tile cell = tileMap[i][j];
-                if (cell.hasTerritory()) {
-                    if (!territories.contains(cell.getTerritory())) {
-                        territories.add(cell.getTerritory());
-                    }
+                Tile tile = tileMap[i][j];
+                if (tile.hasTerritory() && tile.getTerritory().getOwner().equals(player)) {
+                    count++;
                 }
             }
         }
-        return territories.size();
+        return count;
     }
 
     /**
@@ -674,57 +682,21 @@ public class Level implements Playable {
      */
     @Override
     public Player hasWon() {
+        List<Player> inGame = new ArrayList<Player>();
 
-        int[] scores = new int[players.length];
-
-        HashMap<Player, Integer> pl = new HashMap<Player, Integer>(players.length);
-        for (int i=0; i<players.length; i++) {
-            pl.put(players[i], i);
-        }
-
-
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                Tile cell = tileMap[i][j];
-                if (cell.getTerritory() != null) {
-                    Player owner = cell.getTerritory().getOwner();
-                    if (cell.getTerritory() != null) {
-                        scores[pl.get(owner)] += 3; // 3 per cell
-
-                        if (cell.getEntity() != null) {
-                            if (cell.getEntity() instanceof Soldier) {
-                                scores[pl.get(owner)] += cell.getEntity().getPrice(); // price per unit
-                            } else if (cell.getEntity() instanceof StaticEntity) {
-                                if (cell.getEntity() == StaticEntity.TREE) {
-                                    scores[pl.get(owner)] -= 1; //-1 per tree because higher risk of loosing units
-                                } else if (cell.getEntity() == StaticEntity.CAPITAL) {
-                                    scores[pl.get(owner)] += 0;
-                                }
-                            }
-                        }
-                    }
-                }
+        for (int i = 0; i < players.length; i++) {
+            Player player = players[i];
+            int n = countTerritories(player);
+            if (n > 0) {
+                inGame.add(player);
             }
         }
-        System.out.print(Arrays.toString(scores));
-
-
-        // We win if our score is 10 times higher than the score of all others
-        for (int i=0; i<players.length; i++) {
-            boolean won = true;
-            for (int j=0; j<players.length; j++) {
-                if (i != j) {
-                    if (scores[i] < 7 * scores[j]) {
-                        won = false;
-                    }
-                }
-            }
-            if (won) {
-                return players[i];
-            }
+        if (inGame.size() == 1) { // Il ne reste qu'un joueur en jeu
+            return inGame.get(0);
+        } else {
+            return null;
         }
 
-        return null;
     }
 
     /**

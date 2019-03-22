@@ -26,7 +26,7 @@ public class AIEasy extends Player implements AI {
     }
 
     @Override
-    public void play() {
+    public boolean play() {
         AIMethods.sleep();
         level = GameScreen.getLevel();
         List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level);
@@ -48,9 +48,8 @@ public class AIEasy extends Player implements AI {
                 }
             }
         }
-
         // finir son tour
-        level.nextTurn();
+        return level.nextTurn();
     }
 
 
@@ -165,7 +164,7 @@ public class AIEasy extends Player implements AI {
     }
 
     private boolean canBuy (Soldier soldier, Territory territory) {
-        if (territory.canBuy(soldier)) {
+        if (territory != null && territory.canBuy(soldier)) {
             int rest = territory.getIncome() - territory.getWages();
             int cost = soldier.getCost();
             return rest > cost;

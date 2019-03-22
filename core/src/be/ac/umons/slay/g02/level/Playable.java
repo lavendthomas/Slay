@@ -28,7 +28,7 @@ public interface Playable {
 
     List<Entity> canBuy(Coordinate p);
 
-    void nextTurn();
+    boolean nextTurn();
 
     Player hasWon();
 

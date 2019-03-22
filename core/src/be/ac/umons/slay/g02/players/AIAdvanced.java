@@ -21,7 +21,7 @@ public class AIAdvanced extends Player implements AI {
         this.color = color;
         avatar = "profile" + File.separator + "ai_advanced.png";    }
     @Override
-    public void play() {
+    public boolean play() {
         AIMethods.sleep();
         level = GameScreen.getLevel();
         List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level);
@@ -45,15 +45,10 @@ public class AIAdvanced extends Player implements AI {
 
                 }
             }
-
-
         }
 
         // finir son tour
-        level.nextTurn();
-
-
-
+        return level.nextTurn();
     }
 
     private void moveSoldier (Soldier soldier, Coordinate coordinate) {

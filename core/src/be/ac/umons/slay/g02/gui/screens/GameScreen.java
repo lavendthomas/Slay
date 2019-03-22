@@ -50,6 +50,7 @@ import be.ac.umons.slay.g02.level.Tile;
 import be.ac.umons.slay.g02.level.TileSetManagement;
 import be.ac.umons.slay.g02.players.AI;
 import be.ac.umons.slay.g02.players.AIMethods;
+import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -58,6 +59,7 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.level.Level.getPlayers;
 import static java.lang.Math.round;
 import static java.lang.StrictMath.sqrt;
@@ -89,6 +91,8 @@ public class GameScreen implements Screen {
 
     private static Window windowPause = new Window("Pause", skinSgx);
     private static Window windowQuit = new Window("Quit Game", skinSgx);
+    private static Window windowEnd = new Window("End", skinSgx);
+
 
     private Label labelCoins;
     private Label labelIncome;
@@ -122,11 +126,13 @@ public class GameScreen implements Screen {
     private int translateY;
     private int nbreH;
     private boolean AIisPaused = false;
+    private boolean endPlay = false; // partie continue tant que faux
 
     GameScreen(Game aGame, String levelName) {
         game = aGame;
         click = ClickState.NOTHING_SELECTED;
         windowPause.setVisible(false);
+        windowEnd.setVisible(false);
 
         try {
             camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -205,7 +211,6 @@ public class GameScreen implements Screen {
         }
 
     }
-
 
     private void showPauseWindow() {
         windowPause.clear();
@@ -302,17 +307,26 @@ public class GameScreen implements Screen {
     public void render(float delta) {
 
         loadLevel();
-        handleInput();
-        camera.update();
-        Gdx.gl.glClearColor(103 / 255f, 173 / 255f, 244 / 255f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        renderer.setView(camera);
-        renderer.render();
+        if (!endPlay) {
+            handleInput();
+            camera.update();
+            Gdx.gl.glClearColor(103 / 255f, 173 / 255f, 244 / 255f, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+            renderer.setView(camera);
+            renderer.render();
 
-        hud.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
+            hud.getViewport().update(SCREEN_WIDTH, SCREEN_HEIGHT, true);
 
-        hud.act();
-        hud.draw();
+            hud.act();
+            hud.draw();
+        } else {
+            Player winner = level.hasWon();
+            Gdx.graphics.setContinuousRendering(false);
+            hud.clear();
+            game.setScreen(new EndGame(game, winner));
+
+
+        }
     }
 
     private Coordinate getCoordinate(float x, float y) {
@@ -352,7 +366,6 @@ public class GameScreen implements Screen {
                         // We clicked on a soldier then on a territory so the soldier should be moved
                         if (level.getMoves(previousClick, 4).contains(clickPos)) {
                             level.move(previousClick, clickPos);
-                            level.hasWon();
                             click = ClickState.NOTHING_SELECTED;
                         } else {
                             click = ClickState.NOTHING_SELECTED;
@@ -481,7 +494,10 @@ public class GameScreen implements Screen {
     private void loadLevel() {
        showNextTurnEffects();
         if (level.getCurrentPlayer() instanceof AI && !AIisPaused) {
-            ((AI) level.getCurrentPlayer()).play();
+            boolean win = ((AI) level.getCurrentPlayer()).play(); // true = il y a un gagnant
+            if (!win) {
+                endPlay = true; // Signale fin de partie
+            }
         }
         for (int i = 0; i < level.width(); i++) {
             for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique
@@ -676,11 +692,15 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        level.nextTurn();
+                        boolean win = level.nextTurn();
                         click = ClickState.NOTHING_SELECTED;
                         EffectsManagement.eraseCells(effects);
                         showEffects(previousClick);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        if (!win) {
+                            endPlay = true; // Signale fin de partie
+                        }
+
                     }
                 }
             });
