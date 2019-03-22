@@ -37,8 +37,6 @@ import be.ac.umons.slay.g02.players.LevelStats;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
-import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
-import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.isAccountEnabled;
 import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
@@ -123,6 +121,13 @@ public class LevelSelection implements Screen {
 
     public LevelSelection(Game aGame) {
         game = aGame;
+
+        init();
+    }
+
+    private void init() {
+
+        stage.clear();
 
         int buttonGapY = SCREEN_HEIGHT * 10 / 100;
         cellHeight = SCREEN_HEIGHT * 6 / 100;
@@ -316,7 +321,7 @@ public class LevelSelection implements Screen {
             table.center().padRight(SCREEN_WIDTH * 6 / 100);
             buttonBack.setPosition(SCREEN_WIDTH / 2 - buttonBack.getWidth() * 3 / 2, SCREEN_HEIGHT * 10 / 100);
             buttonPlay.setPosition(SCREEN_WIDTH / 2 + buttonBack.getWidth() / 2, SCREEN_HEIGHT * 10 / 100);
-        } else if (isAccountEnabled) {
+        } else if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             // partie droite
             buttonStats = new TextButton("Statistics", skinSgx, "big");
             buttonStats.addListener(new ClickListener() {
@@ -326,7 +331,7 @@ public class LevelSelection implements Screen {
                     showStats();
                 }
             });
-            buttonStats.setWidth(SCREEN_WIDTH * 12 / 100);
+            buttonStats.setWidth(SCREEN_WIDTH * 12 / 100); // TODO fixed lenght
 
             Table tableStats = new Table();
             tableStats.setFillParent(true);
@@ -417,6 +422,10 @@ public class LevelSelection implements Screen {
             buttonBack.setPosition(SCREEN_WIDTH * 7 / 100, SCREEN_HEIGHT * 10 / 100);
             buttonPlay.setPosition(SCREEN_WIDTH * 27 / 100, SCREEN_HEIGHT * 10 / 100);
             buttonStats.setPosition(SCREEN_WIDTH * 47 / 100, SCREEN_HEIGHT * 10 / 100);
+        } else {
+            buttonBack.setPosition(SCREEN_WIDTH / 2 - buttonBack.getWidth() * 3 / 2, SCREEN_HEIGHT * 10 / 100);
+            buttonPlay.setPosition(SCREEN_WIDTH / 2 + buttonBack.getWidth() / 2, SCREEN_HEIGHT * 10 / 100);
+            // TODO add button to go to hall of fame in portrait mode
         }
         stage.addActor(table);
         stage.addActor(buttonBack);
@@ -879,9 +888,12 @@ public class LevelSelection implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
-        skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
-        skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
+        //skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
+        //skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
+        //skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
+
+        init();
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
