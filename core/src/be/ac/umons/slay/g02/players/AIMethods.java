@@ -8,7 +8,7 @@ import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 
 public class AIMethods {
-    private static int speed = 400;
+    private static int speed = 333; // 3 tours / seconde
 
     static List<List<Coordinate>> loadTerritories (Playable level) {
         List<List<Coordinate>> allTerritories = new ArrayList<List<Coordinate>>();

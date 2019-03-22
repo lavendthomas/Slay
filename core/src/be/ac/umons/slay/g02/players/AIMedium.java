@@ -182,8 +182,8 @@ public class AIMedium extends Player implements AI {
 
     private boolean canBuy (Soldier soldier, Territory territory) {
         if (territory.canBuy(soldier)) {
-            int rest = territory.getIncome() - territory.getWages();
-            int cost = soldier.getCost() + 10;  //plus économe
+            int rest = territory.getCoins() - territory.getWages() + territory.getIncome();
+            int cost = soldier.getCost() * 2; // Possibilité de l'entretenir pendant 2 tours
             return rest > cost;
         }
         return false;
@@ -191,8 +191,8 @@ public class AIMedium extends Player implements AI {
 
     private boolean canFusion (Soldier sold1, Soldier sold2, Territory territory) {
         int newlvl = sold1.getSoldierLevel().getLevel() + sold2.getSoldierLevel().getLevel();
-        int rest = territory.getIncome() - territory.getWages();
-        int cost = SoldierLevel.fromLevel(newlvl).getCost() + 10; // Plus économe
+        int rest = territory.getCoins() - territory.getWages() + territory.getIncome();
+        int cost = SoldierLevel.fromLevel(newlvl).getCost() * 2; // Possibilité de l'entretenir pendant 2 tours
         return rest > cost;
     }
 
