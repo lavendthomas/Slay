@@ -435,7 +435,6 @@ public class GameScreen implements Screen {
             }
         }
 
-        Gdx.app.log("", c.toString() + canBuy.toString());
         boolean isVisibleL0 = shown && canBuy.contains("L0");
         boolean isVisibleL1 = shown && canBuy.contains("L1");
         boolean isVisibleL2 = shown && canBuy.contains("L2");
@@ -573,97 +572,103 @@ public class GameScreen implements Screen {
         hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
 
         if (LevelSelection.numberHumans == 0) {
+            // Initialisation des bouttons
+            TextureRegionDrawable imageV4 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v4.png"))));
+            final ImageButton buttonV4 = new ImageButton(imageV4);
+            TextureRegionDrawable imageV3 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v3.png"))));
+            final ImageButton buttonV3 = new ImageButton(imageV3);
+            TextureRegionDrawable imageV2 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v2.png"))));
+            final ImageButton buttonV2 = new ImageButton(imageV2);
+            TextureRegionDrawable imageV1 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v1.png"))));
+            final ImageButton buttonV1 = new ImageButton(imageV1);
+            TextureRegionDrawable imagePause = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v0.png"))));
+            final ImageButton buttonV0 = new ImageButton(imagePause);
 
-            // Charge boutton v3
-            TextureRegionDrawable imageV3 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v4.png"))));
-            ImageButton buttonV3 = new ImageButton(imageV3);
-            buttonV3.addListener(new ClickListener() {
+            // Bien positionner les bouttons
+            float offsetW = 10;
+            float offsetH = buttonV4.getHeight();
+            buttonV4.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            offsetW += buttonV3.getWidth() + 10;
+            buttonV3.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            offsetW += buttonV2.getWidth() + 10;
+            buttonV2.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            offsetW += buttonV1.getWidth() + 10;
+            buttonV1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            offsetW += buttonV0.getWidth() + 10;
+            buttonV0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+
+
+            // Ajouter les actions
+
+            buttonV4.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
                         AIisPaused = false;
                         AIMethods.setSpeed(200); // 5 tours / seconde
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        makeUnitGreen(true, buttonV4);
+                        makeUnitGreen(false, buttonV0, buttonV1, buttonV2, buttonV3);
                     }
                 }
             });
-            buttonV3.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
-            float offsetW = 10;
-            float offsetH = buttonV3.getHeight();
-            buttonV3.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
-            // Charge boutton v2
-            TextureRegionDrawable imageV2 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v3.png"))));
-            ImageButton buttonV2 = new ImageButton(imageV2);
-            buttonV2.addListener(new ClickListener() {
+            buttonV3.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
                         AIisPaused = false;
                         AIMethods.setSpeed(333); //3 tours / seconde
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        makeUnitGreen(true, buttonV3);
+                        makeUnitGreen(false, buttonV0, buttonV1, buttonV2, buttonV4);
                     }
                 }
             });
-            buttonV2.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
-            offsetW += buttonV2.getWidth() + 10;
-            buttonV2.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
-            // Charge boutton v1
-            TextureRegionDrawable imageV1 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v2.png"))));
-            ImageButton buttonV1 = new ImageButton(imageV1);
-            buttonV1.addListener(new ClickListener() {
+            buttonV2.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
                         AIisPaused = false;
                         AIMethods.setSpeed(500); //2 tours / seconde
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        makeUnitGreen(true, buttonV2);
+                        makeUnitGreen(false, buttonV0, buttonV1, buttonV3, buttonV4);
                     }
                 }
             });
-            buttonV1.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
-            offsetW += buttonV1.getWidth() + 10;
-            buttonV1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
-            // Charge boutton v0
-            TextureRegionDrawable imageV0 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v1.png"))));
-            ImageButton buttonV0 = new ImageButton(imageV0);
-            buttonV0.addListener(new ClickListener() {
+            buttonV1.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
                         AIisPaused = false;
                         AIMethods.setSpeed(1000);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        makeUnitGreen(true, buttonV1);
+                        makeUnitGreen(false, buttonV0, buttonV2, buttonV3, buttonV4);
                     }
                 }
             });
-            buttonV0.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
-            offsetW += buttonV0.getWidth() + 10;
-            buttonV0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
-            // Charge boutton pause
-            TextureRegionDrawable imagePause = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v0.png"))));
-            ImageButton buttonPause = new ImageButton(imagePause);
-            buttonPause.addListener(new ClickListener() {
+            buttonV0.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
                         AIisPaused = true;
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        makeUnitGreen(true, buttonV0);
+                        makeUnitGreen(false, buttonV1, buttonV2, buttonV3, buttonV4);
                     }
                 }
             });
-            buttonPause.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 4 / 100);
-            offsetW += buttonPause.getWidth() + 10;
-            buttonPause.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
 
+            hud.addActor(buttonV4);
             hud.addActor(buttonV3);
             hud.addActor(buttonV2);
             hud.addActor(buttonV1);
             hud.addActor(buttonV0);
-            hud.addActor(buttonPause);
 
         } else {
             // Add button Next
