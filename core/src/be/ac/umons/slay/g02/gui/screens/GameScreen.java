@@ -59,7 +59,6 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
-import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.level.Level.getPlayers;
 import static java.lang.Math.round;
 import static java.lang.StrictMath.sqrt;
@@ -597,6 +596,7 @@ public class GameScreen implements Screen {
             buttonV1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
             offsetW += buttonV0.getWidth() + 10;
             buttonV0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            makeButtonGreen(true, buttonV3);
 
 
             // Ajouter les actions
@@ -608,8 +608,8 @@ public class GameScreen implements Screen {
                         AIisPaused = false;
                         AIMethods.setSpeed(200); // 5 tours / seconde
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
-                        makeUnitGreen(true, buttonV4);
-                        makeUnitGreen(false, buttonV0, buttonV1, buttonV2, buttonV3);
+                        makeButtonGreen(true, buttonV4);
+                        makeButtonGreen(false, buttonV0, buttonV1, buttonV2, buttonV3);
                     }
                 }
             });
@@ -621,8 +621,8 @@ public class GameScreen implements Screen {
                         AIisPaused = false;
                         AIMethods.setSpeed(333); //3 tours / seconde
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
-                        makeUnitGreen(true, buttonV3);
-                        makeUnitGreen(false, buttonV0, buttonV1, buttonV2, buttonV4);
+                        makeButtonGreen(true, buttonV3);
+                        makeButtonGreen(false, buttonV0, buttonV1, buttonV2, buttonV4);
                     }
                 }
             });
@@ -634,8 +634,8 @@ public class GameScreen implements Screen {
                         AIisPaused = false;
                         AIMethods.setSpeed(500); //2 tours / seconde
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
-                        makeUnitGreen(true, buttonV2);
-                        makeUnitGreen(false, buttonV0, buttonV1, buttonV3, buttonV4);
+                        makeButtonGreen(true, buttonV2);
+                        makeButtonGreen(false, buttonV0, buttonV1, buttonV3, buttonV4);
                     }
                 }
             });
@@ -647,8 +647,8 @@ public class GameScreen implements Screen {
                         AIisPaused = false;
                         AIMethods.setSpeed(1000);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
-                        makeUnitGreen(true, buttonV1);
-                        makeUnitGreen(false, buttonV0, buttonV2, buttonV3, buttonV4);
+                        makeButtonGreen(true, buttonV1);
+                        makeButtonGreen(false, buttonV0, buttonV2, buttonV3, buttonV4);
                     }
                 }
             });
@@ -659,8 +659,8 @@ public class GameScreen implements Screen {
                     if (!windowPause.isVisible()) {
                         AIisPaused = true;
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
-                        makeUnitGreen(true, buttonV0);
-                        makeUnitGreen(false, buttonV1, buttonV2, buttonV3, buttonV4);
+                        makeButtonGreen(true, buttonV0);
+                        makeButtonGreen(false, buttonV1, buttonV2, buttonV3, buttonV4);
                     }
                 }
             });
@@ -695,6 +695,9 @@ public class GameScreen implements Screen {
                 }
             });
             hud.addActor(buttonNext);
+
+
+
         }
         // Add button Pause
 
@@ -730,8 +733,8 @@ public class GameScreen implements Screen {
                     boughtEntity = new Soldier(SoldierLevel.L0);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
-                    makeUnitGreen(true, buttonL0);
-                    makeUnitGreen(false, buttonL1, buttonL2, buttonL3);
+                    makeButtonGreen(true, buttonL0);
+                    makeButtonGreen(false, buttonL1, buttonL2, buttonL3);
                 }
             }
         });
@@ -748,8 +751,8 @@ public class GameScreen implements Screen {
                     boughtEntity = new Soldier(SoldierLevel.L1);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
-                    makeUnitGreen(true, buttonL1);
-                    makeUnitGreen(false, buttonL0, buttonL2, buttonL3);
+                    makeButtonGreen(true, buttonL1);
+                    makeButtonGreen(false, buttonL0, buttonL2, buttonL3);
                 }
             }
         });
@@ -766,8 +769,8 @@ public class GameScreen implements Screen {
                     boughtEntity = new Soldier(SoldierLevel.L2);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
-                    makeUnitGreen(true, buttonL2);
-                    makeUnitGreen(false, buttonL1, buttonL0, buttonL3);
+                    makeButtonGreen(true, buttonL2);
+                    makeButtonGreen(false, buttonL1, buttonL0, buttonL3);
                 }
             }
         });
@@ -784,8 +787,8 @@ public class GameScreen implements Screen {
                     boughtEntity = new Soldier(SoldierLevel.L3);
                     click = ClickState.BUYING_UNIT;
                     showEffects(previousClick);
-                    makeUnitGreen(true, buttonL3);
-                    makeUnitGreen(false, buttonL1, buttonL2, buttonL0);
+                    makeButtonGreen(true, buttonL3);
+                    makeButtonGreen(false, buttonL1, buttonL2, buttonL0);
                 }
             }
         });
@@ -939,7 +942,7 @@ public class GameScreen implements Screen {
      * @param isSelected true if buttonL is the selected unit
      * @param buttonL    the units in the market
      */
-    private void makeUnitGreen(boolean isSelected, ImageButton... buttonL) {
+    private void makeButtonGreen(boolean isSelected, ImageButton... buttonL) {
         if (isSelected) {
             buttonL[0].getImage().setColor(Color.GREEN);
         } else {

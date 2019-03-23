@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.gui.screens;
 
+import com.badlogic.gdx.maps.Map;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import be.ac.umons.slay.g02.level.Coordinate;
@@ -103,6 +104,20 @@ public class HexManagement {
         }
         return new Cube(round(rx), round(ry), round(rz));
     }
+
+    public static int distance (Coordinate a, Coordinate b) {
+        Cube ac = oddqToCube(a);
+        Cube bc = oddqToCube(b);
+        return (Math.abs(ac.x - bc.x) + Math.abs(ac.y - bc.y) + Math.abs(ac.z - bc.z)) / 2;
+    }
+
+    private static Cube oddqToCube(Coordinate hex) {
+        int x = hex.getY();
+        int z = hex.getX() - (hex.getY() - (hex.getY()&1)) / 2;
+        int y = -x - z;
+        return new Cube(x, y, z);
+    }
+
 
     /**
      * Inner class representing a hexagon in cubic coordinates

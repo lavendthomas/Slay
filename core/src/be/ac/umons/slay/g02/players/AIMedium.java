@@ -1,7 +1,9 @@
 package be.ac.umons.slay.g02.players;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
@@ -16,186 +18,122 @@ public class AIMedium extends Player implements AI {
 
     private Playable level;
 
-    public AIMedium (Colors color, String name) {
+    public AIMedium(Colors color, String name) {
         this.name = name;
         this.color = color;
         avatar = "profile" + File.separator + "ai_medium.png";
     }
 
+
     @Override
     public boolean play() {
         AIMethods.sleep();
         level = GameScreen.getLevel();
-        List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level);
-
+        List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level, this, false);
         for (List<Coordinate> territory : allTerritories) {
             // Pour chaque territoire
-            if (territory.size() > 1) {
-                // Seulement pour les territoires assez grand
-                tryToAddUnit(territory);
+            tryToAddUnit(territory);
 
-                // Déplacement ?
-                for (Coordinate coordinate : territory) {
-                    // Parcours toutes les cases de ce terroire
-                    Tile tile = level.get(coordinate);
-                    if (tile.getEntity() != null && tile.getEntity() instanceof Soldier) {
-                        // Si il y a un soldat
-                        Soldier soldier = (Soldier) tile.getEntity();
-                        if (!soldier.getMoved()) {
-                            // Il ne s'est pas encore déplacé
-                            moveSoldier(soldier, coordinate);
+            // Déplacement ?
+            for (Coordinate cFrom : territory) {
+                // Parcours toutes les cases de ce terroire
+                Tile tile = level.get(cFrom);
+                if (tile.getEntity() != null && tile.getEntity() instanceof Soldier) {
+                    // Si il y a un soldat
+                    Soldier soldier = (Soldier) tile.getEntity();
+                    if (!soldier.getMoved()) {
+                        // Il ne s'est pas encore déplacé
+                        Coordinate cTo = findBestPlace(level.getMoves(cFrom, 4), cFrom, null);
+                        if (cTo == null) {
+                            // Default case, get closer to the enemy
+                            cTo = AIMethods.searchEnnemy(cFrom, level, this, null); // Soldat null car dplct
+                        }
+                        if (cTo != null) {
+                            level.move(cFrom, cTo);
                         }
                     }
                 }
             }
         }
-
         // finir son tour
         return level.nextTurn();
     }
 
-    private void findPositionDefense (Coordinate coordinate) {
-        for (Coordinate c : level.getMoves(coordinate, 4)) {
-            if (!c.equals(coordinate)) {
-                Tile current = level.get(c);
-                if (current.getTerritory() != null
-                    && current.getTerritory().getOwner().equals(this)
-                    && current.getEntity() == null) {
-                    for (Coordinate cNeigh : c.getNeighbors()) {
-                        if (level.get(cNeigh).getTerritory() != null
-                            && !level.get(cNeigh).getTerritory().getOwner().equals(this)) {
-                            // Il y un ennemei proche => Defendre la tuile
-                            level.move(coordinate, c);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void moveSoldier (Soldier soldier, Coordinate coordinate) {
-        for (Coordinate c : level.getMoves(coordinate, 4)) {
-            // Parcours de toutes les cases où mon soldat peut se déplacer
-            if (!c.equals(coordinate)) {
-                Tile current = level.get(c);
-                if (current.getTerritory() != null) {
-                    // Il y a un territoire
-
-                    if (current.getTerritory().getOwner().equals(this)) {
-                        // Même territoire
-
-                        if (current.getEntity() != null) {
-                            // Il y une entité
-
-                            if (current.getEntity() == StaticEntity.TREE) {
-                                // C'est un arbre => le couper
-                                level.move(coordinate, c);
-                                break;
-
-                            } else if (current.getEntity() instanceof Soldier) {
-                                // Il y a un soldat
-                                if (canFusion(soldier, (Soldier) current.getEntity(),
-                                        current.getTerritory())) {
-                                    // Fusion sans risque ? Retirer dans easy pour plus simple
-                                    level.move(coordinate, c);
-                                    break;
-
-                                }
-                            } // Ajouter cas défense du territoire Pour IA plus dure
-                        }
-                    } else {
-                        // Territoire adverse
-                        level.move(coordinate, c);
-                        break;
-                    }
-                } else {
-                    // Pas de territoire
-                    level.move(coordinate, c);
-                    break;
-                }
-            }
-        }
-        if (!soldier.getMoved()) {
-            // Trouver une position à défendre
-            findPositionDefense(coordinate);
-        }
-        if (!soldier.getMoved()) {
-            // Cas par défaut pour essayer de déplacer quand même le soldat sur une tuile vide dans son territoire
-            for (Coordinate c : level.getMoves(coordinate, 4)) {
-                Tile current = level.get(c);
-                if (current.getTerritory() != null
-                        && current.getTerritory().getOwner().equals(this)
-                        && current.getEntity() == null) {
-                    level.move(coordinate, c);
-                }
-            }
-        }
-    }
-
-
     private void tryToAddUnit(List<Coordinate> territory) {
-        // récup les données du territoire concerné
-        Coordinate cFrom = territory.get(0);
-        Territory terr = level.get(cFrom).getTerritory();
         for (int i = 1; i <= 4; i++) {
-            Soldier entity = new Soldier(SoldierLevel.fromLevel(i));
-            // Essai ajouter chacun des soldats possibles en commencant par le plus faible
-
-            if (canBuy(entity, terr)) {
-                // Je peux l'acheter => choix d'une case où la placer
-                for (Coordinate coordinate : level.getMoves(entity, cFrom)) {
-                    Tile current = level.get(coordinate);
-                    if (current.getTerritory() != null) {
-                        // Coordonée d'une tuile appartenant à quelqu'un
-                        if (current.getTerritory().getOwner().equals(this)) {
-                            // Coordonée d'une tuile m'appartenant
-                            if (current.getEntity() != null) {
-                                // Il y a une entité
-                                if (current.getEntity() == StaticEntity.TREE
-                                        || current.getEntity() == StaticEntity.GRAVE) {
-                                    // Il y a un arbre => le couper OU une tombe donc place libre
-                                    level.buy(entity, cFrom, coordinate);
-                                } else if (current.getEntity() instanceof Soldier) {
-                                    // Il y a un soldat => Fusion ?
-                                    if (canFusion(entity, (Soldier) current.getEntity(), terr)) {
-                                        // Peut fusionner => achat et fusion
-                                        level.buy(entity, cFrom, coordinate);
-                                    }
-                                }
-                            } else {
-                                // Pas d'entité case libre
-                                level.buy(entity, cFrom, coordinate);
-                            }
-                        } else {
-                            // Coordonnée d'une tuile ennemie
-                            level.buy(entity, cFrom, coordinate);
-                        }
-
-                    } else {
-                        // Coordonnée d'une tuile neutre
-                        level.buy(entity, cFrom, coordinate);
-                    }
+            // Try to buy every type of soldier
+            Soldier soldier = new Soldier(SoldierLevel.fromLevel(i));
+            Coordinate cFrom = territory.get(0);
+            Tile tileFrom = level.get(cFrom);
+            if (canBuy(soldier, tileFrom.getTerritory())) {
+                Coordinate cTo = findBestPlace(level.getMoves(soldier, cFrom), cFrom, soldier);
+                if (cTo == null) {
+                    cTo = AIMethods.searchEnnemy(cFrom, level, this, soldier);
+                }
+                if (cTo != null) {
+                    level.buy(soldier, cFrom, cTo);
                 }
             }
         }
+    }
+
+    private Coordinate findBestPlace(List<Coordinate> moves, Coordinate cFrom, Soldier soldier) {
+
+        // Seeking to occupy a neutral tile
+        Coordinate cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
+        }
+
+        // Merge soldiers
+        cTo = AIMethods.fusion(level, moves, cFrom, this);
+        if (cTo != null) {
+            Soldier soldier1;
+            Soldier soldier2 = (Soldier) level.get(cTo).getEntity();
+            if (soldier == null) {
+                soldier1 = (Soldier) level.get(cFrom).getEntity();
+            } else {
+                soldier1 = soldier;
+            }
+
+            if (canFusion(soldier1, soldier2, level.get(moves.get(0)).getTerritory())) {
+                return cTo;
+            }
+        }
+
+        // Attack enemy tiles
+        cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
+        }
+
+        // Cut trees of its territory
+        cTo = AIMethods.chopTree(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
+        }
+
+        // Default case, get closer to the enemy
+        return cTo; // null value
     }
 
     private boolean canBuy (Soldier soldier, Territory territory) {
         if (territory.canBuy(soldier)) {
-            int rest = territory.getCoins() - territory.getWages() + territory.getIncome();
-            int cost = soldier.getCost() * 2; // Possibilité de l'entretenir pendant 2 tours
+            // Coins remaining after purchase
+            int rest = territory.getCoins() - soldier.getPrice();
+            // Salary after a turn
+            int cost = soldier.getSoldierLevel().getCost();
             return rest > cost;
         }
         return false;
     }
 
     private boolean canFusion (Soldier sold1, Soldier sold2, Territory territory) {
-        int newlvl = sold1.getSoldierLevel().getLevel() + sold2.getSoldierLevel().getLevel();
-        int rest = territory.getCoins() - territory.getWages() + territory.getIncome();
-        int cost = SoldierLevel.fromLevel(newlvl).getCost() * 2; // Possibilité de l'entretenir pendant 2 tours
-        return rest > cost;
+        if (sold1 != null && sold2 != null) {
+            int newlvl = sold1.getSoldierLevel().getLevel() + sold2.getSoldierLevel().getLevel();
+            int cost = SoldierLevel.fromLevel(newlvl).getCost();
+            return territory.getCoins() > cost;
+        }
+        return false;
     }
-
-
-
 }
