@@ -1,10 +1,8 @@
 package be.ac.umons.slay.g02.gui.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
-import be.ac.umons.slay.g02.players.AI;
 
 public class LevelGestureListener implements GestureDetector.GestureListener {
     OrthographicCamera camera;
@@ -33,12 +31,12 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean fling(float velocityX, float velocityY, int button) {
-        Gdx.app.debug("slay", "flong!");
         return false;
     }
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
+        camera.translate(- camera.zoom * deltaX, camera.zoom * deltaY);
         return false;
     }
 
@@ -49,7 +47,6 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        Gdx.app.debug("slay", "I' zoomed!" +  (initialDistance - distance));
         camera.zoom += (initialDistance - distance) / 100000;
         return false;
     }

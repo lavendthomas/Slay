@@ -331,7 +331,7 @@ public class LevelSelection implements Screen {
                     showStats();
                 }
             });
-            buttonStats.setWidth(SCREEN_WIDTH * 12 / 100); // TODO fixed lenght
+            buttonStats.setWidth(SCREEN_WIDTH * 12 / 100); // TODO fixed length
 
             Table tableStats = new Table();
             tableStats.setFillParent(true);
