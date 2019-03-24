@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import java.util.Iterator;
 
 import be.ac.umons.slay.g02.players.HumanPlayer;
+import be.ac.umons.slay.g02.players.Statistics;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -36,14 +37,21 @@ public class Hall implements Screen {
     private Game game;
     SpriteBatch batch;
     private Sprite sprite;
-
+    private int cellHeight;
+    private int scrollHeight;
 
     public Hall(Game aGame) {
         game = aGame;
 
-        int cellHeight = SCREEN_HEIGHT * 6 / 100;
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            cellHeight = SCREEN_HEIGHT * 6 / 100;
+            scrollHeight = (int) (SCREEN_HEIGHT *1f* 9 / 100 + cellHeight*1.2f/100);
+        } else {
 
-        // background
+
+        }
+
+        // Background
         batch = new SpriteBatch();
         Texture texture = new Texture(Gdx.files.internal("backgrounds/background.png"));
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -55,232 +63,279 @@ public class Hall implements Screen {
         tableScreen.setFillParent(true);
         tableScreen.bottom();
 
-        TextButton backButton = new TextButton("Back", skinSgx, "big");
-        tableScreen.add(backButton).size(SCREEN_WIDTH, cellHeight * 3 / 2);
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            TextButton backButton = new TextButton("Back", skinSgx, "big");
+            tableScreen.add(backButton).size(SCREEN_WIDTH, cellHeight * 3 / 2);
 
-        Table tableHall = new Table(skinSgxTable);
-        tableHall.setFillParent(true);
-        tableHall.bottom();
+            Table tableHall = new Table(skinSgxTable);
+            tableHall.setFillParent(true);
+            tableHall.bottom();
 
-        Label labelTitle = new Label("Hall Of Fame", skinSgxTable, "title-white");
-        labelTitle.setHeight(SCREEN_HEIGHT * 9 / 100);
-        tableHall.add(labelTitle).colspan(SCREEN_WIDTH / 2).height(Value.percentHeight(1f));
-        tableHall.row();
+            Label labelTitle = new Label("Hall Of Fame", skinSgxTable, "title-white");
+            labelTitle.setHeight(SCREEN_HEIGHT * 9 / 100);
+            Label labelScroll = new Label("", skinSgx);
 
-        Color colorViolet = new Color(195 / 255f, 195 / 255f, 251 / 255f, 1);
-        Color colorBlack = new Color(Color.BLACK);
-        Color colorYellow = new Color(241 / 255f, 222 / 255f, 169 / 255f, 1);
-        Color colorGray = new Color(229 / 255f, 229 / 255f, 229 / 255f, 1);
+            tableHall.add(labelTitle).colspan(SCREEN_WIDTH / 2).height(Value.percentHeight(1f));
+            tableHall.row();
 
-        TextButton cell = new TextButton("Rank", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 5 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+            Color colorViolet = new Color(195 / 255f, 195 / 255f, 251 / 255f, 1);
+            Color colorBlack = new Color(Color.BLACK);
+            Color colorYellow = new Color(241 / 255f, 222 / 255f, 169 / 255f, 1);
+            Color colorGray = new Color(229 / 255f, 229 / 255f, 229 / 255f, 1);
 
-        cell = new TextButton("Player", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 36 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).colspan(2).center().fill();
-
-        cell = new TextButton("Wins", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 7 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-
-        cell = new TextButton("Games", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 7 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-
-        cell = new TextButton("Turns", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setWidth(SCREEN_WIDTH * 7 / 100);
-        cell.setColor(colorViolet);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-
-        cell = new TextButton("Lands\nturn", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 7 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-
-        cell = new TextButton("Cut trees", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 7 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-
-        cell = new TextButton("Losses", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 7 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-
-        cell = new TextButton("Full army\nvalue", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 7 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-
-        cell = new TextButton("SCORE", skinSgxTable);
-        cell.getLabel().setColor(Color.BLACK);
-        cell.setColor(colorViolet);
-        cell.setWidth(SCREEN_WIDTH * 10 / 100);
-        cell.setHeight(cellHeight);
-        tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
-        tableHall.row();
-
-        int j = 0;
-
-        Iterator iter = tabPlayers.iterator();
-        ImageButton avatarButton;
-        TextureRegionDrawable imageAvatar;
-
-        Color currentColor;
-        Color colorLabel;
-        boolean isNext = true;
-
-        while (iter.hasNext()) {
-            if (isNext) {
-                currentColor = colorYellow;
-                colorLabel = colorBlack;
-                isNext = false;
-            } else {
-                currentColor = colorGray;
-                colorLabel = colorBlack;
-                isNext = true;
-            }
-
-            HumanPlayer statis = (HumanPlayer) iter.next();
-
-            j++;
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getRank()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            TextButton cell = new TextButton("Rank", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
             cell.setWidth(SCREEN_WIDTH * 5 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f)).fill();
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
 
-            imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(statis.getAvatar()))));
-            avatarButton = new ImageButton(imageAvatar);
-            avatarButton.setSize(cellHeight, cell.getHeight() * 95 / 100);
-            cell.setColor(currentColor);
-            tableHall.add(avatarButton).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getName()), skinSgxTable);
-            // coupe le nom s'il est trop long
-            cell.setClip(true);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            cell = new TextButton("Player", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 36 / 100);
             cell.setHeight(cellHeight);
-            cell.setWidth(SCREEN_WIDTH * 35 / 100 - cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f));
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getTotalWins()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).colspan(2).center().fill();
+
+            cell = new TextButton("Wins", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 7 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getTotalGames()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+
+            cell = new TextButton("Games", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 7 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgTurns()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+
+            cell = new TextButton("Turns", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setWidth(SCREEN_WIDTH * 7 / 100);
+            cell.setColor(colorViolet);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgLandsTurn()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+
+            cell = new TextButton("Lands\n/ turn", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 7 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgTrees()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+
+            cell = new TextButton("Cut trees", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 7 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgLostUnits()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+
+            cell = new TextButton("Losses", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 7 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getAvgArmy()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+
+            cell = new TextButton("Full army\nvalue", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 7 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
-            cell = new TextButton(String.valueOf(statis.getGlobalStats().getScore()), skinSgxTable);
-            cell.setColor(currentColor);
-            cell.getLabel().setColor(colorLabel);
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
+
+            cell = new TextButton("SCORE", skinSgxTable);
+            cell.getLabel().setColor(Color.BLACK);
+            cell.setColor(colorViolet);
+            cell.setWidth(SCREEN_WIDTH * 10 / 100);
             cell.setHeight(cellHeight);
-            tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+            tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
             tableHall.row();
-        }
 
-        // affiche au moins 20 lignes
-        for (int i = j; i < 50; i++) {
-            Label nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            nameLabel2 = new Label("", skinSgxTable);
-            tableHall.add(nameLabel2).right();
-            tableHall.row();
-        }
+            int j = 0;
 
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(prefs.getFloat("volume", 0.2f));
-                stage.clear();
-                game.setScreen(new Menu(game));
+            Iterator iter = tabPlayers.iterator();
+            ImageButton avatarButton;
+            TextureRegionDrawable imageAvatar;
+
+            Color currentColor;
+            Color colorLabel;
+            boolean isNext = true;
+
+            while (iter.hasNext()) {
+                scrollHeight += cellHeight*1.3f;
+
+                if (isNext) {
+                    currentColor = colorYellow;
+                    colorLabel = colorBlack;
+                    isNext = false;
+                } else {
+                    currentColor = colorGray;
+                    colorLabel = colorBlack;
+                    isNext = true;
+                }
+
+                HumanPlayer player = (HumanPlayer) iter.next();
+
+                j++;
+                cell = new TextButton(String.valueOf(player.getGlobalStats().getRank()), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setWidth(SCREEN_WIDTH * 5 / 100);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f)).fill();
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+
+                imageAvatar = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(player.getAvatar()))));
+                avatarButton = new ImageButton(imageAvatar);
+                avatarButton.setSize(cellHeight, cell.getHeight() * 95 / 100);
+                cell.setColor(currentColor);
+                tableHall.add(avatarButton).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getName()), skinSgxTable);
+                cell.setClip(true);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                cell.setWidth(SCREEN_WIDTH * 35 / 100 - cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f));
+                cell = new TextButton(String.valueOf(player.getGlobalStats().getStats().get(Statistics.WINS)), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getGlobalStats().getStats().get(Statistics.GAMES)), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.TURNS)), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.LANDS_TURN)), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.TREES)), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.LOST_UNITS)), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.ARMY)), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton(String.valueOf(player.getGlobalStats().getScore()), skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                tableHall.row();
             }
-        });
+            if (tabPlayers.isEmpty()) {
+                Texture transparence = new Texture(Gdx.files.internal("profile/transparence.jpg"));
+                scrollHeight += cellHeight*1.3f;
+                currentColor = Color.CLEAR;
+                colorLabel = Color.CLEAR;
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setWidth(SCREEN_WIDTH * 5 / 100);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f)).fill();
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                imageAvatar = new TextureRegionDrawable(new TextureRegion(transparence));
+                avatarButton = new ImageButton(imageAvatar);
+                avatarButton.setSize(cellHeight, cell.getHeight() * 95 / 100);
+                avatarButton.getImage().setColor(Color.CLEAR);
+                cell.setColor(currentColor);
+                tableHall.add(avatarButton).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setClip(true);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                cell.setWidth(SCREEN_WIDTH * 35 / 100 - cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).width(Value.percentWidth(1f));
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.getLabel().setColor(colorLabel);
+                cell.setHeight(cellHeight);
+                tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
+            }
 
-        Table container = new Table(skinSgxTable);
+            // Displays the scroll
+            tableHall.row().padTop(SCREEN_HEIGHT - scrollHeight);
+            tableHall.add(labelScroll);
 
-        // no-bg pour afficher notre background, sinon il en rajoute un par dessus
-        ScrollPane pane = new ScrollPane(tableHall, skinSgxTable, "no-bg");
+            backButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    soundButton2.play(prefs.getFloat("volume", 0.2f));
+                    stage.clear();
+                    game.setScreen(new Menu(game));
+                }
+            });
+            Table container = new Table(skinSgxTable);
+            ScrollPane pane = new ScrollPane(tableHall, skinSgxTable, "no-bg");
 
-        container.setFillParent(true);
+            container.setFillParent(true);
+            container.add(pane).fill().expand();
 
-        container.add(pane).fill().expand();
-        container.setDebug(false);
+            stage.addActor(container);
+            stage.addActor(tableScreen);
 
-        stage.addActor(container);
+        } else {
 
-        stage.addActor(tableScreen);
+
+        }
     }
 
     @Override
@@ -291,7 +346,6 @@ public class Hall implements Screen {
     @Override
     public void render(float delta) {
         batch.begin();
-        // place le background correctement dans la fenetre
         batch.setProjectionMatrix(camera.combined);
         sprite.draw(batch);
         batch.end();

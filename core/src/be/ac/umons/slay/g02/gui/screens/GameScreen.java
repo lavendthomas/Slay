@@ -324,8 +324,6 @@ public class GameScreen implements Screen {
             Gdx.graphics.setContinuousRendering(false);
             hud.clear();
             game.setScreen(new EndGame(game, winner, LevelSelection.numberHumans));
-
-
         }
     }
 
@@ -572,7 +570,7 @@ public class GameScreen implements Screen {
         hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
 
         if (LevelSelection.numberHumans == 0) {
-            // Initialisation des bouttons
+            // Initialisation des boutons
             TextureRegionDrawable imageV4 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v4.png"))));
             final ImageButton buttonV4 = new ImageButton(imageV4);
             TextureRegionDrawable imageV3 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v3.png"))));
@@ -584,7 +582,7 @@ public class GameScreen implements Screen {
             TextureRegionDrawable imagePause = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v0.png"))));
             final ImageButton buttonV0 = new ImageButton(imagePause);
 
-            // Bien positionner les bouttons
+            // Bien positionner les boutons
             float offsetW = 10;
             float offsetH = buttonV4.getHeight();
             buttonV4.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
@@ -672,7 +670,7 @@ public class GameScreen implements Screen {
             hud.addActor(buttonV0);
 
         } else {
-            // Add button Next
+            // Adds button Next
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
             buttonNext = new ImageButton(imageNext);
@@ -695,11 +693,8 @@ public class GameScreen implements Screen {
                 }
             });
             hud.addActor(buttonNext);
-
-
-
         }
-        // Add button Pause
+        // Adds button Pause
 
         TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/dots.png"))));
         buttonPause = new ImageButton(imageDots);
@@ -716,10 +711,7 @@ public class GameScreen implements Screen {
             }
         });
 
-
-
-
-        // Add entity market
+        // Adds entity market
 
         TextureRegionDrawable imageL0 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L0.png")))));
         buttonL0 = new ImageButton(imageL0);
@@ -738,7 +730,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-
         TextureRegionDrawable imageL1 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L1.png")))));
         buttonL1 = new ImageButton(imageL1);
         buttonL1.getImage().setScale(2.5f);
@@ -756,7 +747,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-
         TextureRegionDrawable imageL2 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L2.png")))));
         buttonL2 = new ImageButton(imageL2);
         buttonL2.getImage().setScale(2.5f);
@@ -774,7 +764,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-
         TextureRegionDrawable imageL3 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L3.png")))));
         buttonL3 = new ImageButton(imageL3);
         buttonL3.getImage().setScale(2.5f);
@@ -804,8 +793,6 @@ public class GameScreen implements Screen {
         ImageButton avatarP1 = new ImageButton(new TextureRegionDrawable(
                 new TextureRegion(new Texture(
                         Gdx.files.internal(Level.getPlayers()[0].getAvatar())))));
-        // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
-        // au lieu de : LevelSelection.player1Name
 
         Label labelP1 = new Label(Level.getPlayers()[0].getName(), skinSgx, "title-white");
         labelP1.setFontScale(1.2f);
@@ -822,9 +809,6 @@ public class GameScreen implements Screen {
         ImageButton avatarP2 = new ImageButton(new TextureRegionDrawable(
                 new TextureRegion(new Texture(
                         Gdx.files.internal(Level.getPlayers()[1].getAvatar())))));
-
-        // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
-        // au lieu de : LevelSelection.player2Name
 
         Label labelP2 = new Label(Level.getPlayers()[1].getName(), skinSgx, "title-white");
         labelP2.setFontScale(1.2f);
@@ -847,11 +831,10 @@ public class GameScreen implements Screen {
         labelIncome.setVisible(false);
 
 
-        // pour les tests
+        // TODO modifier la position (un à gauche et un à droite)
         labelWages = new Label("", skinSgx, "title-white");
         labelWages.setFontScale(1.5f);
         labelWages.setVisible(false);
-
 
         Table screenTablePlayers = new Table();
         screenTablePlayers.setFillParent(true);
@@ -872,12 +855,8 @@ public class GameScreen implements Screen {
 
         Table tableIncome = new Table();
         tableIncome.add(labelIncome);
-
-
-        // pour les tests
         tableIncome.row();
         tableIncome.add(labelWages);
-
 
         Table screenTableIncome = new Table();
         screenTableIncome.setFillParent(true);
@@ -916,7 +895,7 @@ public class GameScreen implements Screen {
             }
         });
 
-        // Create multiplexer to handle input in stage and hud
+        // Creates a multiplexer to handle the input in hud
         multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(hud);
         multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));

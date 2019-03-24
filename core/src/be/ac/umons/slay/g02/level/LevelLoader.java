@@ -3,9 +3,14 @@ package be.ac.umons.slay.g02.level;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.TiledMap;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,11 +21,6 @@ import java.util.Random;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
@@ -34,6 +34,8 @@ import be.ac.umons.slay.g02.players.AIRandom;
 import be.ac.umons.slay.g02.players.Colors;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
+
+import static be.ac.umons.slay.g02.gui.Main.prefs;
 
 public class LevelLoader {
 
@@ -199,7 +201,7 @@ public class LevelLoader {
     private static Player loadHumanPlayer (int countHuman, Colors color) {
         Player player;
         if (countHuman == 0) {
-            if (Menu.isPlayer1Logged) {
+            if (prefs.getBoolean("isPlayer1Logged")) {
                 player = Menu.player1;
                 player.setColor(color);
                 player.setAvatar(Menu.player1.getAvatar());
@@ -208,7 +210,7 @@ public class LevelLoader {
                 player.setAvatar("profile" + File.separator + "anonymous.png");
             }
         } else {
-            if (Menu.isPlayer2Logged) {
+            if (prefs.getBoolean("isPlayer2Logged")) {
                 player = Menu.player2;
                 player.setColor(color);
                 player.setAvatar(Menu.player2.getAvatar());

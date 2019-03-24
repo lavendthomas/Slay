@@ -11,6 +11,7 @@ import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.gui.screens.Menu;
 import be.ac.umons.slay.g02.players.StatsLoader;
 
+import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static org.junit.Assert.assertEquals;
 
 public class MenuTests {
@@ -47,8 +48,7 @@ public class MenuTests {
         String newPassword2 = "";
         String message = "";
         message = menu.validatePlayer(username, newPassword1, newPassword2);
-        assertEquals(message, Menu.INCORRECT_LENGTH_PASSWORD, 1);
-
+        assertEquals(message, prefs.getBoolean("INCORRECT_LENGTH_PASSWORD"), 1);
 
     }
 }

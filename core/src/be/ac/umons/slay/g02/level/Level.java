@@ -1,21 +1,22 @@
 package be.ac.umons.slay.g02.level;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
-import be.ac.umons.slay.g02.players.AI;
+import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
+import be.ac.umons.slay.g02.players.Statistics;
+
+import static be.ac.umons.slay.g02.gui.Main.prefs;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 public class Level implements Playable {
 
@@ -68,7 +69,7 @@ public class Level implements Playable {
     }
 
     /**
-     * Charge players, init turn and current player
+     * Loads players, initializes the turn and the current player
      *
      * @param players Tab of players
      */
@@ -103,7 +104,6 @@ public class Level implements Playable {
         return height;
     }
 
-
     /**
      * Places the tile in parameter in the mentioned coordinates
      *
@@ -116,6 +116,7 @@ public class Level implements Playable {
 
     /**
      * Changes the entity of the tile at the mentioned coordinates
+     *
      * @param entity the entity to place
      * @param coords the coordinates of the tile to place the entity on.
      */
@@ -124,7 +125,7 @@ public class Level implements Playable {
     }
 
     /**
-     * Return the tile at the mentioned coordinates
+     * Returns the tile at the mentioned coordinates
      *
      * @param x
      * @param y
@@ -136,10 +137,10 @@ public class Level implements Playable {
     }
 
     /**
-     * Return the tile at the mentioned coordinates
+     * Returns the tile at the mentioned coordinates
      *
      * @param coords the coordinates for which we want the tile
-     * @return A Tile
+     * @return a Tile
      */
     @Override
     public Tile get(Coordinate coords) {
@@ -147,26 +148,63 @@ public class Level implements Playable {
     }
 
     /**
-     * Buy an entity
+     * Buys an entity
      *
-     * @param entity The new entity to place
-     * @param start Origin Tile
-     * @param to Tile where place the entity
+     * @param entity the new entity to place
+     * @param start  the origin Tile
+     * @param to     the tile in which to place the entity
      * @return
      */
 
     @Override
-    public boolean buy(Entity entity, Coordinate start,  Coordinate to) {
+    public boolean buy(Entity entity, Coordinate start, Coordinate to) {
         if (getMoves(entity, start).contains(to)) {
-            return get(start).buy(entity, get(to));
+            boolean isBought = get(start).buy(entity, get(to));
+
+            // When a soldier is bought, updates for stats : currentL. and currentMoneySpent
+            if (isBought) {
+                if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
+                    // Updates currentMoneySpent
+                    player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
+                            Statistics.CURRENT_MONEY_SPENT, entity.getPrice());
+
+                    // Updates currentL.
+                    if (entity.getName().equals(SoldierLevel.L0.getName())) {
+                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L0);
+                    } else if (entity.getName().equals(SoldierLevel.L1.getName())) {
+                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L1);
+                    } else if (entity.getName().equals(SoldierLevel.L2.getName())) {
+                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L2);
+                    } else if (entity.getName().equals(SoldierLevel.L3.getName())) {
+                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L3);
+                    }
+                } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
+                    // Updates currentMoneySpent
+                    player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
+                            Statistics.CURRENT_MONEY_SPENT, entity.getPrice());
+
+                    // Updates currentL.
+                    if (entity.getName().equals(SoldierLevel.L0.getName())) {
+                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L0);
+                    } else if (entity.getName().equals(SoldierLevel.L1.getName())) {
+                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L1);
+                    } else if (entity.getName().equals(SoldierLevel.L2.getName())) {
+                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L2);
+                    } else if (entity.getName().equals(SoldierLevel.L3.getName())) {
+                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L3);
+                    }
+                }
+            }
+            return isBought;
         }
         return false;
     }
 
     @Override
     public boolean nextTurn() {
+        // If there is no winner
+        if (hasWon() == null) {
 
-        if ( hasWon() == null) { // Pas de gagnant
             List<Territory> processed = new LinkedList<Territory>();
 
             turn = (turn + 1) % players.length;
@@ -178,19 +216,15 @@ public class Level implements Playable {
                     Tile t = get(i, j);
                     Territory terr = t.getTerritory();
 
-
                     if (terr != null && !processed.contains(terr)) {
                         // Adds funds and kills soldier for all territories
                         t.getTerritory().nextTurn();
                         processed.add(terr);
                     }
-
-                    // Spawn trees
+                    // Spawns trees
                     if (canSpawnTree(c)) {
                         t.setEntity(StaticEntity.TREE);
                     }
-
-
                     if (t.getTerritory() != null && t.getTerritory().getOwner().equals(currentPlayer)) {
                         if (t.getEntity() != null && t.getEntity() instanceof Soldier) {
                             ((Soldier) t.getEntity()).setMoved(false);
@@ -198,11 +232,19 @@ public class Level implements Playable {
                     }
                 }
             }
-            return true;
-        } else { // Il y a un gagnant
-            return false;
+            // Updates currentTurns for stats - when the player plays a new turn
+            if (turn == 0) {
+                if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_TURNS);
+                else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_TURNS);
+            }
 
+            return true;
         }
+        // There is a winner
+        else
+            return false;
     }
 
     /**
@@ -222,7 +264,6 @@ public class Level implements Playable {
                 treeCount++;
             }
         }
-
         double odds = 0.01 + ((treeCount * Math.log10(treeCount + 1)) / 10);
         double random = new Random().nextDouble();
 
@@ -230,29 +271,31 @@ public class Level implements Playable {
     }
 
     /**
-     * Use to load positions where you can place a soldier when you buy
+     * Uses to load positions in which to place a soldier freshly bought
      * Used to buy a soldier
      *
-     * @param entity The new entity to place
-     * @param start Origin tile
+     * @param entity the new entity to place
+     * @param start  the origin tile
      * @return Coordinates list
      */
-
     @Override
     public List<Coordinate> getMoves(Entity entity, Coordinate start) {
-        // charge la liste des cellules dans le territoire en double car il faut la parcourir et y ajouter les éléments en même temps
+        /*
+         *	Loads the list of cells in the duplicated territory (because it must be browsed)
+         *	and adds the elements in the list at the same time
+         */
         List<Coordinate> listTerr = neighbourTilesInSameTerritory(start);
         List<Coordinate> visited = new ArrayList<Coordinate>();
 
         for (Coordinate terr : listTerr) {
-            // Pour toutes les cellules déjà dans la liste
+            // For all cells already in the list
 
             if (get(terr).getEntity() != null && get(terr).getEntity() instanceof Soldier) {
-                // Placing on other soldier
+                // Places on another soldier
                 int toLvl = ((Soldier) get(terr).getEntity()).getSoldierLevel().getLevel();
                 int fromLvl = ((Soldier) entity).getSoldierLevel().getLevel();
 
-                // Soldiers can fusion ?
+                // Checks if the soldiers can merge
                 if (toLvl == fromLvl && toLvl + fromLvl < 3) {
                     visited.add(terr);
                 }
@@ -260,28 +303,28 @@ public class Level implements Playable {
                 visited.add(terr);
             }
 
-            for(Coordinate neighbour : terr.getNeighbors()) {
-                // Parcours tous ses voisins
+            for (Coordinate neighbour : terr.getNeighbors()) {
+                // Goes through all neighbours
                 Tile neigh = get(neighbour);
 
-                if (neigh.getType() == TileType.NEUTRAL // Ne pas regarder dans l'eau
-                    && !visited.contains(neighbour) // Pas encore dans la liste de résultat
-                        && !neigh.hasSameOwner(get(start))) { //Ajoute juste les cellules en limite du territoire
+                if (neigh.getType() == TileType.NEUTRAL // Water is excluded
+                        && !visited.contains(neighbour) // Not in the list of results yet
+                        && !neigh.hasSameOwner(get(start))) { // Adds only the cells at the border of the territory
 
                     if (neigh.getEntity() != null) {
-                        // Une entité est présente sur la case
+                        // An entity is in the cell
                         if (neigh.getEntity() instanceof Soldier) {
-                            // Soldat ennemie
+                            // Enemy soldier
                             if (((Soldier) entity).canAttack((Soldier) neigh.getEntity())) {
-                                // Peut attaquer
+                                // Can attack
                                 visited.add(neighbour);
                             }
                         }
-
                         if (neigh.getEntity() == StaticEntity.TREE
-                            // Arbre
-                            || (neigh.getEntity() == StaticEntity.CAPITAL && ((Soldier) entity).getSoldierLevel().getLevel() > 0)  ) {
-                            // Attaque une capitale
+                                // Tree
+                                || (neigh.getEntity() == StaticEntity.CAPITAL && ((Soldier) entity).getSoldierLevel().getLevel() > 0)) {
+
+                            // Attacks a capital
                             visited.add(neighbour);
                         }
                     } else {
@@ -292,17 +335,16 @@ public class Level implements Playable {
         }
         return visited;
     }
-    
+
     /**
-     * Return the list of coordinates that can be reached
+     * Returns the list of coordinates that can be reached
      * from the start coordinate limited to n steps
      * Used to move a soldier
      *
-     * @param start Starting coordinate
-     * @param n     Maximum number of steps
+     * @param start the starting coordinate
+     * @param n     the maximum number of steps
      * @return List of coordinates that can be reached
      */
-
     @Override
     public List<Coordinate> getMoves(Coordinate start, int n) {
         ArrayList<Coordinate> visited = new ArrayList<Coordinate>();
@@ -337,11 +379,11 @@ public class Level implements Playable {
     }
 
     /**
-     * Returns a list of all entites we can buy in the territory at the mentionned coordianate.
+     * Returns a list of all purchasable entities in the territory at the mentionned coordinate
+     *
      * @param p the coordinate where we want to buy the Entity
      * @return List of entities we can buy
      */
-
     @Override
     public List<Entity> canBuy(Coordinate p) {
         if (get(p).getTerritory() == null) {
@@ -358,72 +400,61 @@ public class Level implements Playable {
     }
 
     /**
-     * Return if it's possible to go from the starting coordinates
+     * Returns if it is possible to go from the starting coordinates
      * to the arrival coordinates
      *
-     * @param fromC Starting coordinate
-     * @param toC   Arrival coordinate
-     * @return True if it's possible, else false
+     * @param fromC the starting coordinate
+     * @param toC   the arrival coordinate
+     * @return True if it is possible, false otherwise
      */
-
     private boolean canMove(Coordinate fromC, Coordinate toC) {
         if (fromC.equals(toC) || !get(fromC).getTerritory().getOwner().equals(currentPlayer)) {
-            // Prevent movement on the starting cell
+            // Prevents movement on the starting cell
             return false;
         }
-
-        // Get the matching tiles
+        // Gets the matching tiles
         Tile from = get(fromC);
         Tile to = get(toC);
 
         if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier && !(((Soldier) from.getEntity()).getMoved())) {
-            //Prevent movement int the water, verify that you are trying to move a soldier and entity has not already moved
+            //Prevents movement in the water, verifies that you are trying to move a soldier and that no entity has already moved
 
             if (to.getTerritory() == null) {
-                // Moving to a cell that doesn't belong to anyone
+                // Moving to a cell that does not belong to anyone
                 return true;
-            }
-
-            else if (to.hasSameOwner(from)) {
+            } else if (to.hasSameOwner(from)) {
                 // Moving in the same territory
 
                 if (to.getEntity() != null && to.getEntity() instanceof Soldier) {
-                    // Moving on other soldier
+                    // Moving on another soldier
 
                     int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                     int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
 
-                    // Soldier can fusion ?
+                    // Checks if the soldiers can merge
                     return toLvl == fromLvl && toLvl + fromLvl < 3;
-
                 }
                 return true;
-            }
-
-            else {
-                // Moving in a other territory
+            } else {
+                // Moving in another territory
 
                 if (to.getEntity() instanceof Soldier) {
                     // The arrival cell contains a soldier so check if it can be attacked
 
                     return ((Soldier) from.getEntity()).canAttack((Soldier) to.getEntity());
-                }
-
-                else if (to.getEntity() == StaticEntity.CAPITAL) {
+                } else if (to.getEntity() == StaticEntity.CAPITAL) {
                     // The arrival cell contains a capital so check if we can attack it
 
                     return ((Soldier) from.getEntity()).getSoldierLevel().getLevel() > 0;
-                }
+                } else {
+                    // Checks if a soldier is watching the arrival cell
 
-                else {
-                    // Check if a soldier is watching the arrival cell
-
-                    // Get the neighbour direct from the arrival cell
+                    // Gets the immediate neighbour from the arrival cell
                     Coordinate[] neighbors = toC.getNeighbors();
-                    boolean bool = true;
+                    boolean isFound = true;
 
                     for (Coordinate coordinate : neighbors) {
-                        // Check all neighbours
+                        // Checks all neighbours
                         Tile current = get(coordinate);
 
                         if (current.getType().equals(TileType.NEUTRAL)
@@ -432,17 +463,17 @@ public class Level implements Playable {
 
                             if (current.getEntity() instanceof Soldier
                                     && to.hasSameOwner(current)) {
-                                // If a soldier has been found
-                                //      and belongs to the same owner as the arrival cell
-
-                                bool = ((Soldier) from.getEntity()).canAttack(
+                                /*
+                                 *	If a soldier has been found and belongs to the same
+                                 *  owner as the arrival cell's one
+                                 */
+                                isFound = ((Soldier) from.getEntity()).canAttack(
                                         (Soldier) current.getEntity());
 
                             }
                         }
-
                     }
-                    return bool;
+                    return isFound;
                 }
             }
         }
@@ -450,55 +481,100 @@ public class Level implements Playable {
     }
 
     /**
-     * Move an entity from the start coordinates to the arrival coordinates
+     * Moves an entity from the start coordinates to the arrival coordinates
      *
-     * @param fromC Start coordinates
-     * @param toC   Arrival coordinates
+     * @param fromC the start coordinates
+     * @param toC   the arrival coordinates
      */
-
     @Override
     public void move(Coordinate fromC, Coordinate toC) {
 
-        // Load the list of possible moves
+        // Loads the list of possible moves
         List<Coordinate> listMoves = getMoves(fromC, 4);
 
-        // Check that the arrival coordinates are in the list of possible moves
-        //      and check that coordinates are different
+        /*
+         *	Checks that the arrival coordinates are in the list of possible moves
+         *	and checks that the coordinates are different
+         */
         if (listMoves.contains(toC) && !fromC.equals(toC)) {
             Tile to = get(toC);
             Tile from = get(fromC);
 
-            // Prevent move in water
+            // Prevents movement in water
             if (to.getTerritory() != null) {
 
                 if (to.hasSameOwner(from)) {
-                    // Move in own territory
+                    // Moves in own territory
                     if (to.getEntity() != StaticEntity.CAPITAL) {
-                        // Prevent movement on its own capital
+                        // Prevents movement on its own capital
 
                         if (to.getEntity() instanceof Soldier) {
                             // Soldier fusion
                             int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                             int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
                             int newLvl = toLvl + fromLvl + 1;
-                            // If to soldier has already moved (no need to check each other because it can move)
+                            // If "to" soldier has already moved (no need to check each other because it can move)
                             to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
                                     ((Soldier) to.getEntity()).getMoved()));
+
+                            // Updates currentL. for stats - when two soldiers merge, they are deleted and another type is added
+                            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
+                                switch (newLvl) {
+                                    case 1: {
+                                        player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L0, -2);
+                                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L1);
+                                    }
+                                    case 2: {
+                                        player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L1, -2);
+                                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L2);
+                                    }
+                                    case 3: {
+                                        player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L2, -2);
+                                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L3);
+                                    }
+                                }
+                            } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
+                                switch (newLvl) {
+                                    case 1: {
+                                        player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L0, -2);
+                                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L1);
+                                    }
+                                    case 2: {
+                                        player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L1, -2);
+                                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L2);
+                                    }
+                                    case 3: {
+                                        player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L2, -2);
+                                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
+                                                Statistics.CURRENT_L3);
+                                    }
+                                }
+                            }
+
                             from.setEntity(null);
 
                         } else {
-                            // Just move the Entity
+                            // Just moves the Entity
                             moveEntity(from, to);
                         }
-
                     }
                 } else {
-                    // To territory is enemy
+                    // "to" territory is enemy
                     moveEntity(from, to);
                 }
-
             } else {
-                // To territory is null
+                // "to" territory is null
                 moveEntity(from, to);
             }
             splitTerritories(); //TODO find a better approach
@@ -506,7 +582,39 @@ public class Level implements Playable {
         }
     }
 
-    private void moveEntity (Tile from, Tile to) {
+    private void moveEntity(Tile from, Tile to) {
+        // Updates currentTrees for stats - when the player cuts a tree
+        if (to.contains(StaticEntity.TREE)) {
+            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
+                player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_TREES);
+            } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
+                player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_TREES);
+            }
+        }
+        if (to.getEntity() != null && to.getEntity() instanceof Soldier) {
+            // Updates currentLostL. for stats - when a soldier is killed by the enemy
+            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
+                if (to.getEntity().getName().equals(SoldierLevel.L0.getName())) {
+                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L0);
+                } else if (to.getEntity().getName().equals(SoldierLevel.L1.getName())) {
+                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L1);
+                } else if (to.getEntity().getName().equals(SoldierLevel.L2.getName())) {
+                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L2);
+                } else if (to.getEntity().getName().equals(SoldierLevel.L3.getName())) {
+                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L3);
+                }
+            } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
+                if (to.getEntity().getName().equals(SoldierLevel.L0.getName())) {
+                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L0);
+                } else if (to.getEntity().getName().equals(SoldierLevel.L1.getName())) {
+                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L1);
+                } else if (to.getEntity().getName().equals(SoldierLevel.L2.getName())) {
+                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L2);
+                } else if (to.getEntity().getName().equals(SoldierLevel.L3.getName())) {
+                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L3);
+                }
+            }
+        }
         to.setTerritory(from.getTerritory());
         to.setEntity(from.getEntity());
         from.setEntity(null);
@@ -530,12 +638,11 @@ public class Level implements Playable {
     }
 
     /**
-     * Merges the territories from a specific position.
+     * Merges the territories from a specific position
      *
      * @param pos
      * @param processed
      */
-
     private void mergeTerritories(Coordinate pos, List<Coordinate> processed) {
         // Source: https://codereview.stackexchange.com/questions/90108/recursively-evaluate-neighbors-in-a-two-dimensional-grid
 
@@ -560,9 +667,9 @@ public class Level implements Playable {
 
     public void splitTerritories() {
         /*
-        Idea: We start from one cell and we keep in this territory all the cells that are
-        adjacent to this one and in the same territory. All the others are separated in another
-        territory and continue to split until all the cells in the territory are adjacent.
+         *	Idea: We start from one cell and we keep in this territory all the cells that are
+         *	adjacent to this one and in the same territory. All the others are separated in another
+         *	territory and continue to split until all the cells in the territory are adjacent.
          */
 
         List<Territory> processedTerritories = new LinkedList<Territory>();
@@ -572,9 +679,8 @@ public class Level implements Playable {
                 Coordinate pos = new Coordinate(i, j);
                 Tile cell = tileMap[i][j];
 
-                if (!cell.hasTerritory()) {
+                if (!cell.hasTerritory())
                     continue;
-                }
 
                 if (!processedTerritories.contains(cell.getTerritory())) { // TODO check that this works
                     List<Coordinate> neighbours = neighbourTilesInSameTerritory(pos);
@@ -589,8 +695,8 @@ public class Level implements Playable {
                         // TODO useless because being checked after ?
                         continue;
                     } else {
-                        // Remove all the cells that are not in the neighborhood
-                        // and create a new territory for them
+                        // Removes all the cells that are not in the neighbourhood
+                        // and creates a new territory for them
                         Territory newTerr = new Territory(cell.getTerritory().getOwner());
                         processedTerritories.add(newTerr);
                         List<Tile> tilesInTerritory = cell.getTerritory().getCells();
@@ -617,11 +723,11 @@ public class Level implements Playable {
     }
 
     /**
-     * Lists all the cells in a neighbourhood, which is all adjacent cells
-     * that are part of the same territory.
+     * Lists all cells in a neighbourhood, which represents all adjacent cells
+     * that are part of the same territory
      *
-     * @param pos The position of one cell of the neighbourhood
-     * @return A list of all the cells in the neighbourhood of which contains the position pos
+     * @param pos the position of one cell of the neighbourhood
+     * @return a list of all the cells in the neighbourhood containing the position pos
      */
     @Override
     public List<Coordinate> neighbourTilesInSameTerritory(Coordinate pos) {
@@ -637,11 +743,11 @@ public class Level implements Playable {
     }
 
     /**
-     * Adds all of the neighbours in the same territory to the known list
+     * Adds all the neighbours in the same territory to the known list
      *
-     * @param pos       The current position
+     * @param pos       the current position
      * @param territory the territory of the neighbourhood
-     * @param known     All already known cells in the neighbourhood in the same territory
+     * @param known     all already known cells in the neighbourhood in the same territory
      */
     private void neighbourTilesInSameTerritory(Coordinate pos, Territory territory, List<Coordinate> known) {
         Tile cell = tileMap[pos.getX()][pos.getY()];
@@ -675,13 +781,13 @@ public class Level implements Playable {
     }
 
     /**
-     * Ckecks if a player won the game
-     * @return a player is he won the game, null if no one did
+     * Ckecks if a player has won the game
+     *
+     * @return a player is he has won the game, null if no one has
      */
     @Override
     public Player hasWon() {
         List<Player> inGame = new ArrayList<Player>();
-
         for (int i = 0; i < players.length; i++) {
             Player player = players[i];
             int n = countTerritories(player);
@@ -689,12 +795,117 @@ public class Level implements Playable {
                 inGame.add(player);
             }
         }
-        if (inGame.size() == 1) { // Il ne reste qu'un joueur en jeu
-            return inGame.get(0);
-        } else {
-            return null;
-        }
+        // If the list only contains one player, it is the winner
+        if (inGame.size() == 1) {
 
+            // Updates all stats for winner and loser (if logged)
+            Player winner = inGame.get(0);
+
+            if (prefs.getBoolean("isPlayer1Logged") && winner.getName().equals(player1.getName())) {
+
+                // Number of games ++
+                incrementPlayerGames(player1);
+
+                // Number of wins ++
+                incrementPlayerWins(player1);
+
+                // All other stats are updated
+                updatePlayerStats(player1);
+
+            } else if (prefs.getBoolean("isPlayer2Logged") && winner.getName().equals(player2.getName())) {
+
+                // Number of games ++
+                incrementPlayerGames(player2);
+
+                // Number of wins ++
+                incrementPlayerWins(player2);
+
+                // All other stats are updated
+                updatePlayerStats(player2);
+            }
+            Player loser;
+            if (winner == players[0])
+                loser = players[1];
+            else
+                loser = players[0];
+
+            if (prefs.getBoolean("isPlayer1Logged") && loser.getName().equals(player1.getName())) {
+
+                // Number of games ++
+                incrementPlayerGames(player1);
+
+                // Number of defeats ++
+                incrementPlayerDefeats(player1);
+
+                // All other stats are updated
+                updatePlayerStats(player1);
+
+            } else if (prefs.getBoolean("isPlayer2Logged") && loser.getName().equals(player2.getName())) {
+
+                // Number of games ++
+                incrementPlayerGames(player2);
+
+                // Number of defeats ++
+                incrementPlayerDefeats(player2);
+
+                // All other stats are updated
+                updatePlayerStats(player2);
+            }
+
+            return winner;
+        }
+        // No one has won
+        else
+            return null;
+    }
+
+    /**
+     * on incrémente pour globalstats et le levelstats du niveau joué
+     *
+     * @param player
+     */
+    private void incrementPlayerGames(HumanPlayer player) {
+        player.getGlobalStats().incrementStat(player.getGlobalStats().getStats(), Statistics.GAMES);
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStat
+                (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.GAMES);
+    }
+
+    /**
+     * on incrémente pour globalstats et le levelstats du niveau joué
+     *
+     * @param player
+     */
+    private void incrementPlayerWins(HumanPlayer player) {
+        player.getGlobalStats().incrementStat(player.getGlobalStats().getStats(), Statistics.WINS);
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStat
+                (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.WINS);
+    }
+
+    /**
+     * on incrémente pour globalstats et le levelstats du niveau joué
+     *
+     * @param player
+     */
+    private void incrementPlayerDefeats(HumanPlayer player) {
+        player.getGlobalStats().incrementStat(player.getGlobalStats().getStats(), Statistics.DEFEATS);
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStat
+                (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.DEFEATS);
+    }
+
+    /**
+     * on met à jour pour globalstats et le levelstats du niveau joué puis on calcule le score (pour le niveau joué)
+     *
+     * @param player
+     */
+    private void updatePlayerStats(HumanPlayer player) {
+        player.getGlobalStats().updateStats();
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).updateStats();
+
+        int games = player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats().get(Statistics.GAMES);
+        int wins = player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats().get(Statistics.WINS);
+        int score = player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).calculateScore(games, wins);
+
+        player.getGlobalStats().setScore(score);
     }
 
     /**
