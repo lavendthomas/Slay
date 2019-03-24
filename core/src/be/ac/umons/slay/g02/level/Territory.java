@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Entity;
-import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 import be.ac.umons.slay.g02.players.Statistics;
 
@@ -260,88 +260,93 @@ public class Territory {
      * Adds money and kills soldiers if funds are not sufficient
      */
     void nextTurn() {
-        /*
-         Updates currentSavings for stats - when the player has just passed a turn
-         Money (variable : coins) might have been spent (variable : currentMoneySpent) to buy units
-         during the previous turn (currentSavings += coins - currentMoneySpent)
-        */
-        int currentMoneySpent;
 
-        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName())) {
-            currentMoneySpent = player1.getStatistics().getCurrentStats().get(Statistics.CURRENT_MONEY_SPENT);
+        // Updates currentSavings for stats - when the player has just passed a turn
+        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+            updatePlayerStatsSavings(player1, coins);
 
-            player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
-                    Statistics.CURRENT_SAVINGS, coins - currentMoneySpent);
-
-            // Resets currentMoneySpent for the new turn
-            player1.getStatistics().putToZero(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_MONEY_SPENT);
-        } else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName())) {
-            currentMoneySpent = player2.getStatistics().getCurrentStats().get(Statistics.CURRENT_MONEY_SPENT);
-
-            player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
-                    Statistics.CURRENT_SAVINGS, coins - currentMoneySpent);
-
-            // Resets currentMoneySpent for the new turn
-            player2.getStatistics().putToZero(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_MONEY_SPENT);
-        }
+        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+            updatePlayerStatsSavings(player2, coins);
 
         // Updates territory's money
         coins += income - wages;
 
         // Updates currentMoney for stats - when player's money is updated (currentMoney += coins)
         if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
-            player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
-                    Statistics.CURRENT_MONEY, coins);
+            updatePlayerStatsMoney(player1, coins);
+
         else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
-            player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
-                    Statistics.CURRENT_MONEY, coins);
+            updatePlayerStatsMoney(player2, coins);
+
         // If not enough money we kill all soldiers (all entities that have a maintaining cost)
         if (coins < 0) {
             for (Tile c : cells) {
                 if (c.getEntity() != null && c.getEntity().getCost() > 0) {
                     // Updates currentLostL. for stats - when a soldier dies because of bankrupt
-                    if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName())) {
-                        if (c.getEntity().getName().equals(SoldierLevel.L0.getName())) {
-                            player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L0);
-                        } else if (c.getEntity().getName().equals(SoldierLevel.L1.getName())) {
-                            player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L1);
-                        } else if (c.getEntity().getName().equals(SoldierLevel.L2.getName())) {
-                            player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L2);
-                        } else if (c.getEntity().getName().equals(SoldierLevel.L3.getName())) {
-                            player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L3);
-                        }
-                    } else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName())) {
-                        if (c.getEntity().getName().equals(SoldierLevel.L0.getName())) {
-                            player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L0);
-                        } else if (c.getEntity().getName().equals(SoldierLevel.L1.getName())) {
-                            player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L1);
-                        } else if (c.getEntity().getName().equals(SoldierLevel.L2.getName())) {
-                            player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L2);
-                        } else if (c.getEntity().getName().equals(SoldierLevel.L3.getName())) {
-                            player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
-                                    Statistics.CURRENT_LOST_L3);
-                        }
-                    }
+                    if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+                        updatePlayerStatsLost(player1, c.getEntity());
+
+                    else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+                        updatePlayerStatsLost(player2, c.getEntity());
+
                     c.setEntity(StaticEntity.GRAVE);
                 }
             }
             coins = income - wages;
         }
         // Updates currentLands for stats - at each turn (currentLands += number of cells)
-        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName())) {
-            player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
-                    Statistics.CURRENT_LANDS, cells.size());
-        } else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName())) {
-            player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
-                    Statistics.CURRENT_LANDS, cells.size());
-        }
+        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+            updatePlayerStatsLands(player1, cells.size());
+
+        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+            updatePlayerStatsLands(player2, cells.size());
+    }
+
+    /**
+     * @param player
+     * @param cellNumber
+     */
+    private void updatePlayerStatsLands(HumanPlayer player, int cellNumber) {
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                Statistics.CURRENT_LANDS, cellNumber);
+    }
+
+    /**
+     * ----- A COMPLETER ----
+     * Money (variable : coins) might have been spent (variable : currentMoneySpent) to buy units
+     * during the previous turn (currentSavings += coins - currentMoneySpent)
+     *
+     * @param player
+     * @param coins
+     */
+    private void updatePlayerStatsSavings(HumanPlayer player, int coins) {
+        int currentMoneySpent;
+
+        currentMoneySpent = player.getStatistics().getCurrentStats().get(Statistics.CURRENT_MONEY_SPENT);
+
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                Statistics.CURRENT_SAVINGS, coins - currentMoneySpent);
+
+        // Resets currentMoneySpent for the new turn
+        player.getStatistics().putToZero(player.getStatistics().getCurrentStats(), Statistics.CURRENT_MONEY_SPENT);
+    }
+
+    /**
+     * @param player
+     * @param coins
+     */
+    private void updatePlayerStatsMoney(HumanPlayer player, int coins) {
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                Statistics.CURRENT_MONEY, coins);
+    }
+
+    /**
+     * @param player
+     * @param entity
+     */
+    private void updatePlayerStatsLost(HumanPlayer player, Entity entity) {
+        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(),
+                "currentLost" + entity.getName());
     }
 
     /**

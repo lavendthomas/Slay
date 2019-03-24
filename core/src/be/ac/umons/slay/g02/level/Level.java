@@ -163,37 +163,11 @@ public class Level implements Playable {
 
             // When a soldier is bought, updates for stats : currentL. and currentMoneySpent
             if (isBought) {
-                if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
-                    // Updates currentMoneySpent
-                    player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
-                            Statistics.CURRENT_MONEY_SPENT, entity.getPrice());
+                if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+                    updatePlayerStatsBuy(player1, entity);
 
-                    // Updates currentL.
-                    if (entity.getName().equals(SoldierLevel.L0.getName())) {
-                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L0);
-                    } else if (entity.getName().equals(SoldierLevel.L1.getName())) {
-                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L1);
-                    } else if (entity.getName().equals(SoldierLevel.L2.getName())) {
-                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L2);
-                    } else if (entity.getName().equals(SoldierLevel.L3.getName())) {
-                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_L3);
-                    }
-                } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
-                    // Updates currentMoneySpent
-                    player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
-                            Statistics.CURRENT_MONEY_SPENT, entity.getPrice());
-
-                    // Updates currentL.
-                    if (entity.getName().equals(SoldierLevel.L0.getName())) {
-                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L0);
-                    } else if (entity.getName().equals(SoldierLevel.L1.getName())) {
-                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L1);
-                    } else if (entity.getName().equals(SoldierLevel.L2.getName())) {
-                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L2);
-                    } else if (entity.getName().equals(SoldierLevel.L3.getName())) {
-                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_L3);
-                    }
-                }
+                else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+                    updatePlayerStatsBuy(player2, entity);
             }
             return isBought;
         }
@@ -235,9 +209,10 @@ public class Level implements Playable {
             // Updates currentTurns for stats - when the player plays a new turn
             if (turn == 0) {
                 if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
-                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_TURNS);
+                    updatePlayerStatsTurns(player1);
+
                 else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
-                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_TURNS);
+                    updatePlayerStatsTurns(player2);
             }
 
             return true;
@@ -510,57 +485,19 @@ public class Level implements Playable {
 
                         if (to.getEntity() instanceof Soldier) {
                             // Soldier fusion
-                            int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                             int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
+                            int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                             int newLvl = toLvl + fromLvl + 1;
                             // If "to" soldier has already moved (no need to check each other because it can move)
                             to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
                                     ((Soldier) to.getEntity()).getMoved()));
 
                             // Updates currentL. for stats - when two soldiers merge, they are deleted and another type is added
-                            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
-                                switch (newLvl) {
-                                    case 1: {
-                                        player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L0, -2);
-                                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L1);
-                                    }
-                                    case 2: {
-                                        player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L1, -2);
-                                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L2);
-                                    }
-                                    case 3: {
-                                        player1.getStatistics().addToStat(player1.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L2, -2);
-                                        player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L3);
-                                    }
-                                }
-                            } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
-                                switch (newLvl) {
-                                    case 1: {
-                                        player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L0, -2);
-                                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L1);
-                                    }
-                                    case 2: {
-                                        player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L1, -2);
-                                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L2);
-                                    }
-                                    case 3: {
-                                        player2.getStatistics().addToStat(player2.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L2, -2);
-                                        player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(),
-                                                Statistics.CURRENT_L3);
-                                    }
-                                }
-                            }
+                            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+                                updatePlayerStatsMerge(player1, fromLvl, toLvl, newLvl);
+
+                            else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+                                updatePlayerStatsMerge(player2, fromLvl, toLvl, newLvl);
 
                             from.setEntity(null);
 
@@ -585,36 +522,24 @@ public class Level implements Playable {
     private void moveEntity(Tile from, Tile to) {
         // Updates currentTrees for stats - when the player cuts a tree
         if (to.contains(StaticEntity.TREE)) {
-            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
-                player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_TREES);
-            } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
-                player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_TREES);
-            }
+            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+                updatePlayerStatsTrees(player1);
+
+            else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+                updatePlayerStatsTrees(player2);
         }
         if (to.getEntity() != null && to.getEntity() instanceof Soldier) {
-            // Updates currentLostL. for stats - when a soldier is killed by the enemy
-            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName())) {
-                if (to.getEntity().getName().equals(SoldierLevel.L0.getName())) {
-                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L0);
-                } else if (to.getEntity().getName().equals(SoldierLevel.L1.getName())) {
-                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L1);
-                } else if (to.getEntity().getName().equals(SoldierLevel.L2.getName())) {
-                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L2);
-                } else if (to.getEntity().getName().equals(SoldierLevel.L3.getName())) {
-                    player1.getStatistics().incrementStat(player1.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L3);
-                }
-            } else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName())) {
-                if (to.getEntity().getName().equals(SoldierLevel.L0.getName())) {
-                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L0);
-                } else if (to.getEntity().getName().equals(SoldierLevel.L1.getName())) {
-                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L1);
-                } else if (to.getEntity().getName().equals(SoldierLevel.L2.getName())) {
-                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L2);
-                } else if (to.getEntity().getName().equals(SoldierLevel.L3.getName())) {
-                    player2.getStatistics().incrementStat(player2.getStatistics().getCurrentStats(), Statistics.CURRENT_LOST_L3);
-                }
-            }
+            /*
+                Updates currentLostL. for stats - when a soldier is killed by the enemy
+                The stats are updated for the player who is not the current player
+             */
+            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player2.getName()))
+                updatePlayerStatsLost(player1, to.getEntity());
+
+            else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player1.getName()))
+                updatePlayerStatsLost(player2, to.getEntity());
         }
+
         to.setTerritory(from.getTerritory());
         to.setEntity(from.getEntity());
         from.setEntity(null);
@@ -804,24 +729,24 @@ public class Level implements Playable {
             if (prefs.getBoolean("isPlayer1Logged") && winner.getName().equals(player1.getName())) {
 
                 // Number of games ++
-                incrementPlayerGames(player1);
+                updatePlayerGames(player1);
 
                 // Number of wins ++
-                incrementPlayerWins(player1);
+                updatePlayerWins(player1);
 
                 // All other stats are updated
-                updatePlayerStats(player1);
+                updatePlayerScore(player1);
 
             } else if (prefs.getBoolean("isPlayer2Logged") && winner.getName().equals(player2.getName())) {
 
                 // Number of games ++
-                incrementPlayerGames(player2);
+                updatePlayerGames(player2);
 
                 // Number of wins ++
-                incrementPlayerWins(player2);
+                updatePlayerWins(player2);
 
                 // All other stats are updated
-                updatePlayerStats(player2);
+                updatePlayerScore(player2);
             }
             Player loser;
             if (winner == players[0])
@@ -832,24 +757,24 @@ public class Level implements Playable {
             if (prefs.getBoolean("isPlayer1Logged") && loser.getName().equals(player1.getName())) {
 
                 // Number of games ++
-                incrementPlayerGames(player1);
+                updatePlayerGames(player1);
 
                 // Number of defeats ++
-                incrementPlayerDefeats(player1);
+                updatePlayerDefeats(player1);
 
                 // All other stats are updated
-                updatePlayerStats(player1);
+                updatePlayerScore(player1);
 
             } else if (prefs.getBoolean("isPlayer2Logged") && loser.getName().equals(player2.getName())) {
 
                 // Number of games ++
-                incrementPlayerGames(player2);
+                updatePlayerGames(player2);
 
                 // Number of defeats ++
-                incrementPlayerDefeats(player2);
+                updatePlayerDefeats(player2);
 
                 // All other stats are updated
-                updatePlayerStats(player2);
+                updatePlayerScore(player2);
             }
 
             return winner;
@@ -860,11 +785,66 @@ public class Level implements Playable {
     }
 
     /**
+     * @param player
+     */
+    private void updatePlayerStatsTrees(HumanPlayer player) {
+        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(), Statistics.CURRENT_TREES);
+    }
+
+    /**
+     * @param player
+     */
+    private void updatePlayerStatsTurns(HumanPlayer player) {
+        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(), Statistics.CURRENT_TURNS);
+    }
+
+    /**
+     * @param player
+     * @param entity
+     */
+    private void updatePlayerStatsLost(HumanPlayer player, Entity entity) {
+        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(), "currentLost" + entity.getName());
+    }
+
+    /**
+     * @param player
+     * @param entity
+     */
+    private void updatePlayerStatsBuy(HumanPlayer player, Entity entity) {
+        // Updates currentMoneySpent
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                Statistics.CURRENT_MONEY_SPENT, entity.getPrice());
+
+        // Updates currentL.
+        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(), "current" + entity.getName());
+    }
+
+    /**
+     * @param player
+     * @param fromLvl
+     * @param toLvl
+     * @param newLvl
+     */
+    private void updatePlayerStatsMerge(HumanPlayer player, int fromLvl, int toLvl, int newLvl) {
+        // Current old unit -= 1 (for the first one)
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                "current" + SoldierLevel.fromLevel(fromLvl).getName(), -1);
+
+        // Current old unit -= 1 (for the second one)
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                "current" + SoldierLevel.fromLevel(toLvl).getName(), -1);
+
+        // Current new unit += 1
+        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(),
+                "current" + SoldierLevel.fromLevel(newLvl).getName());
+    }
+
+    /**
      * on incrémente pour globalstats et le levelstats du niveau joué
      *
      * @param player
      */
-    private void incrementPlayerGames(HumanPlayer player) {
+    private void updatePlayerGames(HumanPlayer player) {
         player.getGlobalStats().incrementStat(player.getGlobalStats().getStats(), Statistics.GAMES);
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStat
                 (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.GAMES);
@@ -875,7 +855,7 @@ public class Level implements Playable {
      *
      * @param player
      */
-    private void incrementPlayerWins(HumanPlayer player) {
+    private void updatePlayerWins(HumanPlayer player) {
         player.getGlobalStats().incrementStat(player.getGlobalStats().getStats(), Statistics.WINS);
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStat
                 (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.WINS);
@@ -886,7 +866,7 @@ public class Level implements Playable {
      *
      * @param player
      */
-    private void incrementPlayerDefeats(HumanPlayer player) {
+    private void updatePlayerDefeats(HumanPlayer player) {
         player.getGlobalStats().incrementStat(player.getGlobalStats().getStats(), Statistics.DEFEATS);
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStat
                 (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.DEFEATS);
@@ -897,7 +877,7 @@ public class Level implements Playable {
      *
      * @param player
      */
-    private void updatePlayerStats(HumanPlayer player) {
+    private void updatePlayerScore(HumanPlayer player) {
         player.getGlobalStats().updateStats();
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).updateStats();
 

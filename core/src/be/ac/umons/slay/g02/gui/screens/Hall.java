@@ -45,7 +45,7 @@ public class Hall implements Screen {
 
         if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             cellHeight = SCREEN_HEIGHT * 6 / 100;
-            scrollHeight = (int) (SCREEN_HEIGHT *1f* 9 / 100 + cellHeight*1.2f/100);
+            scrollHeight = (int) (SCREEN_HEIGHT * 1f * 9 / 100 + cellHeight * 1.2f / 100);
         } else {
 
 
@@ -165,7 +165,7 @@ public class Hall implements Screen {
             boolean isNext = true;
 
             while (iter.hasNext()) {
-                scrollHeight += cellHeight*1.3f;
+                scrollHeight += cellHeight * 1.3f;
 
                 if (isNext) {
                     currentColor = colorYellow;
@@ -245,7 +245,7 @@ public class Hall implements Screen {
             }
             if (tabPlayers.isEmpty()) {
                 Texture transparence = new Texture(Gdx.files.internal("profile/transparence.jpg"));
-                scrollHeight += cellHeight*1.3f;
+                scrollHeight += cellHeight * 1.3f;
                 currentColor = Color.CLEAR;
                 colorLabel = Color.CLEAR;
                 cell = new TextButton("", skinSgxTable);

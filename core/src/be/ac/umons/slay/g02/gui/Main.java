@@ -57,7 +57,7 @@ public class Main extends Game {
 
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();
-	 
+
         skinSgx = new Skin(Gdx.files.internal("skins/sgx/sgx-ui.json"));
         skinSgxTable = new Skin(Gdx.files.internal("skins/sgx-table/sgx-ui.json"));
 
@@ -94,7 +94,7 @@ public class Main extends Game {
         prefs.putInteger("playerRank", 0);
         prefs.putInteger("totalNumberPlayers", 0);
         prefs.putInteger("numPlayer", 0);
-		
+
         prefs.flush();
         stage = new Stage(new ScreenViewport());
         camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
@@ -129,7 +129,7 @@ public class Main extends Game {
     public void resize(int width, int height) {
         SCREEN_WIDTH = width;
         SCREEN_HEIGHT = height;
-        if (SCREEN_WIDTH>SCREEN_HEIGHT) {
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
             skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
             skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
