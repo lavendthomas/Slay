@@ -13,13 +13,30 @@ import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Territory;
 import be.ac.umons.slay.g02.level.Tile;
 
+/**
+ * Class representing artificial intelligence of random level
+ */
+
 public class AIRandom extends Player implements AI {
+
+    /**
+     * Constructor of the class, initiating its name, its color and the path of its avatar
+     * @param color Player color
+     * @param name  Player name
+     */
 
     public AIRandom (Colors color, String name) {
         this.name = name;
         this.color = color;
         avatar = "profile" + File.separator + "ai_random.png";
     }
+
+    /**
+     * Perform actions to be done during a game turn randomly
+     *
+     * @return true if performed successfully false otherwise
+     */
+
     @Override
     public boolean play() {
         AIMethods.sleep();

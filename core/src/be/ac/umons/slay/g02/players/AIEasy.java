@@ -10,15 +10,35 @@ import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 
+/**
+ * Class representing artificial intelligence of easy level
+ */
+
 public class AIEasy extends Player implements AI {
 
+    /**
+     * The level that is played
+     */
+
     private Playable level;
+
+    /**
+     * Constructor of the class, initiating its name, its color and the path of its avatar
+     * @param color Player color
+     * @param name  Player name
+     */
 
     public AIEasy(Colors color, String name) {
         this.color = color;
         this.name = name;
         avatar = "profile" + File.separator + "ai_easy.png";
     }
+
+    /**
+     * Perform the actions to be done during a game turn
+     *
+     * @return true if performed successfully false otherwise
+     */
 
     @Override
     public boolean play() {
@@ -49,6 +69,11 @@ public class AIEasy extends Player implements AI {
         return level.nextTurn();
     }
 
+    /**
+     * Try to buy weak units
+     * @param territory List of coordinates representing the territory in which searched
+     */
+
     private void tryToAddUnit(List<Coordinate> territory) {
         // AIEasy only buys weak units
         Coordinate cFrom = territory.get(0);
@@ -62,6 +87,14 @@ public class AIEasy extends Player implements AI {
         }
 
     }
+
+    /**
+     * Find the best coordinate to place a soldier
+     *
+     * @param moves List of accessible coordinates
+     * @param cFrom Original coordinate
+     * @return      The best coordinate if found, null else
+     */
 
     private Coordinate findBestPlace(List<Coordinate> moves, Coordinate cFrom) {
 

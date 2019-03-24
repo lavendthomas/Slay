@@ -14,9 +14,23 @@ import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Territory;
 import be.ac.umons.slay.g02.level.Tile;
 
+/**
+ * Class representing artificial intelligence of medium level
+ */
+
 public class AIMedium extends Player implements AI {
 
+    /**
+     * The level that is played
+     */
+
     private Playable level;
+
+    /**
+     * Constructor of the class, initiating its name, its color and the path of its avatar
+     * @param color Player color
+     * @param name  Player name
+     */
 
     public AIMedium(Colors color, String name) {
         this.name = name;
@@ -24,6 +38,11 @@ public class AIMedium extends Player implements AI {
         avatar = "profile" + File.separator + "ai_medium.png";
     }
 
+    /**
+     * Perform the actions to be done during a game turn
+     *
+     * @return true if performed successfully false otherwise
+     */
 
     @Override
     public boolean play() {
@@ -59,6 +78,11 @@ public class AIMedium extends Player implements AI {
         return level.nextTurn();
     }
 
+    /**
+     * Try to buy each type of unit
+     * @param territory List of coordinates representing the territory in which searched
+     */
+
     private void tryToAddUnit(List<Coordinate> territory) {
         for (int i = 0; i < 4; i++) {
             // Try to buy every type of soldier
@@ -76,6 +100,14 @@ public class AIMedium extends Player implements AI {
             }
         }
     }
+
+    /**
+     * Find the best coordinate to place a soldier
+     *
+     * @param moves List of accessible coordinates
+     * @param cFrom Original coordinate
+     * @return      The best coordinate if found, null else
+     */
 
     private Coordinate findBestPlace(List<Coordinate> moves, Coordinate cFrom, Soldier soldier) {
 
@@ -117,6 +149,14 @@ public class AIMedium extends Player implements AI {
         return cTo; // Always null
     }
 
+    /**
+     * Check if a soldier can be bought and its salary can be paid
+     *
+     * @param soldier   Soldier to buy
+     * @param territory Territory in which the soldier will be placed
+     * @return          True if can buy the soldier, false else
+     */
+
     private boolean canBuy (Soldier soldier, Territory territory) {
         if (territory != null && territory.canBuy(soldier)) {
             // Coins remaining after purchase
@@ -127,6 +167,15 @@ public class AIMedium extends Player implements AI {
         }
         return false;
     }
+
+    /**
+     * Check if two soldiers can be fusion and new soldier calary con be paid
+     *
+     * @param sold1     Soldier to merge
+     * @param sold2     Soldier to merge
+     * @param territory Territory in which soldiers are
+     * @return          True if can fusion the soldier, false else
+     */
 
     private boolean canFusion (Soldier sold1, Soldier sold2, Territory territory) {
         int newlvl = sold1.getSoldierLevel().getLevel() + sold2.getSoldierLevel().getLevel();
