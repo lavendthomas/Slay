@@ -81,15 +81,9 @@ public class Territory {
         if (cell.getEntity() != null) {
             // We remove the wage if it is a soldier
             wages -= cell.getEntity().getCost();
-
-            if (cell.getEntity() instanceof StaticEntity) {
-                StaticEntity se = (StaticEntity) cell.getEntity();
-                if (se == StaticEntity.CAPITAL) {
-                    // If we removed a capital we have to recreate one.
-                    Gdx.app.debug("moves", "calling newCapital in remove from " + cell);
-                    newCapital();
-                }
-            }
+            
+            // If we removed a capital we have to recreate one.
+            newCapital();
         }
 
         /*
