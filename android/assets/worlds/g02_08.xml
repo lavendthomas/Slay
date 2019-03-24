@@ -3,33 +3,15 @@
 	<players number="2"/>
 	<territories>
 		<terr
-			player="0" x="1" y="12"/>
-		<terr
-			player="0" x="2" y="1"/>
-		<terr
 			player="0" x="2" y="3"/>
 		<terr
 			player="0" x="2" y="4"/>
-		<terr
-			player="0" x="2" y="13"/>
-		<terr
-			player="0" x="3" y="4"/>
-		<terr
-			player="0" x="3" y="5"/>
 		<terr
 			player="0" x="3" y="7"/>
 		<terr
 			player="0" x="3" y="8"/>
 		<terr
-			player="0" x="3" y="11"/>
-		<terr
 			player="0" x="4" y="2"/>
-		<terr
-			player="0" x="4" y="4"/>
-		<terr
-			player="0" x="4" y="6"/>
-		<terr
-			player="0" x="4" y="7"/>
 		<terr
 			player="0" x="5" y="4"/>
 		<terr
@@ -47,8 +29,6 @@
 		<terr
 			player="0" x="6" y="5"/>
 		<terr
-			player="0" x="6" y="7"/>
-		<terr
 			player="0" x="6" y="12"/>
 		<terr
 			player="0" x="6" y="13"/>
@@ -57,21 +37,9 @@
 		<terr
 			player="0" x="7" y="6"/>
 		<terr
-			player="0" x="7" y="12"/>
+			player="0" x="7" y="13"/>
 		<terr
 			player="0" x="7" y="14"/>
-		<terr
-			player="0" x="8" y="2"/>
-		<terr
-			player="0" x="8" y="12"/>
-		<terr
-			player="0" x="8" y="14"/>
-		<terr
-			player="0" x="8" y="15"/>
-		<terr
-			player="0" x="9" y="14"/>
-		<terr
-			player="0" x="10" y="14"/>
 		<terr
 			player="1" x="1" y="6"/>
 		<terr
@@ -81,9 +49,9 @@
 		<terr
 			player="1" x="2" y="12"/>
 		<terr
-			player="1" x="2" y="14"/>
+			player="1" x="2" y="13"/>
 		<terr
-			player="1" x="3" y="10"/>
+			player="1" x="2" y="14"/>
 		<terr
 			player="1" x="3" y="12"/>
 		<terr
@@ -94,8 +62,6 @@
 			player="1" x="4" y="8"/>
 		<terr
 			player="1" x="4" y="9"/>
-		<terr
-			player="1" x="4" y="11"/>
 		<terr
 			player="1" x="4" y="14"/>
 		<terr
@@ -108,6 +74,10 @@
 			player="1" x="6" y="8"/>
 		<terr
 			player="1" x="9" y="10"/>
+		<terr
+			player="1" x="9" y="12"/>
+		<terr
+			player="1" x="9" y="14"/>
 	</territories>
 	<items>
 		<item

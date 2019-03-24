@@ -15,19 +15,11 @@
         <terr
             player="0" x="3" y="10"/>
         <terr
-            player="0" x="3" y="11"/>
-        <terr
             player="0" x="4" y="1"/>
         <terr
             player="0" x="4" y="2"/>
         <terr
-            player="0" x="4" y="6"/>
-        <terr
-            player="0" x="4" y="7"/>
-        <terr
             player="0" x="4" y="9"/>
-        <terr
-            player="0" x="5" y="7"/>
         <terr
             player="0" x="5" y="9"/>
         <terr
@@ -39,19 +31,9 @@
         <terr
             player="0" x="6" y="3"/>
         <terr
-            player="0" x="6" y="6"/>
-        <terr
-            player="0" x="6" y="7"/>
-        <terr
-            player="0" x="6" y="9"/>
-        <terr
             player="0" x="6" y="12"/>
         <terr
             player="0" x="6" y="13"/>
-        <terr
-            player="0" x="7" y="5"/>
-        <terr
-            player="0" x="7" y="6"/>
         <terr
             player="0" x="7" y="11"/>
         <terr
@@ -110,6 +92,10 @@
             player="1" x="7" y="2"/>
         <terr
             player="1" x="7" y="3"/>
+		<terr
+            player="1" x="7" y="4"/>
+        <terr
+            player="1" x="7" y="5"/>
         <terr
             player="1" x="7" y="8"/>
         <terr
@@ -118,6 +104,10 @@
             player="1" x="7" y="10"/>
         <terr
             player="1" x="7" y="12"/>
+        <terr
+            player="1" x="8" y="1"/>
+        <terr
+            player="1" x="8" y="2"/>
         <terr
             player="1" x="8" y="3"/>
         <terr
@@ -140,8 +130,6 @@
 	<items>
         <item
             type="capital" coins="20" x="4" y="2"/>
-        <item
-            type="capital" coins="20" x="4" y="6"/>
         <item
             type="capital" coins="20" x="5" y="3"/>
         <item
