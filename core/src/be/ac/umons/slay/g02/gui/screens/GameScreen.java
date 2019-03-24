@@ -31,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -121,6 +122,9 @@ public class GameScreen implements Screen {
     private boolean AIisPaused = false;
     private boolean endPlay = false; // partie continue tant que faux
 
+    private int worldW;
+    private int worldH;
+
     /**
      * @param aGame
      * @param levelName
@@ -157,9 +161,7 @@ public class GameScreen implements Screen {
 
             tileMap = loadTileHashMap();
 
-
-            int worldW;
-            int worldH = nbreH * tileH + tileH / 2;
+            worldH = nbreH * tileH + tileH / 2;
 
             if (nbreW % 2 == 0) {
                 worldW = ((nbreW / 2) * tileW) + ((nbreW / 2) * (tileW / 2));
@@ -167,7 +169,7 @@ public class GameScreen implements Screen {
                 worldW = (int) (Math.ceil(nbreW / 2f) * tileW + Math.floor(nbreW / 2f) * (tileW / 2));
             }
 
-            viewport = new FitViewport(worldW, worldH, camera);
+            viewport = new FillViewport(worldW, worldH, camera);
 
             int midScreenW = SCREEN_WIDTH / 2;
             int midScreenH = SCREEN_HEIGHT / 2;
@@ -432,9 +434,11 @@ public class GameScreen implements Screen {
                 break;
 
             case BUYING_UNIT:
-                List<Coordinate> listBuyable = level.getMoves(boughtEntity, previousClick);
-                EffectsManagement.shadowMap(effects, level, set);
-                EffectsManagement.highlightCells(effects, listBuyable, tileMap.get("GREEN_HIGHLIGHT"));
+                if (level.isInLevel(previousClick)) {
+                    List<Coordinate> listBuyable = level.getMoves(boughtEntity, previousClick);
+                    EffectsManagement.shadowMap(effects, level, set);
+                    EffectsManagement.highlightCells(effects, listBuyable, tileMap.get("GREEN_HIGHLIGHT"));
+                }
                 break;
         }
     }
@@ -446,24 +450,26 @@ public class GameScreen implements Screen {
     private void showMarket(Coordinate c, boolean hidden) {
         boolean shown = !hidden;
         List<String> canBuy = new ArrayList<String>();
-        List<Entity> couldBuy = level.canBuy(c);
-        if (couldBuy != null) {
-            for (Entity e : level.canBuy(c)) {
-                canBuy.add(e.getName());
+        if (level.isInLevel(c)) {
+            List<Entity> couldBuy = level.canBuy(c);
+            if (couldBuy != null) {
+                for (Entity e : level.canBuy(c)) {
+                    canBuy.add(e.getName());
+                }
             }
+
+            boolean isVisibleL0 = shown && canBuy.contains("L0");
+            boolean isVisibleL1 = shown && canBuy.contains("L1");
+            boolean isVisibleL2 = shown && canBuy.contains("L2");
+            boolean isVisibleL3 = shown && canBuy.contains("L3");
+
+            listButtonLDark.clear();
+
+            changeMarketDisplay(shown, isVisibleL0, buttonL0);
+            changeMarketDisplay(shown, isVisibleL1, buttonL1);
+            changeMarketDisplay(shown, isVisibleL2, buttonL2);
+            changeMarketDisplay(shown, isVisibleL3, buttonL3);
         }
-
-        boolean isVisibleL0 = shown && canBuy.contains("L0");
-        boolean isVisibleL1 = shown && canBuy.contains("L1");
-        boolean isVisibleL2 = shown && canBuy.contains("L2");
-        boolean isVisibleL3 = shown && canBuy.contains("L3");
-
-        listButtonLDark.clear();
-
-        changeMarketDisplay(shown, isVisibleL0, buttonL0);
-        changeMarketDisplay(shown, isVisibleL1, buttonL1);
-        changeMarketDisplay(shown, isVisibleL2, buttonL2);
-        changeMarketDisplay(shown, isVisibleL3, buttonL3);
     }
 
     /**
@@ -561,7 +567,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        viewport.setScreenBounds(0, 0, width, height);
         hud.getViewport().setScreenBounds(0, 0, width, height);
     }
 
@@ -702,15 +707,14 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        boolean win = level.nextTurn();
+                        boolean hasWon = level.nextTurn(); // true = il y a un gagnant
+                        if (!hasWon) {
+                            endPlay = true; // Signale fin de partie
+                        }
                         click = ClickState.NOTHING_SELECTED;
                         EffectsManagement.eraseCells(effects);
                         showEffects(previousClick);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
-                        if (!win) {
-                            endPlay = true; // Signale fin de partie
-                        }
-
                     }
                 }
             });
