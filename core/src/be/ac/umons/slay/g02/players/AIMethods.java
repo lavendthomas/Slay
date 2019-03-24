@@ -43,6 +43,7 @@ public class AIMethods {
         }
         return allTerritories;
     }
+
     static void sleep() {
         try {
             Thread.sleep(speed);
@@ -121,7 +122,6 @@ public class AIMethods {
             if (!cFrom.equals(cTo)) {
                 Tile current = level.get(cTo);
                 if (current.getTerritory() != null) {
-
                     if (!current.getTerritory().getOwner().equals(player)) {
                         return cTo;
                     }
@@ -184,5 +184,34 @@ public class AIMethods {
         }
     }
 
+    static int searchStrongerSoldier (Playable level, Player player, Boolean searchEnemy) {
+        List<List<Coordinate>> territories = loadTerritories(level, player, searchEnemy);
+        int strongestLevel = -1;
 
+        for (List<Coordinate> territory : territories) {
+            for (Coordinate coordinate : territory) {
+                Tile current = level.get(coordinate);
+
+                if (current.getTerritory() != null) {
+                    if (searchEnemy) {
+                        if (!current.getTerritory().getOwner().equals(player)) {
+                            if (current.getEntity() != null && current.getEntity() instanceof Soldier) {
+                                strongestLevel = Math.max(strongestLevel,
+                                        ((Soldier) current.getEntity()).getSoldierLevel().getLevel());
+                            }
+                        }
+                    } else {
+                        if (current.getTerritory().getOwner().equals(player)) {
+                            if (current.getEntity() != null && current.getEntity() instanceof Soldier) {
+                                strongestLevel = Math.max(strongestLevel,
+                                        ((Soldier) current.getEntity()).getSoldierLevel().getLevel());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return strongestLevel;
+
+    }
 }

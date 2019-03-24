@@ -60,7 +60,7 @@ public class AIMedium extends Player implements AI {
     }
 
     private void tryToAddUnit(List<Coordinate> territory) {
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 0; i < 4; i++) {
             // Try to buy every type of soldier
             Soldier soldier = new Soldier(SoldierLevel.fromLevel(i));
             Coordinate cFrom = territory.get(0);
@@ -85,6 +85,12 @@ public class AIMedium extends Player implements AI {
             return cTo;
         }
 
+        // Attack enemy tiles
+        cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
+        }
+
         // Merge soldiers
         cTo = AIMethods.fusion(level, moves, cFrom, this);
         if (cTo != null) {
@@ -101,12 +107,6 @@ public class AIMedium extends Player implements AI {
             }
         }
 
-        // Attack enemy tiles
-        cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
-        if (cTo != null) {
-            return cTo;
-        }
-
         // Cut trees of its territory
         cTo = AIMethods.chopTree(level, moves, cFrom, this);
         if (cTo != null) {
@@ -114,7 +114,7 @@ public class AIMedium extends Player implements AI {
         }
 
         // Default case, get closer to the enemy
-        return cTo; // null value
+        return cTo; // Always null
     }
 
     private boolean canBuy (Soldier soldier, Territory territory) {
@@ -129,11 +129,8 @@ public class AIMedium extends Player implements AI {
     }
 
     private boolean canFusion (Soldier sold1, Soldier sold2, Territory territory) {
-        if (sold1 != null && sold2 != null) {
-            int newlvl = sold1.getSoldierLevel().getLevel() + sold2.getSoldierLevel().getLevel();
-            int cost = SoldierLevel.fromLevel(newlvl).getCost();
-            return territory.getCoins() > cost;
-        }
-        return false;
+        int newlvl = sold1.getSoldierLevel().getLevel() + sold2.getSoldierLevel().getLevel();
+        int cost = SoldierLevel.fromLevel(newlvl).getCost();
+        return territory.getCoins() > cost;
     }
 }

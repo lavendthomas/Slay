@@ -71,20 +71,14 @@ public class AIEasy extends Player implements AI {
             return cTo;
         }
 
-        // Seeking to occupy a neutral tile
-        cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
-        if (cTo != null) {
-            return cTo;
-        }
-
         // Clean the graves of its territory
         cTo = AIMethods.cleanGraves(level, moves, cFrom, this);
         if (cTo != null) {
             return cTo;
         }
 
-        // Merge soldiers
-        cTo = AIMethods.fusion(level, moves, cFrom, this);
+        // Seeking to occupy a neutral tile
+        cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
         if (cTo != null) {
             return cTo;
         }
