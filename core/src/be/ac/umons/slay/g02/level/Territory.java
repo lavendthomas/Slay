@@ -86,7 +86,6 @@ public class Territory {
                 StaticEntity se = (StaticEntity) cell.getEntity();
                 if (se == StaticEntity.CAPITAL) {
                     // If we removed a capital we have to recreate one.
-                    Gdx.app.debug("moves", "calling newCapital in remove from " + cell);
                     newCapital();
                 }
             }

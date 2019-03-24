@@ -540,6 +540,11 @@ public class Level implements Playable {
                 updatePlayerStatsLost(player2, to.getEntity());
         }
 
+        if (to.getEntity() == StaticEntity.CAPITAL) {
+            // the enemy gets rewarded with half of the resources that would be generated
+            from.getTerritory().setCoins(from.getTerritory().getCoins() + (to.getTerritory().getCoins() / 2) );
+        }
+
         to.setTerritory(from.getTerritory());
         to.setEntity(from.getEntity());
         from.setEntity(null);
