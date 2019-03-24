@@ -85,8 +85,8 @@ public class AIMedium extends Player implements AI {
             return cTo;
         }
 
-        // Attack enemy tiles
-        cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
+        // Cut trees of its territory
+        cTo = AIMethods.chopTree(level, moves, cFrom, this);
         if (cTo != null) {
             return cTo;
         }
@@ -107,8 +107,8 @@ public class AIMedium extends Player implements AI {
             }
         }
 
-        // Cut trees of its territory
-        cTo = AIMethods.chopTree(level, moves, cFrom, this);
+        // Attack enemy tiles
+        cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
         if (cTo != null) {
             return cTo;
         }
@@ -118,7 +118,7 @@ public class AIMedium extends Player implements AI {
     }
 
     private boolean canBuy (Soldier soldier, Territory territory) {
-        if (territory.canBuy(soldier)) {
+        if (territory != null && territory.canBuy(soldier)) {
             // Coins remaining after purchase
             int rest = territory.getCoins() - soldier.getPrice();
             // Salary after a turn

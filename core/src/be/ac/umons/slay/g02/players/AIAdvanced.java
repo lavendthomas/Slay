@@ -16,8 +16,6 @@ import be.ac.umons.slay.g02.level.Tile;
 public class AIAdvanced extends Player implements AI {
 
     private Playable level;
-    private int strongestEnemy;
-    private int strongestAlly;
 
     public AIAdvanced(Colors color, String name) {
         this.name = name;
@@ -30,8 +28,6 @@ public class AIAdvanced extends Player implements AI {
         AIMethods.sleep();
         level = GameScreen.getLevel();
         List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level, this, false);
-        strongestEnemy = AIMethods.searchStrongerSoldier(level, this, true);
-        strongestAlly = AIMethods.searchStrongerSoldier(level, this, false);
 
         for (List<Coordinate> territory : allTerritories) {
             // Pour chaque territoire
@@ -67,13 +63,13 @@ public class AIAdvanced extends Player implements AI {
             if (cTo == null) {
                 cTo = AIMethods.searchEnnemy(cFrom, level, this, soldier);
             }
+
             if (cTo != null) {
                 level.buy(soldier, cFrom, cTo);
-                strongestAlly = strongestEnemy;
             }
 
     }
-
+/*
     private int wichSoldier () {
         if (strongestEnemy != -1) {
             if (strongestEnemy == 3 && strongestAlly < 3) {
@@ -87,138 +83,63 @@ public class AIAdvanced extends Player implements AI {
         }
         return 0;
     }
-
+*/
     private void tryToAddUnit(List<Coordinate> territory) {
-        int soughtLevel = wichSoldier();
-        Coordinate cFrom = territory.get(0);
-        Tile tileFrom = level.get(cFrom);
-        Soldier soldier = new Soldier(SoldierLevel.fromLevel(soughtLevel));
-        if (canBuy(soldier, tileFrom.getTerritory())) {
-            buyUnit(soldier, cFrom);
+        for (int i = 0; i < 4; i++) {
+            // Try to buy every type of soldier
+            Soldier soldier = new Soldier(SoldierLevel.fromLevel(i));
+            Coordinate cFrom = territory.get(0);
+            Tile tileFrom = level.get(cFrom);
+            if (canBuy(soldier, tileFrom.getTerritory())) {
+                Coordinate cTo = findBestPlace(level.getMoves(soldier, cFrom), cFrom, soldier);
+                if (cTo == null) {
+                    cTo = AIMethods.searchEnnemy(cFrom, level, this, soldier);
+                }
+                if (cTo != null) {
+                    level.buy(soldier, cFrom, cTo);
+                }
+            }
         }
     }
 
     private Coordinate findBestPlace(List<Coordinate> moves, Coordinate cFrom, Soldier soldier) {
-        Soldier soldier1;
-        if (soldier == null) {
-            soldier1 = (Soldier) level.get(cFrom).getEntity();
-        } else {
-            soldier1 = soldier;
+
+        // Seeking to occupy a neutral tile
+        Coordinate cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
         }
-        int lvl = soldier1.getSoldierLevel().getLevel();
-        Coordinate cTo;
-        switch (lvl) {
-            case 0:
-                // Seeking to occupy a neutral tile
-                cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
 
-                // Cut trees of its territory
-                cTo = AIMethods.chopTree(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Attack enemy tiles
-                cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Merge ?
-                if (wichSoldier() == 1) {
-                    // Merge soldiers
-                    cTo = AIMethods.fusion(level, moves, cFrom, this);
-                    if (cTo != null) {
-                        Soldier soldier2 = (Soldier) level.get(cTo).getEntity();
-                        if (canFusion(soldier1, soldier2, level.get(moves.get(0)).getTerritory())) {
-                            return cTo;
-                        }
-                    }
-                }
-            case 1:
-                // Seeking to occupy a neutral tile
-                cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Attack enemy tiles
-                cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Cut trees of its territory
-                cTo = AIMethods.chopTree(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Merges ?
-                if (wichSoldier() == 2) {
-                    // Merge soldiers
-                    cTo = AIMethods.fusion(level, moves, cFrom, this);
-                    if (cTo != null) {
-                        Soldier soldier2 = (Soldier) level.get(cTo).getEntity();
-                        if (canFusion(soldier1, soldier2, level.get(moves.get(0)).getTerritory())) {
-                            return cTo;
-                        }
-                    }
-                }
-            case 2:
-                // Attack enemy tiles
-                cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-                // Merge ?
-                if (wichSoldier() == 3) {
-                    // Merge soldiers
-                    cTo = AIMethods.fusion(level, moves, cFrom, this);
-                    if (cTo != null) {
-                        Soldier soldier2 = (Soldier) level.get(cTo).getEntity();
-                        if (canFusion(soldier1, soldier2, level.get(moves.get(0)).getTerritory())) {
-                            return cTo;
-                        }
-                    }
-                }
-
-                // Seeking to occupy a neutral tile
-                cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Cut trees of its territory
-                cTo = AIMethods.chopTree(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-            case 3:
-                // Attack enemy tiles
-                cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Seeking to occupy a neutral tile
-                cTo = AIMethods.captureNeutral(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-
-                // Cut trees of its territory
-                cTo = AIMethods.chopTree(level, moves, cFrom, this);
-                if (cTo != null) {
-                    return cTo;
-                }
-            default:
-                // Default case, get closer to the enemy
-                return null; // null pour chercher à se rapprocher de l'ennemie par défaut
+        // Attack enemy tiles
+        cTo = AIMethods.attackEnemy(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
         }
+
+        // Merge soldiers
+        cTo = AIMethods.fusion(level, moves, cFrom, this);
+        if (cTo != null) {
+            Soldier soldier1;
+            Soldier soldier2 = (Soldier) level.get(cTo).getEntity();
+            if (soldier == null) {
+                soldier1 = (Soldier) level.get(cFrom).getEntity();
+            } else {
+                soldier1 = soldier;
+            }
+
+            if (canFusion(soldier1, soldier2, level.get(moves.get(0)).getTerritory())) {
+                return cTo;
+            }
+        }
+
+        // Cut trees of its territory
+        cTo = AIMethods.chopTree(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
+        }
+
+        // Default case, get closer to the enemy
+        return cTo; // Always null
     }
 
     private boolean canBuy (Soldier soldier, Territory territory) {

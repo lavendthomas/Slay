@@ -89,6 +89,12 @@ public class AIEasy extends Player implements AI {
             return cTo;
         }
 
+        // Merge soldiers
+        cTo = AIMethods.fusion(level, moves, cFrom, this);
+        if (cTo != null) {
+            return cTo;
+        }
+
         // Default case, random move
         int rand = new Random().nextInt(moves.size());
         return moves.get(rand);
