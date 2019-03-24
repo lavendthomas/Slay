@@ -129,7 +129,6 @@ public class LevelSelection implements Screen {
      */
     public LevelSelection(Game aGame) {
         game = aGame;
-
         init();
     }
 
@@ -208,7 +207,7 @@ public class LevelSelection implements Screen {
         selectBoxIsland.addListener(selectBoxIslandListener);
 
         selectBoxNumber = new SelectBox<Integer>(skinSgx);
-        Array<Integer> numberOfHumans = new Array<Integer>();
+        final Array<Integer> numberOfHumans = new Array<Integer>();
         numberOfHumans.add(0, 1, 2);
         selectBoxNumber.setItems(numberOfHumans);
         ChangeListener selectBoxNumberListener = new ChangeListener() {
@@ -297,7 +296,9 @@ public class LevelSelection implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton3.play(prefs.getFloat("volume", 0.1f));
                 stage.clear();
-                game.setScreen(new GameScreen(game, String.format("g02_%02d", currentIslandNumber)));
+                game.setScreen(new GameScreen(game, String.format("g02_%02d", currentIslandNumber), numberHumans));
+                dispose();
+
             }
         });
         final Table table = new Table();
@@ -971,5 +972,9 @@ public class LevelSelection implements Screen {
 
     @Override
     public void dispose() {
+        currentIslandNumber = 1;
+        numberHumans = 0;
+        difficulty1 = 1;
+        difficulty2 = 2;
     }
 }

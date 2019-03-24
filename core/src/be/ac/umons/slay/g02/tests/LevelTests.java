@@ -31,7 +31,7 @@ public class LevelTests {
 
         Level lvl = null;
         try {
-            lvl = (Level) LevelLoader.load("test_01").getLevel();
+            lvl = (Level) LevelLoader.load("test_01", 1).getLevel();
         } catch (FileFormatException e) {
             fail("Level could not be loaded");
         }
@@ -47,7 +47,7 @@ public class LevelTests {
 
         Level lvl = null;
         try {
-            lvl = (Level) LevelLoader.load("test_01").getLevel();
+            lvl = (Level) LevelLoader.load("test_01", 1).getLevel();
         } catch (FileFormatException e) {
             fail("Level could not be loaded");
         }
@@ -65,7 +65,7 @@ public class LevelTests {
          */
         Level lvl = null;
         try {
-            lvl = (Level) LevelLoader.load("test_01").getLevel();
+            lvl = (Level) LevelLoader.load("test_01", 1).getLevel();
         } catch (FileFormatException e) {
             fail("Level could not be loaded");
         }

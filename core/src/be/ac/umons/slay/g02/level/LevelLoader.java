@@ -40,6 +40,7 @@ import static be.ac.umons.slay.g02.gui.Main.prefs;
 public class LevelLoader {
 
     private static final String LEVELS_PATH = "worlds";
+    private static int numberHumans;
 
     private static Player[] players;
     /**
@@ -55,9 +56,10 @@ public class LevelLoader {
      * @throws FileFormatException If the file don't use the correct format
      */
 
-    public static Map load(String levelName) throws FileFormatException {
+    public static Map load(String levelName, int nbrHumans) throws FileFormatException {
         String tmxName = LEVELS_PATH + File.separator +levelName + ".tmx";
         String xmlName = LEVELS_PATH + File.separator +levelName + ".xml";
+        numberHumans = nbrHumans;
 
         // Init level and load water and playable territories
         TiledMap map = new TmxMapLoader().load(tmxName);
@@ -149,7 +151,6 @@ public class LevelLoader {
                 players = new Player[nbPlayers];
                 int countHuman = 0;
                 int countAI = 0;
-                int numberHumans = LevelSelection.numberHumans;
                 for (int p = 0; p < players.length; p++) {
                     int rand = new Random().nextInt(8);
                     Colors color = Colors.fromId(rand);

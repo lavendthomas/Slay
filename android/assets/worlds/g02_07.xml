@@ -113,13 +113,9 @@
         <item
             type="capital" coins="20" x="8" y="4"/>
         <item
-            type="capital" coins="20" x="8" y="5"/>
-        <item
             type="capital" coins="20" x="10" y="3"/>
         <item
             type="capital" coins="20" x="10" y="6"/>
-        <item
-            type="capital" coins="20" x="11" y="1"/>
         <item
             type="tree" x="1" y="2"/>
         <item

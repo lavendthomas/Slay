@@ -95,6 +95,8 @@
         <item
             type="capital" coins="20" x="6" y="5"/>
         <item
+            type="capital" coins="20" x="7" y="9"/>
+        <item
             type="capital" coins="20" x="8" y="7"/>
         <item
             type="capital" coins="20" x="9" y="10"/>

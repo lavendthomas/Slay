@@ -124,20 +124,22 @@ public class GameScreen implements Screen {
 
     private int worldW;
     private int worldH;
+    private int numberHumans;
 
     /**
      * @param aGame
      * @param levelName
      */
-    GameScreen(Game aGame, String levelName) {
+    GameScreen(Game aGame, String levelName, int numberHumans) {
         game = aGame;
         click = ClickState.NOTHING_SELECTED;
         windowPause.setVisible(false);
         windowEnd.setVisible(false);
+        this.numberHumans = numberHumans;
 
         try {
             camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-            LevelLoader.Map lvlLoader = LevelLoader.load(levelName);
+            LevelLoader.Map lvlLoader = LevelLoader.load(levelName, numberHumans);
             level = lvlLoader.getLevel();
             TiledMap map = lvlLoader.getMap();
             renderer = new HexagonalTiledMapRenderer(map);
@@ -169,7 +171,7 @@ public class GameScreen implements Screen {
                 worldW = (int) (Math.ceil(nbreW / 2f) * tileW + Math.floor(nbreW / 2f) * (tileW / 2));
             }
 
-            viewport = new FillViewport(worldW, worldH, camera);
+            viewport = new FitViewport(worldW, worldH, camera);
 
             int midScreenW = SCREEN_WIDTH / 2;
             int midScreenH = SCREEN_HEIGHT / 2;
@@ -331,7 +333,7 @@ public class GameScreen implements Screen {
             Player winner = level.hasWon();
             Gdx.graphics.setContinuousRendering(false);
             hud.clear();
-            game.setScreen(new EndGame(game, winner, LevelSelection.numberHumans));
+            game.setScreen(new EndGame(game, winner, numberHumans));
 
 
         }
@@ -346,14 +348,18 @@ public class GameScreen implements Screen {
         Vector2 vect = viewport.unproject(new Vector2(x, y));
         // Bien mettre le système d'axe
         int offset = (int) (vect.y / size * errorOffset);
+
         vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH) + offset));
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
     void onTap(float x, float y) {
         if (!windowPause.isVisible() && level.getCurrentPlayer() instanceof HumanPlayer) {
+
             Coordinate clickPos = getCoordinate(x, y);
+
             if (level.isInLevel(clickPos)) {
+
                 Tile clickedTile = level.get(clickPos);
                 // Change state if needed
                 switch (click) {
@@ -567,6 +573,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        viewport.setScreenBounds(0, 0, width, height);
         hud.getViewport().setScreenBounds(0, 0, width, height);
     }
 
@@ -596,8 +603,7 @@ public class GameScreen implements Screen {
     private void loadButtons() {
         hudCam = new OrthographicCamera();
         hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
-
-        if (LevelSelection.numberHumans == 0) {
+        if (numberHumans == 0) {
             // Initialisation des boutons
             TextureRegionDrawable imageV4 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v4.png"))));
             final ImageButton buttonV4 = new ImageButton(imageV4);
