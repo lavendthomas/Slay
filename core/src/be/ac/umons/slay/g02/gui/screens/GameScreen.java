@@ -82,8 +82,6 @@ public class GameScreen implements Screen {
     private ImageButton buttonL3;
     private ImageButton buttonChest;
 
-
-
     private CheckBox checkboxPlayer1;
     private CheckBox checkboxPlayer2;
 
@@ -93,14 +91,9 @@ public class GameScreen implements Screen {
     private static Window windowQuit = new Window("Quit Game", skinSgx);
     private static Window windowEnd = new Window("End", skinSgx);
 
-
     private Label labelCoins;
     private Label labelIncome;
-
-
-    // pour les tests
     private Label labelWages;
-
 
     private int tileW;
     private int tileH;
@@ -128,7 +121,10 @@ public class GameScreen implements Screen {
     private boolean AIisPaused = false;
     private boolean endPlay = false; // partie continue tant que faux
 
-
+    /**
+     * @param aGame
+     * @param levelName
+     */
     GameScreen(Game aGame, String levelName) {
         game = aGame;
         click = ClickState.NOTHING_SELECTED;
@@ -187,6 +183,9 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     *
+     */
     private void handleInput() { //TODO Bloquer dépassements (trop zoom, trop à gauche ...)
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             camera.zoom += 0.02;
@@ -213,6 +212,9 @@ public class GameScreen implements Screen {
 
     }
 
+    /**
+     *
+     */
     private void showPauseWindow() {
         windowPause.clear();
         windowPause.setSize(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3);
@@ -256,6 +258,9 @@ public class GameScreen implements Screen {
         hud.addActor(windowPause);
     }
 
+    /**
+     *
+     */
     private void showWindowQuit() {
         windowQuit.clear();
         windowQuit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
@@ -330,6 +335,11 @@ public class GameScreen implements Screen {
         }
     }
 
+    /**
+     * @param x
+     * @param y
+     * @return
+     */
     private Coordinate getCoordinate(float x, float y) {
         Vector2 vect = viewport.unproject(new Vector2(x, y));
         // Bien mettre le système d'axe
@@ -385,6 +395,9 @@ public class GameScreen implements Screen {
         }
     }
 
+    /**
+     * @param clickPos
+     */
     private void showEffects(Coordinate clickPos) {
         // Show effects
         EffectsManagement.eraseCells(effects);
@@ -426,6 +439,10 @@ public class GameScreen implements Screen {
         }
     }
 
+    /**
+     * @param c
+     * @param hidden
+     */
     private void showMarket(Coordinate c, boolean hidden) {
         boolean shown = !hidden;
         List<String> canBuy = new ArrayList<String>();
@@ -449,7 +466,12 @@ public class GameScreen implements Screen {
         changeMarketDisplay(shown, isVisibleL3, buttonL3);
     }
 
-    private void changeMarketDisplay(boolean shown, boolean isVisibleL, ImageButton buttonL) {
+    /**
+     * @param isShown
+     * @param isVisibleL
+     * @param buttonL
+     */
+    private void changeMarketDisplay(boolean isShown, boolean isVisibleL, ImageButton buttonL) {
         if (isVisibleL) {
             buttonL.getImage().setColor(Color.WHITE);
             buttonL.setTouchable(Touchable.enabled);
@@ -458,11 +480,11 @@ public class GameScreen implements Screen {
             buttonL.getImage().setColor(Color.DARK_GRAY);
             buttonL.setTouchable(Touchable.disabled);
         }
-        buttonL.setVisible(shown);
+        buttonL.setVisible(isShown);
     }
 
     /**
-     * Display the coins of the selected territory and its income
+     * Displays the coins of the selected territory and its income
      *
      * @param c
      * @param hidden
@@ -472,30 +494,26 @@ public class GameScreen implements Screen {
             buttonChest.setVisible(false);
             labelCoins.setVisible(false);
             labelIncome.setVisible(false);
-
-            // pour les tests
             labelWages.setVisible(false);
         } else {
             buttonChest.setVisible(true);
             labelCoins.setVisible(true);
             labelIncome.setVisible(true);
+            labelWages.setVisible(true);
             labelCoins.setText("" + level.get(c).getTerritory().getCoins());
             labelIncome.setText("+ " + level.get(c).getTerritory().getIncome());
-
-            // pour les tests
-            labelWages.setVisible(true);
             labelWages.setText("- " + level.get(c).getTerritory().getWages());
         }
     }
 
     /**
-     * Reload the visual of the level according to the changes made in the logic
+     * Reloads the visual of the level according to the changes made in logic
      */
     private void loadLevel() {
-       showNextTurnEffects();
+        showNextTurnEffects();
         if (level.getCurrentPlayer() instanceof AI && !AIisPaused) {
-            boolean win = ((AI) level.getCurrentPlayer()).play(); // true = il y a un gagnant
-            if (!win) {
+            boolean hasWon = ((AI) level.getCurrentPlayer()).play(); // true = il y a un gagnant
+            if (!hasWon) {
                 endPlay = true; // Signale fin de partie
             }
         }
@@ -527,11 +545,10 @@ public class GameScreen implements Screen {
     }
 
     /**
-     * Load image of tile linked to their names
+     * Loads the image of tiles linked to their names
      *
      * @return Map of tile names and tile
      */
-
     private Map<String, TiledMapTile> loadTileHashMap() {
         List<String> namesList = TileSetManagement.getNames();
         HashMap<String, TiledMapTile> tileMap = new HashMap<String, TiledMapTile>();
@@ -568,12 +585,15 @@ public class GameScreen implements Screen {
         hud.dispose();
     }
 
+    /**
+     *
+     */
     private void loadButtons() {
         hudCam = new OrthographicCamera();
         hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
 
         if (LevelSelection.numberHumans == 0) {
-            // Initialisation des bouttons
+            // Initialisation des boutons
             TextureRegionDrawable imageV4 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v4.png"))));
             final ImageButton buttonV4 = new ImageButton(imageV4);
             TextureRegionDrawable imageV3 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v3.png"))));
@@ -585,7 +605,7 @@ public class GameScreen implements Screen {
             TextureRegionDrawable imagePause = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v0.png"))));
             final ImageButton buttonV0 = new ImageButton(imagePause);
 
-            // Bien positionner les bouttons
+            // Bien positionner les boutons
             float offsetW = 10;
             float offsetH = buttonV4.getHeight();
             buttonV4.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
@@ -598,7 +618,6 @@ public class GameScreen implements Screen {
             offsetW += buttonV0.getWidth() + 10;
             buttonV0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
             makeButtonGreen(true, buttonV3);
-
 
             // Ajouter les actions
 
@@ -673,7 +692,7 @@ public class GameScreen implements Screen {
             hud.addActor(buttonV0);
 
         } else {
-            // Add button Next
+            // Adds button Next
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
             buttonNext = new ImageButton(imageNext);
@@ -696,11 +715,8 @@ public class GameScreen implements Screen {
                 }
             });
             hud.addActor(buttonNext);
-
-
-
         }
-        // Add button Pause
+        // Adds button Pause
 
         TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/dots.png"))));
         buttonPause = new ImageButton(imageDots);
@@ -717,10 +733,7 @@ public class GameScreen implements Screen {
             }
         });
 
-
-
-
-        // Add entity market
+        // Adds entity market
 
         TextureRegionDrawable imageL0 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L0.png")))));
         buttonL0 = new ImageButton(imageL0);
@@ -739,7 +752,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-
         TextureRegionDrawable imageL1 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L1.png")))));
         buttonL1 = new ImageButton(imageL1);
         buttonL1.getImage().setScale(2.5f);
@@ -757,7 +769,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-
         TextureRegionDrawable imageL2 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L2.png")))));
         buttonL2 = new ImageButton(imageL2);
         buttonL2.getImage().setScale(2.5f);
@@ -775,7 +786,6 @@ public class GameScreen implements Screen {
                 }
             }
         });
-
         TextureRegionDrawable imageL3 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L3.png")))));
         buttonL3 = new ImageButton(imageL3);
         buttonL3.getImage().setScale(2.5f);
@@ -805,8 +815,6 @@ public class GameScreen implements Screen {
         ImageButton avatarP1 = new ImageButton(new TextureRegionDrawable(
                 new TextureRegion(new Texture(
                         Gdx.files.internal(Level.getPlayers()[0].getAvatar())))));
-        // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
-        // au lieu de : LevelSelection.player1Name
 
         Label labelP1 = new Label(Level.getPlayers()[0].getName(), skinSgx, "title-white");
         labelP1.setFontScale(1.2f);
@@ -823,9 +831,6 @@ public class GameScreen implements Screen {
         ImageButton avatarP2 = new ImageButton(new TextureRegionDrawable(
                 new TextureRegion(new Texture(
                         Gdx.files.internal(Level.getPlayers()[1].getAvatar())))));
-
-        // quand ce sera implemente, il faudra changer le nom pour : level.getCurrentPlayer().getName()
-        // au lieu de : LevelSelection.player2Name
 
         Label labelP2 = new Label(Level.getPlayers()[1].getName(), skinSgx, "title-white");
         labelP2.setFontScale(1.2f);
@@ -847,12 +852,9 @@ public class GameScreen implements Screen {
         labelIncome.setFontScale(1.5f);
         labelIncome.setVisible(false);
 
-
-        // pour les tests
         labelWages = new Label("", skinSgx, "title-white");
         labelWages.setFontScale(1.5f);
         labelWages.setVisible(false);
-
 
         Table screenTablePlayers = new Table();
         screenTablePlayers.setFillParent(true);
@@ -873,12 +875,8 @@ public class GameScreen implements Screen {
 
         Table tableIncome = new Table();
         tableIncome.add(labelIncome);
-
-
-        // pour les tests
         tableIncome.row();
         tableIncome.add(labelWages);
-
 
         Table screenTableIncome = new Table();
         screenTableIncome.setFillParent(true);
@@ -917,12 +915,15 @@ public class GameScreen implements Screen {
             }
         });
 
-        // Create multiplexer to handle input in stage and hud
+        // Creates a multiplexer to handle the input in hud
         multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(hud);
         multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
     }
 
+    /**
+     *
+     */
     private void showNextTurnEffects() {
         if (level.getCurrentPlayer() == getPlayers()[0]) {
             checkboxPlayer1.setChecked(true);
@@ -954,6 +955,9 @@ public class GameScreen implements Screen {
         }
     }
 
+    /**
+     * @return
+     */
     public static Playable getLevel() {
         return level;
     }

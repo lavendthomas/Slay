@@ -8,7 +8,13 @@ import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
+import be.ac.umons.slay.g02.players.Statistics;
+
+import static be.ac.umons.slay.g02.gui.Main.prefs;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 public class Territory {
 
@@ -53,7 +59,7 @@ public class Territory {
         if (cell.getEntity() != StaticEntity.TREE) {
             income += 1;
         }
-        if (cell.getEntity() != null){
+        if (cell.getEntity() != null) {
             // We add the wage if it is a soldier
             wages += cell.getEntity().getCost();
         }
@@ -68,7 +74,6 @@ public class Territory {
      * @param cell
      * @return
      */
-
     public boolean remove(Tile cell) {
         if (cell.getEntity() != StaticEntity.TREE) {
             income -= 1;
@@ -87,8 +92,10 @@ public class Territory {
             }
         }
 
-        // if less than 2 cells then delete the territory (delete the pointer to this territory from all cells
-
+        /*
+			If there is less than 2 cells then the territory is deleted (deletes the pointer to
+			this territory from all cells)
+		*/
         if (cells.size() < 2) {
             for (Tile c : cells) {
 
@@ -101,10 +108,8 @@ public class Territory {
 
                 // We remove the territory from all cells
                 c.setTerritory(null, false);
-
             }
         }
-
         return this.cells.remove(cell);
     }
 
@@ -146,7 +151,8 @@ public class Territory {
                     case CAPITAL:
                         // The capital was removed so we have to create a new one
                         capital = null;
-                        Gdx.app.debug("moves", "Calling newCapital in update from " + removed + " and " + added);
+                        Gdx.app.debug("moves", "Calling newCapital in update from "
+                                + removed + " and " + added);
                         newCapital();
                         break;
                 }
@@ -161,13 +167,13 @@ public class Territory {
     }
 
     /**
-     * Places a capital in the territory if needed.
+     * Places a capital in the territory if needed
      *
      * @return true if a capital had to be placed
      */
     boolean newCapital() {
 
-        // Territory empty or too small => No capital
+        // Territory is empty or too small => No capital
         if (cells.size() <= 1) {
             return false;
         }
@@ -175,18 +181,19 @@ public class Territory {
         List<Tile> capitals = getCapitals();
 
         if (capitals.size() == 1) {
-            // If a capital is already there we delete don't anything
+            // If a capital is already there we do not delete anything
             return false;
 
         } else if (capitals.size() > 1) {
-            // We have to many capitals (e.g. if merge), we remove all of them but one.
+            // We have too many capitals (e.g. if merge), we remove all of them but one
             for (int i = 1; i < capitals.size(); i++) {
                 capitals.get(i).setEntity(null, false);
             }
-            return false; // no new capital
+            // No new capital
+            return false;
         }
 
-        // There are no capitals one has to be added.
+        // There are no capitals, one has to be added
         List<Tile> emptyTiles = new ArrayList<Tile>();
         for (Tile cell : cells) {
             if (cell.getEntity() == null) {
@@ -195,7 +202,7 @@ public class Territory {
         }
 
         if (emptyTiles.size() != 0) {
-            // Place a capital in one of the empty cells
+            // Places a capital in one of the empty cells
 
             int nc = new Random().nextInt(emptyTiles.size());
             Tile newCap = emptyTiles.get(nc);
@@ -203,7 +210,7 @@ public class Territory {
             setCapital(newCap);
 
         } else {
-            // Try to place it on a tree, then on a random cell
+            // Tries to place it on a tree, then on a random cell
 
             List<Tile> treeTiles = new ArrayList<Tile>();
             for (Tile cell : cells) {
@@ -212,14 +219,15 @@ public class Territory {
                 }
             }
             if (treeTiles.size() != 0) {
-                // Place a capital in one of the cells with a tree
+                // Places a capital in one of the cells with a tree
 
                 int nc = new Random().nextInt(treeTiles.size());
                 Tile newCap = treeTiles.get(nc);
                 newCap.setEntity(StaticEntity.CAPITAL, false);
                 setCapital(newCap);
+
             } else {
-                // Place a capital in a random cell
+                // Places a capital in a random cell
 
                 int nc = new Random().nextInt(cells.size());
                 Tile newCap = cells.get(nc);
@@ -227,12 +235,11 @@ public class Territory {
                 setCapital(newCap);
             }
         }
-
         return true;
     }
 
     /**
-     * Sets the capital of the territory and removes all other capitals in the territory.
+     * Sets the capital of the territory and removes all other capitals in the territory
      * Also sets the entity of the Tile c as a StaticEntity.CAPITAL
      *
      * @param c the tile to set as a capital
@@ -253,17 +260,93 @@ public class Territory {
      * Adds money and kills soldiers if funds are not sufficient
      */
     void nextTurn() {
+
+        // Updates currentSavings for stats - when the player has just passed a turn
+        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+            updatePlayerStatsSavings(player1, coins);
+
+        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+            updatePlayerStatsSavings(player2, coins);
+
+        // Updates territory's money
         coins += income - wages;
+
+        // Updates currentMoney for stats - when player's money is updated (currentMoney += coins)
+        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+            updatePlayerStatsMoney(player1, coins);
+
+        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+            updatePlayerStatsMoney(player2, coins);
 
         // If not enough money we kill all soldiers (all entities that have a maintaining cost)
         if (coins < 0) {
             for (Tile c : cells) {
                 if (c.getEntity() != null && c.getEntity().getCost() > 0) {
+                    // Updates currentLostL. for stats - when a soldier dies because of bankrupt
+                    if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+                        updatePlayerStatsLost(player1, c.getEntity());
+
+                    else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+                        updatePlayerStatsLost(player2, c.getEntity());
+
                     c.setEntity(StaticEntity.GRAVE);
                 }
             }
             coins = income - wages;
         }
+        // Updates currentLands for stats - at each turn (currentLands += number of cells)
+        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+            updatePlayerStatsLands(player1, cells.size());
+
+        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+            updatePlayerStatsLands(player2, cells.size());
+    }
+
+    /**
+     * @param player
+     * @param cellNumber
+     */
+    private void updatePlayerStatsLands(HumanPlayer player, int cellNumber) {
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                Statistics.CURRENT_LANDS, cellNumber);
+    }
+
+    /**
+     * ----- A COMPLETER ----
+     * Money (variable : coins) might have been spent (variable : currentMoneySpent) to buy units
+     * during the previous turn (currentSavings += coins - currentMoneySpent)
+     *
+     * @param player
+     * @param coins
+     */
+    private void updatePlayerStatsSavings(HumanPlayer player, int coins) {
+        int currentMoneySpent;
+
+        currentMoneySpent = player.getStatistics().getCurrentStats().get(Statistics.CURRENT_MONEY_SPENT);
+
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                Statistics.CURRENT_SAVINGS, coins - currentMoneySpent);
+
+        // Resets currentMoneySpent for the new turn
+        player.getStatistics().putToZero(player.getStatistics().getCurrentStats(), Statistics.CURRENT_MONEY_SPENT);
+    }
+
+    /**
+     * @param player
+     * @param coins
+     */
+    private void updatePlayerStatsMoney(HumanPlayer player, int coins) {
+        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+                Statistics.CURRENT_MONEY, coins);
+    }
+
+    /**
+     * @param player
+     * @param entity
+     */
+    private void updatePlayerStatsLost(HumanPlayer player, Entity entity) {
+        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(),
+                "currentLost" + entity.getName());
     }
 
     /**
@@ -290,7 +373,6 @@ public class Territory {
             return false;
         }
     }
-
 
     private List<Tile> getCapitals() {
         List<Tile> capitals = new ArrayList<Tile>();

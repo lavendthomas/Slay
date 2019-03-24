@@ -47,28 +47,17 @@ public class Main extends Game {
     private static boolean isStatsLoad = false;
     public static ArrayList tabPlayers;
 
-//    public static Menu menu;
-
-    // booleen temporaire, faudra peut-etre le mettre dans une autre classe, true par defaut
-    public static boolean isAccountEnabled = true;
-
-
     @Override
     public void create() {
         // Language support
-
         FileHandle baseFileHandle = Gdx.files.internal("lang/Slay");
         Locale locale = new Locale("en", "UK", "VAR1");
         lang = I18NBundle.createBundle(baseFileHandle, locale);
-
         prefs = Gdx.app.getPreferences("Slay");
-        isAccountEnabled = prefs.getBoolean("isAccountEnabled", true);	
+
         SCREEN_HEIGHT = Gdx.graphics.getHeight();
         SCREEN_WIDTH = Gdx.graphics.getWidth();
 
-        if (prefs.getBoolean("isFullScreenEnabled", false)) {
-            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-        }	 
         skinSgx = new Skin(Gdx.files.internal("skins/sgx/sgx-ui.json"));
         skinSgxTable = new Skin(Gdx.files.internal("skins/sgx-table/sgx-ui.json"));
 
@@ -76,47 +65,55 @@ public class Main extends Game {
         soundButton2 = Gdx.audio.newSound(Gdx.files.internal("sounds/button_2.wav"));
         soundButton3 = Gdx.audio.newSound(Gdx.files.internal("sounds/button_3.wav"));
 
+        if (prefs.getBoolean("isFullScreenEnabled"))
+            Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+
+        prefs.putString("INCORRECT_PASSWORD", "Incorrect password");
+        prefs.putString("USER_NAME_NOT_EXIST", "Username does not exist");
+        prefs.putString("INCORRECT_LENGTH_PASSWORD", "Passwords must be at least 4 characters long");
+        prefs.putString("INCORRECT_LENGTH_USER_NAME", "Usernames must be between 4 and 20 char.");
+        prefs.putString("USER_NAME_NOT_AVAILABLE", "Username not available");
+        prefs.putString("PASSWORDS_NOT_MATCH", "Passwords do not match");
+        prefs.putString("USER_LOGGED", "User already logged");
+        prefs.putString("NO_AVATAR", "Choose an avatar");
+        prefs.putString("pathImageRobot", "profile/robot.jpg");
+        prefs.putString("pathImageGirl", "profile/girl.jpg");
+        prefs.putString("pathImagePanda", "profile/panda.jpg");
+        prefs.putString("pathImagePink", "profile/pink.jpg");
+        prefs.putString("pathImageSquid", "profile/squid.jpg");
+        prefs.putString("pathImageBanana", "profile/banana.jpg");
+        prefs.putString("pathImageBurger", "profile/burger.jpg");
+        prefs.putString("pathImageBlue", "profile/blue.jpg");
+        prefs.putString("pathImageMustache", "profile/mustache.jpg");
+        prefs.putString("pathImagePenguin", "profile/penguin.jpg");
+        prefs.putString("pathImageProfile", "profile/anonymous.png");
+        prefs.putString("pathImageTmp", "profile/anonymous.png");
+        prefs.putBoolean("isPlayer1Logged", false);
+        prefs.putBoolean("isPlayer2Logged", false);
+        prefs.putBoolean("isAccountEnabled", true);
+        prefs.putInteger("playerRank", 0);
+        prefs.putInteger("totalNumberPlayers", 0);
+        prefs.putInteger("numPlayer", 0);
+
+        prefs.flush();
         stage = new Stage(new ScreenViewport());
         camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 
-        // change cursor aspect
+        // Changes the cursor appearance
         pm = new Pixmap(Gdx.files.internal("cursors/cursor.png"));
-        // x = pm.getWidth()/2 et y = pm.getHeight()/2 si on veut que ca pointe au centre du curseur
-        // = 0 ca pointe au bout de la fleche
         xHotSpot = 0;
         yHotSpot = 0;
         cursor = Gdx.graphics.newCursor(pm, xHotSpot, yHotSpot);
         Gdx.graphics.setCursor(cursor);
         Gdx.graphics.setTitle("");
 
-   /*
-    // si besoin d'un labelstyle
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        BitmapFont myFont = new BitmapFont(Gdx.files.internal("skins/sgx/font-title-export.fnt"),
-                Gdx.files.internal("skins/sgx/sgx-ui.png"), false);
-        labelStyle.font = myFont;*/
-
-
-   /* NOTE : on peut changer la couleur des labels en faisant :
-       nomLabel.setColor(Color.  );
-       et pour les labels dans les boutons :
-       nomBouton.getLabel().setColor(Color.  );
-       et le fond des boutons :
-       nomBouton.setColor(valeur/255f, valeur/255f, valeur/255f, 1); --> les valeurs sont des int
-   */
-
-        // load Hall Of Fame (ca doit etre fait dans le menu)
+        // Loads the hall of fame
         if (!isStatsLoad) {
             StatsLoader statsLoader = new StatsLoader();
             tabPlayers = statsLoader.createTab();
             isStatsLoad = true;
         }
-
-
         this.setScreen(new Menu(this));
-
-        //     menu = new Menu(this);
-        //     setScreen(menu);
     }
 
     @Override
@@ -125,7 +122,6 @@ public class Main extends Game {
 
     @Override
     public void render() {
-        // permet de passer d'un ecran a l'autre
         super.render();
     }
 
@@ -133,25 +129,13 @@ public class Main extends Game {
     public void resize(int width, int height) {
         SCREEN_WIDTH = width;
         SCREEN_HEIGHT = height;
-        //skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
-        //skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
-        //skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
-        // fixe le probleme de decalage en fenetre reduite
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
+            skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
+            skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
+        }
         stage.getViewport().setScreenBounds(0, 0, width, height);
-
         this.getScreen().resize(width, height);
-
-
-
-/*      // ne change pas la taille de la fenetre et ca bug (mais ca garde le ratio)
-
-        Vector2 size = Scaling.fit.apply(1920, 1080, width, height);
-        int viewportX = (int)(width - size.x) / 2;
-        int viewportY = (int)(height - size.y) / 2;
-        int viewportWidth = (int)size.x;
-        int viewportHeight = (int)size.y;
-        Gdx.gl.glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
-*/
     }
 
     @Override
