@@ -50,6 +50,7 @@ import be.ac.umons.slay.g02.level.Tile;
 import be.ac.umons.slay.g02.level.TileSetManagement;
 import be.ac.umons.slay.g02.players.AI;
 import be.ac.umons.slay.g02.players.AIMethods;
+import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
@@ -337,8 +338,8 @@ public class GameScreen implements Screen {
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
-    void onTap(float x, float y) { // TODO Bloquer quand click sur territoire IA
-        if (!windowPause.isVisible()) {
+    void onTap(float x, float y) {
+        if (!windowPause.isVisible() && level.getCurrentPlayer() instanceof HumanPlayer) {
             Coordinate clickPos = getCoordinate(x, y);
             if (level.isInLevel(clickPos)) {
                 Tile clickedTile = level.get(clickPos);
