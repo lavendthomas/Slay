@@ -265,6 +265,7 @@ public class LevelSelection implements Screen {
         selectBoxDifficulty1 = new SelectBox<String>(skinSgx);
         Array<String> difficultyDegrees = new Array<String>();
         difficultyDegrees.add("EASY", "MEDIUM", "ADVANCED", "RANDOM");
+        difficultyDegrees.add("ADAPTIVE");
         selectBoxDifficulty1.setItems(difficultyDegrees);
         ChangeListener selectBoxDifficultyListener1 = new ChangeListener() {
             @Override

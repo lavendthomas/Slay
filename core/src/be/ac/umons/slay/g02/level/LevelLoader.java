@@ -27,6 +27,7 @@ import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 import be.ac.umons.slay.g02.gui.screens.Menu;
+import be.ac.umons.slay.g02.players.AIAdaptive;
 import be.ac.umons.slay.g02.players.AIAdvanced;
 import be.ac.umons.slay.g02.players.AIEasy;
 import be.ac.umons.slay.g02.players.AIMedium;
@@ -244,8 +245,11 @@ public class LevelLoader {
             case 3 :
                 player = new AIAdvanced(color, name);
                 break;
-            default:
+            case 4 :
                 player = new AIRandom(color, name);
+                break;
+            default:
+                player = new AIAdaptive(color, name);
                 break;
         }
         return player;

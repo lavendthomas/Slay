@@ -30,7 +30,7 @@ public class AIMethods {
      * @return              List of all territories represented by the list of coordinates belonging to it
      */
 
-    static List<List<Coordinate>> loadTerritories (Playable level, Player player, Boolean searchEnemy) {
+    static List<List<Coordinate>> loadTerritories (Playable level, Player player, boolean searchEnemy) {
         List<List<Coordinate>> allTerritories = new ArrayList<List<Coordinate>>();
         List<Coordinate> visited = new ArrayList<Coordinate>();
 

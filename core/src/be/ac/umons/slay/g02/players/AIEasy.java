@@ -41,11 +41,15 @@ public class AIEasy extends Player implements AI {
      */
 
     @Override
-    public boolean play() {
+    public boolean play(Player player, boolean forMe) {
         AIMethods.sleep();
         level = GameScreen.getLevel();
-        List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level, this, false);
-        for (List<Coordinate> territory : allTerritories) {
+        List<List<Coordinate>> allTerritories;
+        if (forMe) {
+            allTerritories = AIMethods.loadTerritories(level, this, false);
+        } else {
+            allTerritories = AIMethods.loadTerritories(level, player, false);
+        }        for (List<Coordinate> territory : allTerritories) {
             // For each territory
 
             // Buy ?

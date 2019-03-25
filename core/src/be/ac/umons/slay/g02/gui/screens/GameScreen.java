@@ -624,7 +624,7 @@ public class GameScreen implements Screen {
     private void loadLevel() {
         showNextTurnEffects();
         if (level.getCurrentPlayer() instanceof AI && !AIisPaused) {
-            boolean hasWon = ((AI) level.getCurrentPlayer()).play(); // true = il y a un gagnant
+            boolean hasWon = ((AI) level.getCurrentPlayer()).play(level.getCurrentPlayer(), true); // true = il y a un gagnant
             if (!hasWon) {
                 endPlay = true; // Signale fin de partie
             }
