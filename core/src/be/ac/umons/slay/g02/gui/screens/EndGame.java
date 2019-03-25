@@ -10,18 +10,17 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Value;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
 import be.ac.umons.slay.g02.players.AI;
 import be.ac.umons.slay.g02.players.Player;
+
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.VIRTUAL_WIDTH;
 import static be.ac.umons.slay.g02.gui.Main.camera;
 import static be.ac.umons.slay.g02.gui.Main.cursor;
-import static be.ac.umons.slay.g02.gui.Main.lang;
 import static be.ac.umons.slay.g02.gui.Main.pm;
 import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.Main.skinSgx;
@@ -36,7 +35,7 @@ import static be.ac.umons.slay.g02.gui.Main.stage;
  */
 public class EndGame implements Screen {
 
-    private static Window windowExit = new Window(lang.get("text_exit"), skinSgx);
+    //  private static Window windowExit = new Window(lang.get("text_exit"), skinSgx);
     private Game game;
     private Sprite sprite;
 
@@ -45,37 +44,47 @@ public class EndGame implements Screen {
     EndGame(Game aGame, Player winner, int numberHuman) {
         game = aGame;
 
-        int buttonCenterWidth = VIRTUAL_WIDTH * 28 / 100;
-        int buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
-        int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
-        int tableCenterPositionX = VIRTUAL_WIDTH / 2;
-        int tableCenterPositionY = VIRTUAL_HEIGHT / 3;
+        int buttonCenterWidth;
 
-        Label labelwinner;
+        if (SCREEN_WIDTH > SCREEN_HEIGHT)
+            buttonCenterWidth = VIRTUAL_WIDTH * 20 / 100;
+        else
+            buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
+
+        int buttonCenterHeight = VIRTUAL_HEIGHT * 5 / 100;
+        int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
+        //     int tableCenterPositionX = SCREEN_WIDTH / 2;
+        //     int tableCenterPositionY = SCREEN_HEIGHT / 3;
+
+        Table table = new Table();
+        table.setFillParent(true);
 
         if (numberHuman == 1) {
             if (winner instanceof AI) {
-                labelwinner = new Label("Too bad you lost, you'll do better next time", skinSgx);
+                Label labelTooBad = new Label("Too bad you lost", skinSgxTable, "title-white");
+                Label labelBetter = new Label("You'll do better next time", skinSgxTable, "title-white");
+                table.add(labelTooBad);
+                table.row().padTop(buttonCenterGap);
+                table.add(labelBetter);
             } else {
-                labelwinner = new Label("Congratulation ! You have won", skinSgx);
+                Label labelWon = new Label("You have won", skinSgxTable, "title-white");
+                Label labelCongrats = new Label("Congratulations !", skinSgxTable, "title-white");
+                table.add(labelCongrats);
+                table.row().padTop(buttonCenterGap);
+                table.add(labelWon);
             }
         } else {
-                labelwinner = new Label("The winner is " + winner.getName(), skinSgx);
+            Label labelWinner = new Label("The winner is", skinSgxTable, "title-white");
+            Label labelNameWinner = new Label(winner.getName(), skinSgxTable, "title-white");
+            table.add(labelWinner);
+            table.row().padTop(buttonCenterGap);
+            table.add(labelNameWinner);
+            table.row().padTop(buttonCenterGap);
         }
-        Table table = new Table();
-        table.setFillParent(true);
-        table.center().center();
-        table.add(labelwinner);
+        table.row().padTop(buttonCenterGap * 1.5f);
         stage.addActor(table);
 
-
-        buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
-        buttonCenterHeight = VIRTUAL_HEIGHT * 5 / 100;
-        buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
-        tableCenterPositionX = SCREEN_WIDTH / 2;
-        tableCenterPositionY = SCREEN_HEIGHT / 3;
-
-        // background
+        // Background
         batch = new SpriteBatch();
         Texture texture = new Texture(Gdx.files.internal("backgrounds/background.png"));
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -83,7 +92,7 @@ public class EndGame implements Screen {
         sprite = new Sprite(texture);
         sprite.setOrigin(0, 0);
         sprite.setPosition(-sprite.getWidth() / 2, -sprite.getHeight() / 2);
-
+/*
         Table tableCenter = new Table();
         tableCenter.setPosition(tableCenterPositionX, tableCenterPositionY);
         stage.addActor(tableCenter);
@@ -95,23 +104,21 @@ public class EndGame implements Screen {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 showExit();
             }
-        });
+        });  */
 
-        TextButton buttonMenu = new TextButton("menu", skinSgx, "big");
-        buttonMenu.addListener(new ClickListener() {
+        TextButton buttonSelection = new TextButton("SELECTION SCREEN", skinSgx, "big");
+        buttonSelection.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 stage.clear();
 
-                game.setScreen(new Menu(game));
+                game.setScreen(new LevelSelection(game));
             }
         });
-
-        tableCenter.add(buttonMenu).width(buttonCenterWidth).height(buttonCenterHeight);
-        tableCenter.row().pad(buttonCenterGap, 0, buttonCenterGap, 0);
-        tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
-
+        table.add(buttonSelection).width(buttonCenterWidth).height(buttonCenterHeight);
+        table.row().pad(buttonCenterGap, 0, buttonCenterGap, 0);
+        //      tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
     }
 
     @Override
@@ -146,6 +153,10 @@ public class EndGame implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
+        }
     }
 
     @Override
@@ -171,7 +182,7 @@ public class EndGame implements Screen {
         skinSgxTable.dispose();
         stage.dispose();
     }
-    private void showExit() {
+ /*   private void showExit() {
         windowExit.clear();
         windowExit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
         windowExit.setPosition(SCREEN_WIDTH / 2 - windowExit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowExit.getHeight() / 2);
@@ -210,9 +221,8 @@ public class EndGame implements Screen {
         table.add(buttonYes).padRight(windowExit.getWidth() * 8 / 100).width(Value.percentWidth(1f));
         table.add(buttonNo).width(Value.percentWidth(1f));
 
-        stage.addActor(windowExit);
+  //      stage.addActor(windowExit);
     }
+*/
 
 }
-
-

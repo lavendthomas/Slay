@@ -9,7 +9,7 @@ import be.ac.umons.slay.g02.entities.SoldierLevel;
  *
  */
 public class Statistics {
-    private static final String LOST_ = "lost_";
+    private static final String LOST_ = "Lost_";
     private static final String MIN_ = "min_";
     private static final String MAX_ = "max_";
     private static int currentArmy = 0;
@@ -20,27 +20,23 @@ public class Statistics {
         All the statistics stored and displayed in the window of statistics in the level selection
         screen (only some of them are used for the Score calculation)
     */
-    public static final String GAMES = "games";
-    public static final String WINS = "wins";
-    public static final String DEFEATS = "defeats";
-    public static final String TURNS = "turns";
+    public static final String GAMES = "Games";
+    public static final String WINS = "Wins";
+    public static final String DEFEATS = "Defeats";
+    public static final String TURNS = "Turns";
     public static final String MIN_TURNS = MIN_ + TURNS;
-    public static final String LANDS_TURN = "lands_turn";
+    public static final String LANDS_TURN = "Lands_Turn";
     public static final String MAX_LANDS_TURN = MAX_ + LANDS_TURN;
-    public static final String TREES = "trees";
+    public static final String TREES = "Trees";
     public static final String MAX_TREES = MAX_ + TREES;
-    public static final String ARMY = "army";
+    public static final String ARMY = "Army";
     public static final String MIN_ARMY = MIN_ + ARMY;
     public static final String MAX_ARMY = MAX_ + ARMY;
-    public static final String SAVINGS = "savings";
-    public static final String MAX_SAVINGS = MAX_ + SAVINGS;
-    public static final String MONEY = "money";
-    public static final String MAX_MONEY = MAX_ + MONEY;
     public static final String L0 = SoldierLevel.L0.getName();
     public static final String L1 = SoldierLevel.L1.getName();
     public static final String L2 = SoldierLevel.L2.getName();
     public static final String L3 = SoldierLevel.L3.getName();
-    public static final String UNITS = "units";
+    public static final String UNITS = "Units";
     public static final String LOST_L0 = LOST_ + L0;
     public static final String LOST_L1 = LOST_ + L1;
     public static final String LOST_L2 = LOST_ + L2;
@@ -57,19 +53,16 @@ public class Statistics {
     public static final String MAX_L3 = MAX_ + L3;
     public static final String MAX_UNITS = MAX_ + UNITS;
 
-    private static LinkedHashMap<String, Integer> currentStats = new LinkedHashMap<String, Integer>();
+    private LinkedHashMap<String, Integer> currentStats = new LinkedHashMap<String, Integer>();
 
     // All counters in game (they are called currentStats in comments)
     public static final String CURRENT_TURNS = "currentTurns";
     public static final String CURRENT_LANDS = "currentLands";
     public static final String CURRENT_TREES = "currentTrees";
-    public static final String CURRENT_MONEY = "currentMoney";
-    public static final String CURRENT_MONEY_SPENT = "currentMoneySpent";
-    public static final String CURRENT_SAVINGS = "currentSavings";
-    public static final String CURRENT_LOST_L0 = "currentLostL0";
-    public static final String CURRENT_LOST_L1 = "currentLostL1";
-    public static final String CURRENT_LOST_L2 = "currentLostL2";
-    public static final String CURRENT_LOST_L3 = "currentLostL3";
+    public static final String CURRENT_LOST_L0 = "currentLost_L0";
+    public static final String CURRENT_LOST_L1 = "currentLost_L1";
+    public static final String CURRENT_LOST_L2 = "currentLost_L2";
+    public static final String CURRENT_LOST_L3 = "currentLost_L3";
     public static final String CURRENT_L0 = "currentL0";
     public static final String CURRENT_L1 = "currentL1";
     public static final String CURRENT_L2 = "currentL2";
@@ -91,12 +84,6 @@ public class Statistics {
         putToZero(currentStats, CURRENT_L1);
         putToZero(currentStats, CURRENT_L2);
         putToZero(currentStats, CURRENT_L3);
-        putToZero(currentStats, CURRENT_MONEY_SPENT);
-        putToZero(currentStats, CURRENT_SAVINGS);
-
-        // il faudrait l'initialiser à Territory.getCoins() au début d'une partie, parce que les
-        // territoires ont de l'argent au début  :
-        currentStats.put(CURRENT_MONEY, 0);
 
         putToZero(currentStats, CURRENT_LANDS); // initialiser au nombre de cellules totales du joueur si possible (1er tour)
 
@@ -113,10 +100,6 @@ public class Statistics {
         putToZero(stats, MIN_ARMY);
         putToZero(stats, MAX_ARMY);
         putToZero(stats, ARMY);
-        putToZero(stats, MAX_SAVINGS);
-        putToZero(stats, SAVINGS);
-        putToZero(stats, MAX_MONEY);
-        putToZero(stats, MONEY);
         putToZero(stats, MAX_LOST_L0);
         putToZero(stats, MAX_LOST_L1);
         putToZero(stats, MAX_LOST_L2);
@@ -153,7 +136,7 @@ public class Statistics {
      *
      * @return the hashmap of currentStats
      */
-    public static LinkedHashMap<String, Integer> getCurrentStats() {
+    public LinkedHashMap<String, Integer> getCurrentStats() {
         return currentStats;
     }
 
@@ -163,8 +146,8 @@ public class Statistics {
      * @param hashmapStats the hashmap of statistics
      * @param stat         the statistic to increment
      */
-    public static void incrementStat(HashMap<String, Integer> hashmapStats, String stat) {
-        hashmapStats.put(stat, currentStats.get(stat) + 1);
+    public static void incrementStatInMap(HashMap<String, Integer> hashmapStats, String stat) {
+        hashmapStats.put(stat, hashmapStats.get(stat) + 1);
     }
 
     /**
@@ -191,10 +174,11 @@ public class Statistics {
     /**
      * Resets the currentStats
      */
-    private void resetCurrentStats() {
-        for (String key : currentStats.keySet()) {
-            currentStats.put(key, 0);
+    public static void resetCurrentStats(HumanPlayer player) {
+        for (String key : player.getStatistics().getCurrentStats().keySet()) {
+            player.getStatistics().getCurrentStats().put(key, 0);
         }
+        currentArmy = 0;
     }
 
     /**
@@ -221,23 +205,15 @@ public class Statistics {
 
         calculateTotal(ARMY);
         calculateTotal(LANDS_TURN);
-        calculateTotal(MONEY);
-        calculateTotal(SAVINGS);
-
-        calculateTotalLeft(L0);
-        calculateTotalLeft(L1);
-        calculateTotalLeft(L2);
-        calculateTotalLeft(L3);
-        calculateTotalLeft(UNITS);
 
         calculateMin(TURNS);
         calculateMin(ARMY);
 
         calculateMax(TREES, CURRENT_TREES);
-        calculateMax(LOST_L0, "");
-        calculateMax(LOST_L1, "");
-        calculateMax(LOST_L2, "");
-        calculateMax(LOST_L3, CURRENT_L3);
+        calculateMax(LOST_L0, CURRENT_LOST_L0);
+        calculateMax(LOST_L1, CURRENT_LOST_L1);
+        calculateMax(LOST_L2, CURRENT_LOST_L2);
+        calculateMax(LOST_L3, CURRENT_LOST_L3);
         calculateMax(LOST_UNITS, "");
         calculateMax(L0, CURRENT_L0);
         calculateMax(L1, CURRENT_L1);
@@ -246,12 +222,6 @@ public class Statistics {
         calculateMax(UNITS, "");
         calculateMax(ARMY, "");
         calculateMax(LANDS_TURN, "");
-        calculateMax(MONEY, CURRENT_MONEY);
-        calculateMax(SAVINGS, CURRENT_SAVINGS);
-
-        // Resets the values used for calculations
-        resetCurrentStats();
-        currentArmy = 0;
     }
 
     /**
@@ -281,10 +251,16 @@ public class Statistics {
                             + stats.get(L3) * SoldierLevel.L3.getPrice());
         } else if (key.equals(LANDS_TURN)) {
             // total of lands/turn in stats += currentLands/currentTurns
-            addToStat(stats, key, currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS));
-        } else
+            if (!(currentStats.get(CURRENT_TURNS).intValue() == 0)) {
+                addToStat(stats, key, currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS));
+            }
+        } else {
             // value in stats += currentStat
-            addToStat(stats, key, currentStats.get("CURRENT_" + key));
+            String current = "current" + key;
+            if (null != currentStats.get(current)) {
+                addToStat(stats, key, currentStats.get(current));
+            }
+        }
     }
 
     /**
@@ -325,7 +301,7 @@ public class Statistics {
             if (key.equals(ARMY))
                 stats.put(MIN_ + key, currentArmy);
             else
-                stats.put(MIN_ + key, currentStats.get(key));
+                stats.put(MIN_ + key, currentStats.get("current" + key));
         }
         // min value in stats = min(currentStat, min value in stats)
         else {
@@ -333,7 +309,7 @@ public class Statistics {
             if (key.equals(ARMY))
                 stats.put(MIN_ + key, Math.min(currentArmy, stats.get(MIN_ + key)));
             else
-                stats.put(MIN_ + key, Math.min(currentStats.get(key), stats.get(MIN_ + key)));
+                stats.put(MIN_ + key, Math.min(currentStats.get("current" + key), stats.get(MIN_ + key)));
         }
     }
 
@@ -361,7 +337,7 @@ public class Statistics {
         } else if (key.equals(LANDS_TURN)) {
             // max lands/turn in stats = max(currentLands/currentTurns, max lands/turn in stats)
             stats.put(MAX_ + key,
-                    Math.max(currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS), stats.get(MAX_ + key)));
+                    Math.max(currentStats.get(CURRENT_LANDS) / 20 /*currentStats.get(CURRENT_TURNS)*/, stats.get(MAX_ + key)));
         } else
             // max value in stats = max(currentStat, max value in stats)
             stats.put(MAX_ + key, Math.max(currentStats.get(current), stats.get(MAX_ + key)));
@@ -375,31 +351,27 @@ public class Statistics {
     }
 
     /**
-     * @param games le nombre total de partie jouées pour le niveau (l'island) joué
-     * @param wins  le nombre total de partie gagnées pour le niveau (l'island) joué
+     * on peut afficher le score global ou par level, mais on n'affiche que le global dans le hall
+     *
      * @return
      */
-    public int calculateScore(int games, int wins) {
+    public int calculateScore() {
         float multiplier = 0.75f;
-        int factorTurns = 1000;
-        int factorTrees = 100;
-        int factorLandsTurn = 300;
-        int factorArmy = 100;
+        int factorTurns = 75;
+        int factorTrees = 200;
+        int factorLandsTurn = 200;
+        int factorArmy = 5;
         int factorLosses = 100;
-        int factorWins = 100;
+        int factorWins = 5000;
 
-        int currentLosses = currentStats.get(CURRENT_LOST_L0)
-                + currentStats.get(CURRENT_LOST_L1)
-                + currentStats.get(CURRENT_LOST_L2)
-                + currentStats.get(CURRENT_LOST_L3);
+        double score = (factorTrees * stats.get(TREES)
+                + factorLandsTurn * stats.get(LANDS_TURN)
+                - factorArmy * stats.get(ARMY)
+                - factorLosses * stats.get(LOST_UNITS))
+                - factorTurns * stats.get(TURNS)
 
-        double score = (factorTurns
-                + factorTrees * currentStats.get(CURRENT_TREES)
-                + factorLandsTurn * currentStats.get(CURRENT_LANDS)
-                - factorArmy * currentArmy
-                - factorLosses * currentLosses)
-                / currentStats.get(CURRENT_TURNS)
-                + factorWins * Math.pow(multiplier, games - wins);
+                // The more the player loses, the higher the penalties
+                + factorWins * Math.pow(multiplier, stats.get(GAMES) - stats.get(WINS));
 
         return (int) score;
     }

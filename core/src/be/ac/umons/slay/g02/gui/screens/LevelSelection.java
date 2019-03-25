@@ -138,6 +138,11 @@ public class LevelSelection implements Screen {
         int buttonGapY = SCREEN_HEIGHT * 10 / 100;
         cellHeight = SCREEN_HEIGHT * 6 / 100;
 
+        currentIslandNumber = 1;
+        numberHumans = 0;
+        difficulty1 = 1;
+        difficulty2 = 2;
+
         // background
         batch = new SpriteBatch();
         Texture texture = new Texture(Gdx.files.internal("backgrounds/background.png"));
@@ -297,8 +302,7 @@ public class LevelSelection implements Screen {
                 soundButton3.play(prefs.getFloat("volume", 0.1f));
                 stage.clear();
                 game.setScreen(new GameScreen(game, String.format("g02_%02d", currentIslandNumber), numberHumans));
-                dispose();
-
+                //       dispose();
             }
         });
         final Table table = new Table();
@@ -688,8 +692,6 @@ public class LevelSelection implements Screen {
         final String MAX_TREES = MAXIMUM_NUMBER_OF + "cut trees" + COLON;
         final String MIN_ARMY = "Minimum army value" + COLON;
         final String MAX_ARMY = "Maximum army value" + COLON;
-        final String MAX_SAVINGS = MAXIMUM_AMOUNT_OF + "savings" + COLON;
-        final String MAX_MONEY = MAXIMUM_AMOUNT_OF + "earned money" + COLON;
         final String MAX_LOST_L0 = MAXIMUM_NUMBER_OF + LOST_UNITS + L0 + COLON;
         final String MAX_LOST_L1 = MAXIMUM_NUMBER_OF + LOST_UNITS + L1 + COLON;
         final String MAX_LOST_L2 = MAXIMUM_NUMBER_OF + LOST_UNITS + L2 + COLON;
@@ -704,8 +706,6 @@ public class LevelSelection implements Screen {
         final String AVG_TURNS = AVERAGE_NUMBER_OF + "turns" + COLON;
         final String AVG_LANDS_TURN = AVERAGE_NUMBER_OF + "lands/turn" + COLON;
         final String AVG_TREES = AVERAGE_NUMBER_OF + "cut trees" + COLON;
-        final String AVG_MONEY = AVERAGE_AMOUNT_OF + "earned money" + COLON;
-        final String AVG_SAVINGS = AVERAGE_AMOUNT_OF + "savings" + COLON;
         final String AVG_ARMY = "Average army value" + COLON;
         final String AVG_L0 = AVERAGE_NUMBER_OF + "units" + L0 + COLON;
         final String AVG_L1 = AVERAGE_NUMBER_OF + "units" + L1 + COLON;
@@ -743,12 +743,6 @@ public class LevelSelection implements Screen {
 
         statsList.put(AVG_TREES, Statistics.TREES);
         statsList.put(MAX_TREES, Statistics.MAX_TREES);
-
-        statsList.put(AVG_MONEY, Statistics.MONEY);
-        statsList.put(MAX_MONEY, Statistics.MAX_MONEY);
-
-        statsList.put(AVG_SAVINGS, Statistics.SAVINGS);
-        statsList.put(MAX_SAVINGS, Statistics.MAX_SAVINGS);
 
         statsList.put(MIN_ARMY, Statistics.MIN_ARMY);
         statsList.put(AVG_ARMY, Statistics.ARMY);
@@ -954,7 +948,7 @@ public class LevelSelection implements Screen {
             skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
             skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
         }
-        init();
+   //     init();
         stage.getViewport().update(width, height, true);
     }
 
@@ -972,9 +966,9 @@ public class LevelSelection implements Screen {
 
     @Override
     public void dispose() {
-        currentIslandNumber = 1;
+ /*       currentIslandNumber = 1;
         numberHumans = 0;
         difficulty1 = 1;
-        difficulty2 = 2;
+        difficulty2 = 2;  */
     }
 }

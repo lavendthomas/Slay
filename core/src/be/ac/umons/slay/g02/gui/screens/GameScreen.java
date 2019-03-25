@@ -31,7 +31,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -53,6 +52,7 @@ import be.ac.umons.slay.g02.players.AI;
 import be.ac.umons.slay.g02.players.AIMethods;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
+import be.ac.umons.slay.g02.players.Statistics;
 
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_HEIGHT;
 import static be.ac.umons.slay.g02.gui.Main.SCREEN_WIDTH;
@@ -61,7 +61,11 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
+import static be.ac.umons.slay.g02.gui.screens.Menu.saveStatsPlayer;
 import static be.ac.umons.slay.g02.level.Level.getPlayers;
+import static be.ac.umons.slay.g02.players.Statistics.resetCurrentStats;
 import static java.lang.Math.round;
 import static java.lang.StrictMath.sqrt;
 
@@ -331,12 +335,108 @@ public class GameScreen implements Screen {
             hud.draw();
         } else {
             Player winner = level.hasWon();
+
+            updatePlayerStats(winner);
             Gdx.graphics.setContinuousRendering(false);
             hud.clear();
             game.setScreen(new EndGame(game, winner, numberHumans));
-
-
         }
+    }
+
+    /**
+     * Updates all stats for winner and loser (if logged)
+     *
+     * @param winner
+     */
+    private void updatePlayerStats(Player winner) {
+        // Player 1
+        if (prefs.getBoolean("isPlayer1Logged") && getPlayers()[0].getName().equals(player1.getName())) {
+            // Number of games ++
+            updatePlayerGames(player1);
+
+            // If player1 is the winner
+            if (winner.getName().equals(player1.getName()))
+                // Number of wins ++
+                updatePlayerWins(player1);
+
+                // If player1 is the loser
+            else
+                // Number of defeats ++
+                updatePlayerDefeats(player1);
+
+            // All other stats are updated and the score is calculated
+            updatePlayerScore(player1);
+        }
+        // Player 2
+        if (prefs.getBoolean("isPlayer2Logged") && getPlayers()[1].getName().equals(player2.getName())) {
+            // Number of games ++
+            updatePlayerGames(player2);
+
+            // If player2 is the winner
+            if (winner.getName().equals(player2.getName()))
+                // Number of wins ++
+                updatePlayerWins(player2);
+
+                // If player2 is the loser
+            else
+                // Number of defeats ++
+                updatePlayerDefeats(player2);
+
+            // All other stats are updated and the score is calculated
+            updatePlayerScore(player2);
+        }
+    }
+
+    /**
+     * on incrémente pour globalstats et le levelstats du niveau joué
+     *
+     * @param player
+     */
+    private void updatePlayerGames(HumanPlayer player) {
+        player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.GAMES);
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap
+                (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.GAMES);
+    }
+
+    /**
+     * on incrémente pour globalstats et le levelstats du niveau joué
+     *
+     * @param player
+     */
+    private void updatePlayerWins(HumanPlayer player) {
+        player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.WINS);
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap
+                (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.WINS);
+    }
+
+    /**
+     * on incrémente pour globalstats et le levelstats du niveau joué
+     *
+     * @param player
+     */
+    private void updatePlayerDefeats(HumanPlayer player) {
+        player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.DEFEATS);
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap
+                (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.DEFEATS);
+    }
+
+    /**
+     * on met à jour pour globalstats et le levelstats du niveau joué puis on calcule le score (pour le niveau joué)
+     *
+     * @param player
+     */
+    private void updatePlayerScore(HumanPlayer player) {
+        player.getGlobalStats().updateStats();
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).updateStats();
+
+        // The score is calculated with the global statistics to be displayed in the hall of fame
+        int score = player.getGlobalStats().calculateScore();
+
+        player.getGlobalStats().setScore(score);
+        saveStatsPlayer(player);
+
+        // Resets the values used for calculations
+        resetCurrentStats(player);
     }
 
     /**
@@ -454,7 +554,7 @@ public class GameScreen implements Screen {
      * @param hidden
      */
     private void showMarket(Coordinate c, boolean hidden) {
-        boolean shown = !hidden;
+        boolean isShown = !hidden;
         List<String> canBuy = new ArrayList<String>();
         if (level.isInLevel(c)) {
             List<Entity> couldBuy = level.canBuy(c);
@@ -464,17 +564,17 @@ public class GameScreen implements Screen {
                 }
             }
 
-            boolean isVisibleL0 = shown && canBuy.contains("L0");
-            boolean isVisibleL1 = shown && canBuy.contains("L1");
-            boolean isVisibleL2 = shown && canBuy.contains("L2");
-            boolean isVisibleL3 = shown && canBuy.contains("L3");
+            boolean isVisibleL0 = isShown && canBuy.contains("L0");
+            boolean isVisibleL1 = isShown && canBuy.contains("L1");
+            boolean isVisibleL2 = isShown && canBuy.contains("L2");
+            boolean isVisibleL3 = isShown && canBuy.contains("L3");
 
             listButtonLDark.clear();
 
-            changeMarketDisplay(shown, isVisibleL0, buttonL0);
-            changeMarketDisplay(shown, isVisibleL1, buttonL1);
-            changeMarketDisplay(shown, isVisibleL2, buttonL2);
-            changeMarketDisplay(shown, isVisibleL3, buttonL3);
+            changeMarketDisplay(isShown, isVisibleL0, buttonL0);
+            changeMarketDisplay(isShown, isVisibleL1, buttonL1);
+            changeMarketDisplay(isShown, isVisibleL2, buttonL2);
+            changeMarketDisplay(isShown, isVisibleL3, buttonL3);
         }
     }
 
@@ -539,7 +639,6 @@ public class GameScreen implements Screen {
                 } else { // Il n'y a pas ou plus d'entité présente dans la case
                     if (entities.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
                         entities.setCell(i, j, new TiledMapTileLayer.Cell());
-
                     }
                 }
                 if (tile.getTerritory() != null) { // Si la case appartient à un territoire, le rajouter à l'interface graphique
@@ -549,7 +648,6 @@ public class GameScreen implements Screen {
                 } else { // Il n'y a pas ou plus de territoire présent sur la case
                     if (territories.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
                         territories.setCell(i, j, new TiledMapTileLayer.Cell());
-
                     }
                 }
             }
@@ -907,8 +1005,9 @@ public class GameScreen implements Screen {
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ENTER && !windowPause.isVisible()) {
-                    level.nextTurn();
-                    showNextTurnEffects();
+                    boolean hasWon = level.nextTurn(); // true = il y a un gagnant
+                    if (!hasWon)
+                        endPlay = true; // Signale fin de partie
                     click = ClickState.NOTHING_SELECTED;
                     EffectsManagement.eraseCells(effects);
                     showEffects(previousClick);

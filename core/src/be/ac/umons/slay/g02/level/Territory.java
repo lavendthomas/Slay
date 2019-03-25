@@ -81,7 +81,7 @@ public class Territory {
         if (cell.getEntity() != null) {
             // We remove the wage if it is a soldier
             wages -= cell.getEntity().getCost();
-            
+
             // If we removed a capital we have to recreate one.
             newCapital();
         }
@@ -254,23 +254,8 @@ public class Territory {
      * Adds money and kills soldiers if funds are not sufficient
      */
     void nextTurn() {
-
-        // Updates currentSavings for stats - when the player has just passed a turn
-        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
-            updatePlayerStatsSavings(player1, coins);
-
-        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
-            updatePlayerStatsSavings(player2, coins);
-
         // Updates territory's money
         coins += income - wages;
-
-        // Updates currentMoney for stats - when player's money is updated (currentMoney += coins)
-        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
-            updatePlayerStatsMoney(player1, coins);
-
-        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
-            updatePlayerStatsMoney(player2, coins);
 
         // If not enough money we kill all soldiers (all entities that have a maintaining cost)
         if (coins < 0) {
@@ -306,41 +291,12 @@ public class Territory {
     }
 
     /**
-     * ----- A COMPLETER ----
-     * Money (variable : coins) might have been spent (variable : currentMoneySpent) to buy units
-     * during the previous turn (currentSavings += coins - currentMoneySpent)
-     *
-     * @param player
-     * @param coins
-     */
-    private void updatePlayerStatsSavings(HumanPlayer player, int coins) {
-        int currentMoneySpent;
-
-        currentMoneySpent = player.getStatistics().getCurrentStats().get(Statistics.CURRENT_MONEY_SPENT);
-
-        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
-                Statistics.CURRENT_SAVINGS, coins - currentMoneySpent);
-
-        // Resets currentMoneySpent for the new turn
-        player.getStatistics().putToZero(player.getStatistics().getCurrentStats(), Statistics.CURRENT_MONEY_SPENT);
-    }
-
-    /**
-     * @param player
-     * @param coins
-     */
-    private void updatePlayerStatsMoney(HumanPlayer player, int coins) {
-        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
-                Statistics.CURRENT_MONEY, coins);
-    }
-
-    /**
      * @param player
      * @param entity
      */
     private void updatePlayerStatsLost(HumanPlayer player, Entity entity) {
-        player.getStatistics().incrementStat(player.getStatistics().getCurrentStats(),
-                "currentLost" + entity.getName());
+        player.getStatistics().incrementStatInMap(player.getStatistics().getCurrentStats(),
+                "currentLost_" + entity.getName());
     }
 
     /**

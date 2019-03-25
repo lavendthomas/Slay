@@ -101,31 +101,33 @@ public class Menu implements Screen {
     private static ImageButton squidButton = new ImageButton(imageSquid);
     public static HumanPlayer player1 = new HumanPlayer("P1", Colors.C1);
     public static HumanPlayer player2 = new HumanPlayer("P2", Colors.C1);
-    private static Window windowExit = new Window(lang.get("text_exit"), skinSgx);
-    private static Window windowSettings = new Window(lang.get("text_settings"), skinSgx);
-    private static Window windowAlert = new Window(lang.get("text_disable_registration"), skinSgx);
-    private static Window windowProfile = new Window(lang.get("text_profile"), skinSgx);
-    private static Window windowEdit = new Window(lang.get("text_edit"), skinSgx);
-    private static Window windowAvatarSelection = new Window(lang.get("text_choose_an_avatar"), skinSgx);
-    private static Window windowLogOut = new Window(lang.get("text_log_out"), skinSgx);
-    private static Window windowDelete = new Window(lang.get("text_delete_account"), skinSgx);
-    private static Table mainTableLogin = new Table();
-    private static Table tableEdit;
-    private static Cell<ImageButton> cellAvatarSelect;
-    private static Cell<ImageButton> cellEdit;
-    private static Cell<ImageButton> cellSignUp;
-    private static Cell<ImageButton> cellAvatarProfile;
-    private static Cell<ImageButton> cellProfileLeft;
-    private static Cell<ImageButton> cellProfileRight;
-    private static Cell<Label> cellLabelEditMessage1;
-    private static Cell<Label> cellLabelEditMessage2;
-    private static Cell<Label> cellLabelEditMessage3;
-    private static Cell<Label> cellErrorUsernameLogin;
-    private static Cell<Label> cellErrorPasswordLogin;
-    private static Cell<Label> cellErrorUsernameSignUp;
-    private static Cell<Label> cellErrorPasswordSignUp;
-    private static Cell<Label> cellErrorPassword2SignUp;
-    private static Cell<Label> cellErrorAvatarSignUp;
+    private Window windowExit = new Window(lang.get("text_exit"), skinSgx);
+    private Window windowSettings = new Window(lang.get("text_settings"), skinSgx);
+    private Window windowAlert = new Window(lang.get("text_disable_registration"), skinSgx);
+    private Window windowProfile = new Window(lang.get("text_profile"), skinSgx);
+    private Window windowEdit = new Window(lang.get("text_edit"), skinSgx);
+    private Window windowAvatarSelection = new Window(lang.get("text_choose_an_avatar"), skinSgx);
+    private Window windowLogOut = new Window(lang.get("text_log_out"), skinSgx);
+    private Window windowDelete = new Window(lang.get("text_delete_account"), skinSgx);
+    private Table mainTableLogin = new Table();
+    private Table tableEdit;
+    private Table tableBackground;
+    private Cell<ImageButton> cellAvatarSelect;
+    private Cell<ImageButton> cellEdit;
+    private Cell<ImageButton> cellSignUp;
+    private Cell<ImageButton> cellAvatarProfile;
+    private Cell<ImageButton> cellProfileLeft;
+    private Cell<ImageButton> cellProfileRight;
+    private Cell<Label> cellLabelEditMessage1;
+    private Cell<Label> cellLabelEditMessage2;
+    private Cell<Label> cellLabelEditMessage3;
+    private Cell<Label> cellErrorUsernameLogin;
+    private Cell<Label> cellErrorPasswordLogin;
+    private Cell<Label> cellErrorUsernameSignUp;
+    private Cell<Label> cellErrorPasswordSignUp;
+    private Cell<Label> cellErrorPassword2SignUp;
+    private Cell<Label> cellErrorAvatarSignUp;
+    private Cell<Label> cellErrorPasswordDelete;
     private Label noMessageError0 = new Label("", skinSgx);
     private Label noMessageError1 = new Label("", skinSgx);
     private Label noMessageError2 = new Label("", skinSgx);
@@ -135,6 +137,8 @@ public class Menu implements Screen {
     private Label noMessageError6 = new Label("", skinSgx);
     private Label noMessageError7 = new Label("", skinSgx);
     private Label noMessageError8 = new Label("", skinSgx);
+	private Label noMessageError9 = new Label("", skinSgx);
+    private Label messageErrorDeletePassword = new Label("*" + prefs.getString("INCORRECT_PASSWORD"), skinSgx, "white");
     private Label messageErrorLoginPassword = new Label("*" + prefs.getString("INCORRECT_PASSWORD"), skinSgx, "white");
     private Label messageErrorUserLogged = new Label("*" + prefs.getString("USER_LOGGED"), skinSgx, "white");
     private Label messageErrorUsername = new Label("*" + prefs.getString("USER_NAME_NOT_EXIST"), skinSgx, "white");
@@ -145,17 +149,19 @@ public class Menu implements Screen {
     private Label messageErrorNoAvatar = new Label("*" + prefs.getString("NO_AVATAR"), skinSgx, "white");
     private Label labelProfileLeft;
     private Label labelProfileRight;
-    private static TextField fieldCurrentPassword = new TextField("", skinSgx);
-    private static TextField fieldNewPassword1 = new TextField("", skinSgx);
-    private static TextField fieldNewPassword2 = new TextField("", skinSgx);
-    private static TextField fieldNameSignUp = new TextField("", skinSgx);
-    private static TextField fieldPasswordLogin = new TextField("", skinSgx);
-    private static TextField fieldNameLogin = new TextField("", skinSgx);
-    private static TextField fieldPassword1SignUp = new TextField("", skinSgx);
-    private static TextField fieldPassword2SignUp = new TextField("", skinSgx);
+	private TextField fieldPasswordDelete = new TextField("", skinSgx);
+    private TextField fieldCurrentPassword = new TextField("", skinSgx);
+    private TextField fieldNewPassword1 = new TextField("", skinSgx);
+    private TextField fieldNewPassword2 = new TextField("", skinSgx);
+    private TextField fieldNameSignUp = new TextField("", skinSgx);
+    private TextField fieldPasswordLogin = new TextField("", skinSgx);
+    private TextField fieldNameLogin = new TextField("", skinSgx);
+    private TextField fieldPassword1SignUp = new TextField("", skinSgx);
+    private TextField fieldPassword2SignUp = new TextField("", skinSgx);
     private String messageErrorLogin = "";
     private String messageErrorSignUp = "";
     private String messageErrorEdit = "";
+	private String messageErrorDelete = "";
     private boolean isProfileLeft = false;
     private boolean hasImportedAvatar = false;
     private boolean hasChangedAvatar = false;
@@ -209,17 +215,19 @@ public class Menu implements Screen {
             buttonCenterWidth = SCREEN_WIDTH * 28 / 100;
             buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
             windowSettingsWidth = buttonCenterWidth * 3 / 4;
+			tableCenterPositionX = SCREEN_WIDTH / 2;
+            tableCenterPositionY = SCREEN_HEIGHT / 3;
+            buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
         } else {
             buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
             buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
             windowSettingsWidth = buttonCenterWidth * 3 / 4;
+            tableCenterPositionX = VIRTUAL_WIDTH / 2;
+            tableCenterPositionY = VIRTUAL_HEIGHT / 3;
+            buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
         }
-
-        buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
         buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
         labelProfileWidth = buttonCenterWidth * 35 / 100;
-        tableCenterPositionX = VIRTUAL_WIDTH / 2;
-        tableCenterPositionY = VIRTUAL_HEIGHT / 3;
 
         // background
         batch = new SpriteBatch();
@@ -313,8 +321,8 @@ public class Menu implements Screen {
                 tableProfile.add(labelProfileLeft).width(labelProfileWidth).height(buttonProfileHeight / 5);
                 tableProfile.add(labelProfileRight).width(labelProfileWidth).height(buttonProfileHeight / 5);
                 tableProfile.row().pad(10, 0, 0, 0);
-                tableProfile.add(buttonProfileLeft).width(buttonProfileHeight).height(buttonProfileHeight);
-                tableProfile.add(buttonProfileRight).width(buttonProfileHeight).height(buttonProfileHeight);
+                tableProfile.add(buttonProfileLeft).width(labelProfileWidth).height(buttonProfileHeight);
+                tableProfile.add(buttonProfileRight).width(labelProfileWidth).height(buttonProfileHeight);
                 tableProfile.row();
                 cellProfileLeft = tableProfile.getCell(buttonProfileLeft);
                 cellProfileRight = tableProfile.getCell(buttonProfileRight);
@@ -638,6 +646,15 @@ public class Menu implements Screen {
 
     private void showLoginWindow() {
         disableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
+
+        Stack contentBack = new Stack();
+        final Table tableBack = new Table();
+        tableBack.setBackground(backgroundGrey);
+        contentBack.addActor(tableBack);
+        tableBackground = new Table();
+        tableBackground.setFillParent(true);
+        tableBackground.add(contentBack).size(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100 - buttonCenterHeight);
+        stage.addActor(tableBackground);
         mainTableLogin.clear();
         stage.addActor(mainTableLogin);
         mainTableLogin.setFillParent(true);
@@ -649,6 +666,7 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
+				isInSignUp = false;
                 buttonTabLogin.setDisabled(true);
                 buttonTabSignUp.setDisabled(false);
                 resetField(fieldNameSignUp, fieldPassword1SignUp, fieldPassword2SignUp);
@@ -672,6 +690,7 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
+                isInSignUp = true;
                 buttonTabLogin.setDisabled(false);
                 buttonTabSignUp.setDisabled(true);
                 resetField(fieldNameLogin, fieldPasswordLogin);
@@ -687,7 +706,6 @@ public class Menu implements Screen {
                 buttonLoginAvatar.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        isInSignUp = true;
                         showAvatarSelectionWindow();
                     }
                 });
@@ -724,7 +742,6 @@ public class Menu implements Screen {
         buttonLoginAvatar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                isInSignUp = true;
                 showAvatarSelectionWindow();
             }
         });
@@ -824,6 +841,7 @@ public class Menu implements Screen {
                         cellErrorPasswordLogin.setActor(messageErrorLoginPassword);
                     }
                 } else {
+                    tableBackground.remove();
                     mainTableLogin.remove();
                     if (isProfileLeft) {
                         prefs.putBoolean("isPlayer1Logged", true);
@@ -874,19 +892,17 @@ public class Menu implements Screen {
                     }
 
                 } else {
+                    tableBackground.remove();
                     mainTableLogin.remove();
                     initializeStatsPlayer(fieldNameSignUp.getText(), fieldPassword1SignUp.getText(), prefs.getString("pathImageProfile"));
+                    isInSignUp = false;
                     if (isProfileLeft) {
                         prefs.putBoolean("isPlayer1Logged", true);
                         prefs.putInteger("numPlayer", 1);
-
-
                         changeAvatar(player1);
                     } else {
                         prefs.putBoolean("isPlayer2Logged", true);
                         prefs.putInteger("numPlayer", 2);
-
-
                         changeAvatar(player2);
                     }
                     prefs.flush();
@@ -900,6 +916,7 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+                tableBackground.remove();
                 mainTableLogin.remove();
                 enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
                 resetButtonsProfileLooks();
@@ -911,7 +928,9 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+                tableBackground.remove();
                 mainTableLogin.remove();
+                isInSignUp = false;
                 enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
                 cellSignUp.clearActor();
                 buttonLoginAvatar = new ImageButton(imageAnonymous);
@@ -1147,7 +1166,7 @@ public class Menu implements Screen {
      * @param player
      * @return liste des 10 niveaux de statistique
      */
-    private ArrayList getLevelStatsPlayer(HumanPlayer player) {
+    private static ArrayList getLevelStatsPlayer(HumanPlayer player) {
         ArrayList listLevelStats = new ArrayList();
         for (int i = 0; i < 10; i++) {
             listLevelStats.add(player.getListLevelStats().get(i));
@@ -1293,11 +1312,11 @@ public class Menu implements Screen {
                 resetButtonsProfileLooks();
             }
         });
-        buttonEdit.setWidth(windowProfile.getWidth() * 38 / 100);
+        buttonEdit.setWidth(windowProfile.getWidth() * 40 / 100);
         windowProfile.center();
-        buttonLogOut.setWidth(windowProfile.getWidth() * 38 / 100);
-        buttonDelete.setWidth(windowProfile.getWidth() * 38 / 100);
-        buttonBack.setWidth(windowProfile.getWidth() * 38 / 100);
+        buttonLogOut.setWidth(windowProfile.getWidth() * 40 / 100);
+        buttonDelete.setWidth(windowProfile.getWidth() * 40 / 100);
+        buttonBack.setWidth(windowProfile.getWidth() * 40 / 100);
 
         table.add(buttonEdit).padTop(SCREEN_HEIGHT * 2 / 100).width(Value.percentWidth(1f));
         table.row();
@@ -1627,7 +1646,7 @@ public class Menu implements Screen {
                 fc.setDialogTitle("Select an image");
                 fc.setAcceptAllFileFilterUsed(false);
                 fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG and GIF images", "png", "jpg", "jpeg", "gif");
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG, PNG", "png", "jpg");
                 fc.addChoosableFileFilter(filter);
 
                 // affichage de la fenetre pour choisir l'image et teste si le bouton ok est presse
@@ -1891,25 +1910,15 @@ public class Menu implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 if (prefs.getInteger("numPlayer") == 1) {
-                    cellProfileLeft.clearActor();
-                    imageProfile = imageAnonymous;
-                    createButtonProfileLeft();
-                    cellProfileLeft.setActor(buttonProfileLeft);
-                    labelProfileLeft.setText("Not logged");
-                    prefs.putBoolean("isPlayer1Logged", false);
-                    saveStatsPlayer(player1);
-                    isProfileLeft = false;
-                    player1.setName("");
-
+                    resetButtonProfile(cellProfileLeft, player1, labelProfileLeft, "isPlayer1Logged");
+                    
+					if (player1.getGlobalStats().getScore() != 0)
+						saveStatsPlayer(player1);
                 } else {
-                    cellProfileRight.clearActor();
-                    imageProfile = imageAnonymous;
-                    createButtonProfileRight();
-                    prefs.putBoolean("isPlayer2Logged", false);
-                    cellProfileRight.setActor(buttonProfileRight);
-                    labelProfileRight.setText("Not logged");
-                    saveStatsPlayer(player2);
-                    player2.setName("");
+                    resetButtonProfile(cellProfileRight, player2, labelProfileRight, "isPlayer2Logged");
+                    
+					if (player2.getGlobalStats().getScore() != 0)
+                        saveStatsPlayer(player2);
                 }
                 prefs.flush();
 
@@ -1938,7 +1947,23 @@ public class Menu implements Screen {
         stage.addActor(windowLogOut);
     }
 
-    private void saveStatsPlayer(HumanPlayer player) {
+    private void resetButtonProfile(Cell cell, HumanPlayer player, Label labelProfile, String string) {
+        cell.clearActor();
+        imageProfile = imageAnonymous;
+        if (isProfileLeft) {
+            createButtonProfileLeft();
+            cell.setActor(buttonProfileLeft);
+        } else {
+            createButtonProfileRight();
+            cell.setActor(buttonProfileRight);
+        }
+        labelProfile.setText("Not logged");
+        prefs.putBoolean(string, false);
+        isProfileLeft = false;
+        player.setName("");
+    }
+
+    public static void saveStatsPlayer(HumanPlayer player) {
         boolean isFound = isPlayerInTabStats(player.getName());
         if (isFound) {
             deletePlayer(player);
@@ -1959,7 +1984,7 @@ public class Menu implements Screen {
         prefs.flush();
     }
 
-    private GlobalStats setGlobalStats(HumanPlayer player) {
+    private static GlobalStats setGlobalStats(HumanPlayer player) {
         GlobalStats globalStats = new GlobalStats();
         globalStats.setScore(player.getGlobalStats().getScore());
         globalStats.setRank(player.getGlobalStats().getRank());
@@ -1992,7 +2017,7 @@ public class Menu implements Screen {
         }
     }
 
-    private boolean isPlayerInTabStats(String name) {
+    private static boolean isPlayerInTabStats(String name) {
         Iterator iter = tabPlayers.iterator();
         while (iter.hasNext()) {
             HumanPlayer player = (HumanPlayer) iter.next();
@@ -2003,7 +2028,7 @@ public class Menu implements Screen {
         return false;
     }
 
-    private void storePlayer(HumanPlayer player) {
+    private static void storePlayer(HumanPlayer player) {
         boolean isFound = false;
         int i = 0;
         while (i < tabPlayers.size() && !isFound) {
@@ -2024,7 +2049,7 @@ public class Menu implements Screen {
         }
     }
 
-    private void deletePlayer(HumanPlayer player) {
+    private static void deletePlayer(HumanPlayer player) {
         int i = 0;
         boolean isFound = false;
         while (i < tabPlayers.size() && !isFound) {
@@ -2038,6 +2063,12 @@ public class Menu implements Screen {
         }
     }
 
+    private void recalculateRank() {
+        for (int i = 0; i < tabPlayers.size(); i++) {
+            HumanPlayer playerTab = (HumanPlayer) tabPlayers.get(i);
+            playerTab.getGlobalStats().setRank(i + 1);
+        }
+    }
     private void showExit() {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (prefs.getBoolean("isAccountEnabled"))
@@ -2095,7 +2126,7 @@ public class Menu implements Screen {
     private void showDelete() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
         windowDelete.clear();
-        windowDelete.setSize(windowProfile.getWidth(), SCREEN_HEIGHT * 2 / 5);
+        windowDelete.setSize(SCREEN_HEIGHT * 80 / 100, SCREEN_HEIGHT * 2 / 5);
         windowDelete.setPosition(SCREEN_WIDTH / 2 - windowDelete.getWidth() / 2, SCREEN_HEIGHT / 2 - windowDelete.getHeight() / 2);
         windowDelete.setMovable(false);
         windowDelete.getTitleTable().padLeft(windowDelete.getWidth() / 2 - windowDelete.getTitleLabel().getWidth() / 2);
@@ -2107,10 +2138,11 @@ public class Menu implements Screen {
         Label labelWarning1 = new Label(lang.get("label_all_data_will_be_erased"), skinSgx, "white");
         Label labelWarning2 = new Label(lang.get("label_including_achievements_in_hof"), skinSgx, "white");
         Label labelPassword = new Label(lang.get("label_password"), skinSgx, "white");
-        Label incorrectPassword = new Label(lang.get("label_incorrect_password"), skinSgx, "white");
-        incorrectPassword.setColor(Color.RED);
-        TextField fieldPassword = new TextField("", skinSgx);
-        fieldPassword.setTextFieldListener(new TextField.TextFieldListener() {
+        Label noMessagePassword = new Label("", skinSgx, "white");
+        messageErrorDeletePassword.setColor(Color.RED);
+
+
+        fieldPasswordDelete.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
                 if ((key == '\r' || key == '\n')) {
@@ -2118,17 +2150,46 @@ public class Menu implements Screen {
                 }
             }
         });
-        setPasswordMode(fieldPassword);
-        stage.setKeyboardFocus(fieldPassword);
+        setPasswordMode(fieldPasswordDelete);
+        stage.setKeyboardFocus(fieldPasswordDelete);
 
         TextButton buttonConfirm = new TextButton(lang.get("button_confirm"), skinSgx, "big");
         buttonConfirm.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
-                resetButtonsProfileLooks();
-                stage.clear();
-                new Menu(game);
+                HumanPlayer player;
+                if (isProfileLeft)
+                    player = player1;
+                else
+                    player = player2;
+
+                if (!player.getAccount().getPassword().equals(fieldPasswordDelete.getText())) {
+                    cellErrorPasswordDelete.clearActor();
+                    cellErrorPasswordDelete.setActor(messageErrorDeletePassword);
+                } else {
+                    // suppression du joueur dans la table des statistiques
+
+                    cellErrorPasswordDelete.clearActor();
+                    cellErrorPasswordDelete.setActor(noMessageError9);
+                    resetField(fieldPasswordDelete);
+
+                    deletePlayer(player);
+                    prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") - 1);
+                    prefs.flush();
+                    recalculateRank();
+                    if (isProfileLeft)
+                        resetButtonProfile(cellProfileLeft, player, labelProfileLeft, "isPlayer1Logged");
+                    else
+                        resetButtonProfile(cellProfileRight, player2, labelProfileRight, "isPlayer2Logged");
+                    windowDelete.remove();
+                    windowProfile.remove();
+                    enableButton(buttonPlay, buttonHall, buttonSettings, buttonExit, buttonProfileLeft, buttonProfileRight);
+                    resetButtonsProfileLooks();
+                }
+
+
+
             }
         });
         TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
@@ -2136,8 +2197,12 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
-                windowDelete.remove();
+                cellErrorPasswordDelete.clearActor();
+                cellErrorPasswordDelete.setActor(noMessageError9);
                 enableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
+                resetField(fieldPasswordDelete);
+                windowDelete.remove();
+
             }
         });
         table.padTop(windowDelete.getWidth() / 20);
@@ -2147,12 +2212,14 @@ public class Menu implements Screen {
         table.row().padTop(windowDelete.getHeight() * 11 / 100);
         table.add(labelPassword);
         labelPassword.setAlignment(1);
-        table.add(fieldPassword).fill().width(Value.percentWidth(1.5f));
+        table.add(fieldPasswordDelete).fill().width(windowDelete.getWidth() * 60 / 100);
+
         table.row();
-        table.add(incorrectPassword).colspan(2).fill();
+        table.add(noMessagePassword).colspan(2).fill();
+        cellErrorPasswordDelete = table.getCell(noMessagePassword);
         table.row().padTop(windowDelete.getHeight() * 6 / 100);
-        table.add(buttonConfirm).padRight(SCREEN_WIDTH * 2 / 100).fill().width(windowDelete.getWidth() / 4);
-        table.add(buttonCancel).padLeft(SCREEN_WIDTH * 2 / 100).fill().width(windowDelete.getWidth() / 4);
+        table.add(buttonCancel).left().padLeft(SCREEN_WIDTH * 2 / 100).width(windowDelete.getWidth() / 4);
+        table.add(buttonConfirm).right().padRight(SCREEN_WIDTH * 2 / 100).width(windowDelete.getWidth() / 4);
 
         stage.addActor(windowDelete);
     }
