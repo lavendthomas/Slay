@@ -48,6 +48,7 @@ import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Tile;
 import be.ac.umons.slay.g02.level.TileSetManagement;
+import be.ac.umons.slay.g02.level.TileType;
 import be.ac.umons.slay.g02.players.AI;
 import be.ac.umons.slay.g02.players.AIMethods;
 import be.ac.umons.slay.g02.players.HumanPlayer;
@@ -61,7 +62,6 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
-import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 import static be.ac.umons.slay.g02.gui.screens.Menu.saveStatsPlayer;
@@ -148,10 +148,6 @@ public class GameScreen implements Screen {
         if (hud != null) {
             hud.clear();
         }
-        if (stage != null) {
-            stage.clear();
-        }
-
 
         click = ClickState.NOTHING_SELECTED;
         windowPause.setVisible(false);
@@ -514,15 +510,19 @@ public class GameScreen implements Screen {
                         }
                         break;
                     case BUYING_UNIT:
-                        if (level.getMoves(boughtEntity, previousClick).contains(clickPos)) {
-                            level.buy(boughtEntity, previousClick, clickPos);
+                        if (level.isInLevel(previousClick)) {
+                            if (level.getMoves(boughtEntity, previousClick).contains(clickPos)) {
+                                level.buy(boughtEntity, previousClick, clickPos);
+                            }
+                            click = ClickState.NOTHING_SELECTED;
                         }
-                        click = ClickState.NOTHING_SELECTED;
                         break;
                 }
                 showEffects(clickPos);
+                if(clickedTile.getType() == TileType.NEUTRAL) {
+                    previousClick = clickPos; // Retenir dernière position que quand click dans le niveau et sur tile neutre
+                }
             }
-            previousClick = clickPos;
         }
     }
 

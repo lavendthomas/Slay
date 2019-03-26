@@ -10,7 +10,7 @@ public class Tile {
     private Entity entity;
     private Territory territory;
 
-    Tile(TileType type) {
+    public Tile(TileType type) {
         this.type = type;
     }
 
@@ -142,7 +142,7 @@ public class Tile {
      *
      * @param t the new territory
      */
-    void setTerritory(Territory t) {
+    public void setTerritory(Territory t) {
         setTerritory(t, true);
     }
 

@@ -55,7 +55,7 @@ public class Level implements Playable {
      * @param x the width of the level
      * @param y the height of the level
      */
-    Level(int x, int y) {
+    public Level(int x, int y) {
         tileMap = new Tile[x][y];
         width = x;
         height = y;
@@ -75,7 +75,7 @@ public class Level implements Playable {
      *
      * @param players Tab of players
      */
-    void setPlayers(Player[] players) {
+    public void setPlayers(Player[] players) {
         this.players = players;
         turn = 0;
         currentPlayer = players[turn];
@@ -112,7 +112,7 @@ public class Level implements Playable {
      * @param tile   The tile to place
      * @param coords The coordiantes to place the tile to
      */
-    void set(Tile tile, Coordinate coords) {
+    public void set(Tile tile, Coordinate coords) {
         tileMap[coords.getX()][coords.getY()] = tile;
     }
 
@@ -541,7 +541,7 @@ public class Level implements Playable {
                 updatePlayerStatsLost(player2, to.getEntity());
         }
 
-        if (to.getEntity() == StaticEntity.CAPITAL) {
+        if (to.getEntity() != null && to.getEntity() == StaticEntity.CAPITAL) {
             // The enemy gets rewarded with half the resources that would be generated
             from.getTerritory().setCoins(from.getTerritory().getCoins() + (to.getTerritory().getCoins() / 2));
         }

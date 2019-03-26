@@ -141,7 +141,7 @@ public class LevelSelection implements Screen {
         currentIslandNumber = 1;
         numberHumans = 0;
         difficulty1 = 1;
-        difficulty2 = 2;
+        difficulty2 = 1;
 
         // background
         batch = new SpriteBatch();

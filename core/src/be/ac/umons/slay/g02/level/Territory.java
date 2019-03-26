@@ -67,7 +67,6 @@ public class Territory {
             wages += cell.getEntity().getCost();
         }
         cells.add(cell);
-        Gdx.app.debug("moves", "Calling newCapital in cell from " + cell);
         // newCapital(); //TODO useful ?
     }
 
@@ -77,6 +76,7 @@ public class Territory {
      * @param cell
      * @return
      */
+
     public boolean remove(Tile cell) {
         if (cell.getEntity() != StaticEntity.TREE) {
             income -= 1;
@@ -148,8 +148,6 @@ public class Territory {
                     case CAPITAL:
                         // The capital was removed so we have to create a new one
                         capital = null;
-                        Gdx.app.debug("moves", "Calling newCapital in update from "
-                                + removed + " and " + added);
                         newCapital();
                         break;
                 }
@@ -242,7 +240,7 @@ public class Territory {
      * @param c the tile to set as a capital
      * @return true if the capital is changed
      */
-    boolean setCapital(Tile c) {
+    public boolean setCapital(Tile c) {
         for (Tile cell : cells) {
             if (cell.contains(StaticEntity.CAPITAL)) {
                 cell.setEntity(null, false);

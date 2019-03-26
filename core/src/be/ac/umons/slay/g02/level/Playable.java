@@ -33,4 +33,12 @@ public interface Playable {
     Player hasWon();
 
     Player getCurrentPlayer();
+
+    void set(Tile tile, Coordinate coords);
+
+    void set(Entity entity, Coordinate coords);
+
+    void setPlayers(Player[] players);
+
+    void mergeTerritories();
 }

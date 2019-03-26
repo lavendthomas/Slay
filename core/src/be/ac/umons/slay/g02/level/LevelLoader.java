@@ -66,7 +66,7 @@ public class LevelLoader {
 
         // Init level and load water and playable territories
         TiledMap map = new TmxMapLoader().load(tmxName);
-        Level level = loadBackground(map);
+        Playable level = loadBackground(map);
 
         //Load xml file
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -202,6 +202,14 @@ public class LevelLoader {
         }
     }
 
+    /**
+     * Init human players
+     *
+     * @param countHuman    Human number already create
+     * @param color         The color to assign
+     * @return              The initialized player
+     */
+
     private static Player loadHumanPlayer (int countHuman, Colors color) {
         Player player;
         if (countHuman == 0) {
@@ -265,7 +273,7 @@ public class LevelLoader {
      * @throws FileFormatException  If the file don't use the correct format
      */
 
-    private static void loadTerritories (Element root, Level level) throws FileFormatException {
+    private static void loadTerritories (Element root, Playable level) throws FileFormatException {
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
             Node n = root.getChildNodes().item(i);
 
@@ -303,7 +311,7 @@ public class LevelLoader {
      * @throws FileFormatException  If the file don't use the correct format
      */
 
-    private static void loadEntities (Element root, Level level) throws FileFormatException {
+    private static void loadEntities (Element root, Playable level) throws FileFormatException {
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
             Node n = root.getChildNodes().item(i);
 
