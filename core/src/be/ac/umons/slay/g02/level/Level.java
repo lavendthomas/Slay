@@ -175,13 +175,20 @@ public class Level implements Playable {
         return false;
     }
 
+    /**
+     * Teste s il y a un gagnant avant d'Effectuer les actions de changement de tour
+     * haswon renvoie le gagnant sil y en a un, null sinon
+     *
+     * @return true if there is no winner and the game should be continued
+     */
+
     @Override
     public boolean nextTurn() {
         // If there is no winner
         if (hasWon() == null) {
 
             List<Territory> processed = new LinkedList<Territory>();
-
+            Player previousPlayer = players[turn];
             turn = (turn + 1) % players.length;
             currentPlayer = players[turn];
 
@@ -194,6 +201,11 @@ public class Level implements Playable {
                     if (terr != null && !processed.contains(terr)) {
                         // Adds funds and kills soldier for all territories
                         t.getTerritory().nextTurn();
+
+                        if (t.getTerritory().getOwner() == previousPlayer) {
+                            System.out.println(t.getTerritory());
+                        }
+
                         processed.add(terr);
                     }
                     // Spawns trees
@@ -712,9 +724,9 @@ public class Level implements Playable {
     }
 
     /**
-     * Ckecks if a player has won the game
+     * Ckecks if a player won the game
      *
-     * @return a player is he has won the game, null if no one has
+     * @return a player is he won the game, null if no one did
      */
     @Override
     public Player hasWon() {

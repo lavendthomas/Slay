@@ -2,6 +2,7 @@ package be.ac.umons.slay.g02.tests;
 
 //import com.badlogic.gdx.backends.headless.HeadlessApplication;
 
+
 public class GameStageTest {
     /*
     private static HeadlessApplication application;

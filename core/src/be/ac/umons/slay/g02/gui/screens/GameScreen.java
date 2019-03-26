@@ -756,11 +756,11 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        AIisPaused = false;
-                        AIMethods.setSpeed(200); // 5 tours / seconde
-                        soundButton3.play(prefs.getFloat("volume", 0.1f));
                         makeButtonGreen(true, buttonV4);
                         makeButtonGreen(false, buttonV0, buttonV1, buttonV2, buttonV3);
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIisPaused = false;
+                        AIMethods.setSpeed(200); // 5 tours / seconde
                     }
                 }
             });
@@ -769,11 +769,11 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        AIisPaused = false;
-                        AIMethods.setSpeed(333); //3 tours / seconde
-                        soundButton3.play(prefs.getFloat("volume", 0.1f));
                         makeButtonGreen(true, buttonV3);
                         makeButtonGreen(false, buttonV0, buttonV1, buttonV2, buttonV4);
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIisPaused = false;
+                        AIMethods.setSpeed(333); //3 tours / seconde
                     }
                 }
             });
@@ -782,11 +782,11 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        AIisPaused = false;
-                        AIMethods.setSpeed(500); //2 tours / seconde
-                        soundButton3.play(prefs.getFloat("volume", 0.1f));
                         makeButtonGreen(true, buttonV2);
                         makeButtonGreen(false, buttonV0, buttonV1, buttonV3, buttonV4);
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIisPaused = false;
+                        AIMethods.setSpeed(500); //2 tours / seconde
                     }
                 }
             });
@@ -795,11 +795,11 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        AIisPaused = false;
-                        AIMethods.setSpeed(1000);
-                        soundButton3.play(prefs.getFloat("volume", 0.1f));
                         makeButtonGreen(true, buttonV1);
                         makeButtonGreen(false, buttonV0, buttonV2, buttonV3, buttonV4);
+                        soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        AIisPaused = false;
+                        AIMethods.setSpeed(1000);
                     }
                 }
             });
@@ -808,10 +808,10 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
-                        AIisPaused = true;
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
                         makeButtonGreen(true, buttonV0);
                         makeButtonGreen(false, buttonV1, buttonV2, buttonV3, buttonV4);
+                        AIisPaused = true;
                     }
                 }
             });

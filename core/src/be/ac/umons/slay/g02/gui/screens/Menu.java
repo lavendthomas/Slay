@@ -209,8 +209,10 @@ public class Menu implements Screen {
     }
 
     public void init() {
+
         stage.clear();
 
+        /*
         if (SCREEN_WIDTH < SCREEN_HEIGHT) {
             buttonCenterWidth = SCREEN_WIDTH * 28 / 100;
             buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
@@ -218,14 +220,14 @@ public class Menu implements Screen {
             tableCenterPositionX = SCREEN_WIDTH / 2;
             tableCenterPositionY = SCREEN_HEIGHT / 3;
             buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
-        } else {
+        } else { */
             buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
             buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
             windowSettingsWidth = buttonCenterWidth * 3 / 4;
-            tableCenterPositionX = VIRTUAL_WIDTH / 2;
-            tableCenterPositionY = VIRTUAL_HEIGHT / 3;
+            tableCenterPositionX = SCREEN_WIDTH / 2;
+            tableCenterPositionY = SCREEN_HEIGHT / 3;
             buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
-        }
+        //}
         buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
         labelProfileWidth = buttonCenterWidth * 35 / 100;
 
