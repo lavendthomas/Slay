@@ -211,7 +211,7 @@ public class Menu implements Screen {
     public void init() {
         stage.clear();
 
-        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+        if (SCREEN_WIDTH < SCREEN_HEIGHT) {
             buttonCenterWidth = SCREEN_WIDTH * 28 / 100;
             buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
             windowSettingsWidth = buttonCenterWidth * 3 / 4;

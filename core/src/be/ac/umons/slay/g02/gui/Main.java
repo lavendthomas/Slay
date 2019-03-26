@@ -134,7 +134,7 @@ public class Main extends Game {
             skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
             skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
         }
-        stage.getViewport().setScreenBounds(0, 0, width, height);
+        //stage.getViewport().setScreenBounds(0, 0, width, height);
         this.getScreen().resize(width, height);
     }
 

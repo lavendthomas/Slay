@@ -61,6 +61,7 @@ import static be.ac.umons.slay.g02.gui.Main.skinSgx;
 import static be.ac.umons.slay.g02.gui.Main.soundButton1;
 import static be.ac.umons.slay.g02.gui.Main.soundButton2;
 import static be.ac.umons.slay.g02.gui.Main.soundButton3;
+import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 import static be.ac.umons.slay.g02.gui.screens.Menu.saveStatsPlayer;
@@ -129,6 +130,7 @@ public class GameScreen implements Screen {
     private int worldW;
     private int worldH;
     private int numberHumans;
+    private String levelName;
 
     /**
      * @param aGame
@@ -136,10 +138,26 @@ public class GameScreen implements Screen {
      */
     GameScreen(Game aGame, String levelName, int numberHumans) {
         game = aGame;
+        this.levelName = levelName;
+        this.numberHumans = numberHumans;
+
+        init();
+
+    }
+    private void init() {
+        if (hud != null) {
+            hud.clear();
+        }
+        if (stage != null) {
+            stage.clear();
+        }
+
+
         click = ClickState.NOTHING_SELECTED;
         windowPause.setVisible(false);
         windowEnd.setVisible(false);
-        this.numberHumans = numberHumans;
+
+
 
         try {
             camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -672,7 +690,6 @@ public class GameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.setScreenBounds(0, 0, width, height);
-        hud.getViewport().setScreenBounds(0, 0, width, height);
     }
 
     @Override
