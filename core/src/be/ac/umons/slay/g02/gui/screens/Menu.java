@@ -137,7 +137,7 @@ public class Menu implements Screen {
     private Label noMessageError6 = new Label("", skinSgx);
     private Label noMessageError7 = new Label("", skinSgx);
     private Label noMessageError8 = new Label("", skinSgx);
-	private Label noMessageError9 = new Label("", skinSgx);
+    private Label noMessageError9 = new Label("", skinSgx);
     private Label messageErrorDeletePassword = new Label("*" + prefs.getString("INCORRECT_PASSWORD"), skinSgx, "white");
     private Label messageErrorLoginPassword = new Label("*" + prefs.getString("INCORRECT_PASSWORD"), skinSgx, "white");
     private Label messageErrorUserLogged = new Label("*" + prefs.getString("USER_LOGGED"), skinSgx, "white");
@@ -149,7 +149,7 @@ public class Menu implements Screen {
     private Label messageErrorNoAvatar = new Label("*" + prefs.getString("NO_AVATAR"), skinSgx, "white");
     private Label labelProfileLeft;
     private Label labelProfileRight;
-	private TextField fieldPasswordDelete = new TextField("", skinSgx);
+    private TextField fieldPasswordDelete = new TextField("", skinSgx);
     private TextField fieldCurrentPassword = new TextField("", skinSgx);
     private TextField fieldNewPassword1 = new TextField("", skinSgx);
     private TextField fieldNewPassword2 = new TextField("", skinSgx);
@@ -161,7 +161,7 @@ public class Menu implements Screen {
     private String messageErrorLogin = "";
     private String messageErrorSignUp = "";
     private String messageErrorEdit = "";
-	private String messageErrorDelete = "";
+    private String messageErrorDelete = "";
     private boolean isProfileLeft = false;
     private boolean hasImportedAvatar = false;
     private boolean hasChangedAvatar = false;
@@ -215,7 +215,7 @@ public class Menu implements Screen {
             buttonCenterWidth = SCREEN_WIDTH * 28 / 100;
             buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
             windowSettingsWidth = buttonCenterWidth * 3 / 4;
-			tableCenterPositionX = SCREEN_WIDTH / 2;
+            tableCenterPositionX = SCREEN_WIDTH / 2;
             tableCenterPositionY = SCREEN_HEIGHT / 3;
             buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
         } else {
@@ -622,6 +622,14 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+                if (prefs.getBoolean("isPlayer1Logged")) {
+                    resetButtonProfile(cellProfileLeft, player1, labelProfileLeft, "isPlayer1Logged");
+                    saveStatsPlayer(player1);
+                }
+                if (prefs.getBoolean("isPlayer2Logged")) {
+                    resetButtonProfile(cellProfileRight, player2, labelProfileRight, "isPlayer2Logged");
+                    saveStatsPlayer(player2);
+                }
                 enableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
                 windowAlert.remove();
             }
@@ -666,7 +674,7 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
-				isInSignUp = false;
+                isInSignUp = false;
                 buttonTabLogin.setDisabled(true);
                 buttonTabSignUp.setDisabled(false);
                 resetField(fieldNameSignUp, fieldPassword1SignUp, fieldPassword2SignUp);
@@ -1395,7 +1403,7 @@ public class Menu implements Screen {
                         ImageButton imageAvatar = new ImageButton(imageProfile);
                         cellAvatarProfile.setActor(imageAvatar);
 
-                        // Updates the left avatar in menu
+                        // Updates the avatar on the left in menu
                         if (isProfileLeft) {
                             prefs.putBoolean("isPlayer1Logged", true);
                             imagePlayer1 = imageProfile;
@@ -1403,7 +1411,7 @@ public class Menu implements Screen {
                             createButtonProfileLeft();
                             cellProfileLeft.setActor(buttonProfileLeft);
                             changeAvatar(player1);
-                        } //Updates the right avatar in menu
+                        } //Updates the avatar on the right in menu
                         else {
                             prefs.putBoolean("isPlayer2Logged", true);
                             imagePlayer2 = imageProfile;
@@ -1911,16 +1919,11 @@ public class Menu implements Screen {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 if (prefs.getInteger("numPlayer") == 1) {
                     resetButtonProfile(cellProfileLeft, player1, labelProfileLeft, "isPlayer1Logged");
-                    
-					if (player1.getGlobalStats().getScore() != 0)
-						saveStatsPlayer(player1);
+                    saveStatsPlayer(player1);
                 } else {
                     resetButtonProfile(cellProfileRight, player2, labelProfileRight, "isPlayer2Logged");
-                    
-					if (player2.getGlobalStats().getScore() != 0)
-                        saveStatsPlayer(player2);
+                    saveStatsPlayer(player2);
                 }
-                prefs.flush();
 
                 windowLogOut.remove();
                 windowProfile.remove();
@@ -1957,18 +1960,24 @@ public class Menu implements Screen {
             createButtonProfileRight();
             cell.setActor(buttonProfileRight);
         }
-        labelProfile.setText("Not logged");
+        labelProfile.setText("Not Logged");
         prefs.putBoolean(string, false);
         isProfileLeft = false;
-        player.setName("");
+
     }
 
     public static void saveStatsPlayer(HumanPlayer player) {
         boolean isFound = isPlayerInTabStats(player.getName());
         if (isFound) {
+            if (getScorePlayerInTabStats(player.getName()) == 0) {
+                if (player.getGlobalStats().getScore() != 0)
+                    prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
+            }
             deletePlayer(player);
+
         } else {
-            prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
+            if (player.getGlobalStats().getScore() != 0)
+                prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
         }
         HumanPlayer player3 = new HumanPlayer(player.getName(), player.getColor());
         Account account3 = new Account();
@@ -2028,6 +2037,17 @@ public class Menu implements Screen {
         return false;
     }
 
+    private static int getScorePlayerInTabStats(String name) {
+        Iterator iter = tabPlayers.iterator();
+        while (iter.hasNext()) {
+            HumanPlayer player = (HumanPlayer) iter.next();
+            if (player.getName().equals(name)) {
+                return player.getGlobalStats().getScore();
+            }
+        }
+        return 0;
+    }
+
     private static void storePlayer(HumanPlayer player) {
         boolean isFound = false;
         int i = 0;
@@ -2069,6 +2089,7 @@ public class Menu implements Screen {
             playerTab.getGlobalStats().setRank(i + 1);
         }
     }
+
     private void showExit() {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (prefs.getBoolean("isAccountEnabled"))
@@ -2187,7 +2208,6 @@ public class Menu implements Screen {
                     enableButton(buttonPlay, buttonHall, buttonSettings, buttonExit, buttonProfileLeft, buttonProfileRight);
                     resetButtonsProfileLooks();
                 }
-
 
 
             }

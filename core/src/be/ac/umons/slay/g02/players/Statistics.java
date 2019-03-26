@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import be.ac.umons.slay.g02.entities.SoldierLevel;
+import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 
 /**
  *
@@ -85,7 +86,7 @@ public class Statistics {
         putToZero(currentStats, CURRENT_L2);
         putToZero(currentStats, CURRENT_L3);
 
-        putToZero(currentStats, CURRENT_LANDS); // initialiser au nombre de cellules totales du joueur si possible (1er tour)
+        putToZero(currentStats, CURRENT_LANDS);
 
 
         putToZero(stats, GAMES);
@@ -175,8 +176,9 @@ public class Statistics {
      * Resets the currentStats
      */
     public static void resetCurrentStats(HumanPlayer player) {
-        for (String key : player.getStatistics().getCurrentStats().keySet()) {
-            player.getStatistics().getCurrentStats().put(key, 0);
+        for (String key : player.getGlobalStats().getCurrentStats().keySet()) {
+            player.getGlobalStats().getCurrentStats().put(key, 0);
+            player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getCurrentStats().put(key, 0);
         }
         currentArmy = 0;
     }
@@ -222,6 +224,13 @@ public class Statistics {
         calculateMax(UNITS, "");
         calculateMax(ARMY, "");
         calculateMax(LANDS_TURN, "");
+
+
+        for (String key : currentStats.keySet()) {
+            System.out.println(key + " : " + currentStats.get(key));
+        }
+
+        System.out.println("--------------");
     }
 
     /**
@@ -257,9 +266,7 @@ public class Statistics {
         } else {
             // value in stats += currentStat
             String current = "current" + key;
-            if (null != currentStats.get(current)) {
                 addToStat(stats, key, currentStats.get(current));
-            }
         }
     }
 
@@ -337,7 +344,7 @@ public class Statistics {
         } else if (key.equals(LANDS_TURN)) {
             // max lands/turn in stats = max(currentLands/currentTurns, max lands/turn in stats)
             stats.put(MAX_ + key,
-                    Math.max(currentStats.get(CURRENT_LANDS) / 20 /*currentStats.get(CURRENT_TURNS)*/, stats.get(MAX_ + key)));
+                    Math.max(currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS), stats.get(MAX_ + key)));
         } else
             // max value in stats = max(currentStat, max value in stats)
             stats.put(MAX_ + key, Math.max(currentStats.get(current), stats.get(MAX_ + key)));
@@ -355,23 +362,31 @@ public class Statistics {
      *
      * @return
      */
-    public int calculateScore() {
+    public int calculateScore(boolean hasWon) {
         float multiplier = 0.75f;
-        int factorTurns = 75;
+        int factorTurns = 50;
         int factorTrees = 200;
-        int factorLandsTurn = 200;
+        int factorLandsTurn = 100;
         int factorArmy = 5;
         int factorLosses = 100;
         int factorWins = 5000;
+        int  factorDefeats = 500;
 
         double score = (factorTrees * stats.get(TREES)
-                + factorLandsTurn * stats.get(LANDS_TURN)
+                + factorLandsTurn * 15/*stats.get(LANDS_TURN)*/
                 - factorArmy * stats.get(ARMY)
                 - factorLosses * stats.get(LOST_UNITS))
-                - factorTurns * stats.get(TURNS)
+                - factorTurns * stats.get(TURNS);
 
-                // The more the player loses, the higher the penalties
-                + factorWins * Math.pow(multiplier, stats.get(GAMES) - stats.get(WINS));
+        // The more the player loses, the lower the score
+        if (hasWon)
+            score += factorWins * Math.pow(multiplier, stats.get(GAMES) - stats.get(WINS));
+        else
+            score -= factorDefeats * Math.pow(multiplier, stats.get(GAMES) - stats.get(DEFEATS));
+
+        // Minimum score
+        if (score <= 0)
+            score = 50;
 
         return (int) score;
     }

@@ -355,17 +355,20 @@ public class GameScreen implements Screen {
             updatePlayerGames(player1);
 
             // If player1 is the winner
-            if (winner.getName().equals(player1.getName()))
+            if (winner.getName().equals(player1.getName())) {
                 // Number of wins ++
                 updatePlayerWins(player1);
+                // All other stats are updated and the score is calculated
+                updatePlayerScore(player1, true);
+            }
 
-                // If player1 is the loser
-            else
+            // If player1 is the loser
+            else {
                 // Number of defeats ++
                 updatePlayerDefeats(player1);
-
-            // All other stats are updated and the score is calculated
-            updatePlayerScore(player1);
+                // All other stats are updated and the score is calculated
+                updatePlayerScore(player1, false);
+            }
         }
         // Player 2
         if (prefs.getBoolean("isPlayer2Logged") && getPlayers()[1].getName().equals(player2.getName())) {
@@ -373,17 +376,19 @@ public class GameScreen implements Screen {
             updatePlayerGames(player2);
 
             // If player2 is the winner
-            if (winner.getName().equals(player2.getName()))
+            if (winner.getName().equals(player2.getName())) {
                 // Number of wins ++
                 updatePlayerWins(player2);
-
-                // If player2 is the loser
-            else
+                // All other stats are updated and the score is calculated
+                updatePlayerScore(player2, true);
+            }
+            // If player2 is the loser
+            else {
                 // Number of defeats ++
                 updatePlayerDefeats(player2);
-
-            // All other stats are updated and the score is calculated
-            updatePlayerScore(player2);
+                // All other stats are updated and the score is calculated
+                updatePlayerScore(player2, false);
+            }
         }
     }
 
@@ -425,12 +430,12 @@ public class GameScreen implements Screen {
      *
      * @param player
      */
-    private void updatePlayerScore(HumanPlayer player) {
+    private void updatePlayerScore(HumanPlayer player, boolean hasWon) {
         player.getGlobalStats().updateStats();
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).updateStats();
 
         // The score is calculated with the global statistics to be displayed in the hall of fame
-        int score = player.getGlobalStats().calculateScore();
+        int score = player.getGlobalStats().calculateScore(hasWon);
 
         player.getGlobalStats().setScore(score);
         saveStatsPlayer(player);

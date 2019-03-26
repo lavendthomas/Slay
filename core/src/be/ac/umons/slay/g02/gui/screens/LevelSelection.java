@@ -109,7 +109,7 @@ public class LevelSelection implements Screen {
     private Cell cellTableTabs;
     private boolean isInIsland;
     private final String AVERAGE_BEGINNING = "Ave";
-    private final String LEFT_UNITS = "left units";
+    private final String LEFT_UNITS = "remaining units";
     public static final int TOTAL_NUMBER_ISLANDS = 10;
 
     // dans la fenetre de stats, c'est pas forcement le meme que celui choisi dans l'ecran de selection
@@ -303,7 +303,6 @@ public class LevelSelection implements Screen {
                 soundButton3.play(prefs.getFloat("volume", 0.1f));
                 stage.clear();
                 game.setScreen(new GameScreen(game, String.format("g02_%02d", currentIslandNumber), numberHumans));
-                //       dispose();
             }
         });
         final Table table = new Table();
@@ -671,58 +670,55 @@ public class LevelSelection implements Screen {
                 }
             }
         });
-        final String COLON = " : ";
         final String MINIMUM_NUMBER_OF = "Minimum number of ";
         final String MAXIMUM_NUMBER_OF = "Maximum number of ";
-        final String MAXIMUM_AMOUNT_OF = "Maximum amount of ";
         final String LOST_UNITS = "lost units";
         final String L0 = " 0";
         final String L1 = " 1";
         final String L2 = " 2";
         final String L3 = " 3";
         final String AVERAGE_NUMBER_OF = "Average number of ";
-        final String AVERAGE_AMOUNT_OF = "Average amount of ";
 
         // texts displayed for all statistics
 
-        final String GAMES = "Games" + COLON;
-        final String WINS = "Wins" + COLON;
-        final String DEFEATS = "Defeats" + COLON;
-        final String MIN_TURNS = MINIMUM_NUMBER_OF + "turns" + COLON;
-        final String MAX_LANDS_TURN = MAXIMUM_NUMBER_OF + "lands/turn" + COLON;
-        final String MAX_TREES = MAXIMUM_NUMBER_OF + "cut trees" + COLON;
-        final String MIN_ARMY = "Minimum army value" + COLON;
-        final String MAX_ARMY = "Maximum army value" + COLON;
-        final String MAX_LOST_L0 = MAXIMUM_NUMBER_OF + LOST_UNITS + L0 + COLON;
-        final String MAX_LOST_L1 = MAXIMUM_NUMBER_OF + LOST_UNITS + L1 + COLON;
-        final String MAX_LOST_L2 = MAXIMUM_NUMBER_OF + LOST_UNITS + L2 + COLON;
-        final String MAX_LOST_L3 = MAXIMUM_NUMBER_OF + LOST_UNITS + L3 + COLON;
-        final String MAX_LOST_UNITS = MAXIMUM_NUMBER_OF + LOST_UNITS + COLON;
-        final String MAX_L0 = MAXIMUM_NUMBER_OF + "units" + L0 + COLON;
-        final String MAX_L1 = MAXIMUM_NUMBER_OF + "units" + L1 + COLON;
-        final String MAX_L2 = MAXIMUM_NUMBER_OF + "units" + L2 + COLON;
-        final String MAX_L3 = MAXIMUM_NUMBER_OF + "units" + L3 + COLON;
-        final String MAX_UNITS = MAXIMUM_NUMBER_OF + "units" + COLON;
+        final String GAMES = "Games";
+        final String WINS = "Wins";
+        final String DEFEATS = "Defeats";
+        final String MIN_TURNS = MINIMUM_NUMBER_OF + "turns";
+        final String MAX_LANDS_TURN = MAXIMUM_NUMBER_OF + "lands/turn";
+        final String MAX_TREES = MAXIMUM_NUMBER_OF + "cut trees";
+        final String MIN_ARMY = "Minimum army value";
+        final String MAX_ARMY = "Maximum army value";
+        final String MAX_LOST_L0 = MAXIMUM_NUMBER_OF + LOST_UNITS + L0;
+        final String MAX_LOST_L1 = MAXIMUM_NUMBER_OF + LOST_UNITS + L1;
+        final String MAX_LOST_L2 = MAXIMUM_NUMBER_OF + LOST_UNITS + L2;
+        final String MAX_LOST_L3 = MAXIMUM_NUMBER_OF + LOST_UNITS + L3;
+        final String MAX_LOST_UNITS = MAXIMUM_NUMBER_OF + LOST_UNITS;
+        final String MAX_L0 = MAXIMUM_NUMBER_OF + "units" + L0;
+        final String MAX_L1 = MAXIMUM_NUMBER_OF + "units" + L1;
+        final String MAX_L2 = MAXIMUM_NUMBER_OF + "units" + L2;
+        final String MAX_L3 = MAXIMUM_NUMBER_OF + "units" + L3;
+        final String MAX_UNITS = MAXIMUM_NUMBER_OF + "units";
 
-        final String AVG_TURNS = AVERAGE_NUMBER_OF + "turns" + COLON;
-        final String AVG_LANDS_TURN = AVERAGE_NUMBER_OF + "lands/turn" + COLON;
-        final String AVG_TREES = AVERAGE_NUMBER_OF + "cut trees" + COLON;
-        final String AVG_ARMY = "Average army value" + COLON;
-        final String AVG_L0 = AVERAGE_NUMBER_OF + "units" + L0 + COLON;
-        final String AVG_L1 = AVERAGE_NUMBER_OF + "units" + L1 + COLON;
-        final String AVG_L2 = AVERAGE_NUMBER_OF + "units" + L2 + COLON;
-        final String AVG_L3 = AVERAGE_NUMBER_OF + "units" + L3 + COLON;
-        final String AVG_UNITS = AVERAGE_NUMBER_OF + "units" + COLON;
-        final String AVG_LOST_L0 = AVERAGE_NUMBER_OF + LOST_UNITS + " 0" + COLON;
-        final String AVG_LOST_L1 = AVERAGE_NUMBER_OF + LOST_UNITS + " 1" + COLON;
-        final String AVG_LOST_L2 = AVERAGE_NUMBER_OF + LOST_UNITS + " 2" + COLON;
-        final String AVG_LOST_L3 = AVERAGE_NUMBER_OF + LOST_UNITS + " 3" + COLON;
-        final String AVG_LOST_UNITS = AVERAGE_NUMBER_OF + LOST_UNITS + COLON;
-        final String AVG_LEFT_L0 = AVERAGE_NUMBER_OF + LEFT_UNITS + L0 + COLON;
-        final String AVG_LEFT_L1 = AVERAGE_NUMBER_OF + LEFT_UNITS + L1 + COLON;
-        final String AVG_LEFT_L2 = AVERAGE_NUMBER_OF + LEFT_UNITS + L2 + COLON;
-        final String AVG_LEFT_L3 = AVERAGE_NUMBER_OF + LEFT_UNITS + L3 + COLON;
-        final String AVG_LEFT_UNITS = AVERAGE_NUMBER_OF + LEFT_UNITS + COLON;
+        final String AVG_TURNS = AVERAGE_NUMBER_OF + "turns";
+        final String AVG_LANDS_TURN = AVERAGE_NUMBER_OF + "lands/turn";
+        final String AVG_TREES = AVERAGE_NUMBER_OF + "cut trees";
+        final String AVG_ARMY = "Average army value";
+        final String AVG_L0 = AVERAGE_NUMBER_OF + "units" + L0;
+        final String AVG_L1 = AVERAGE_NUMBER_OF + "units" + L1;
+        final String AVG_L2 = AVERAGE_NUMBER_OF + "units" + L2;
+        final String AVG_L3 = AVERAGE_NUMBER_OF + "units" + L3;
+        final String AVG_UNITS = AVERAGE_NUMBER_OF + "units";
+        final String AVG_LOST_L0 = AVERAGE_NUMBER_OF + LOST_UNITS + " 0";
+        final String AVG_LOST_L1 = AVERAGE_NUMBER_OF + LOST_UNITS + " 1";
+        final String AVG_LOST_L2 = AVERAGE_NUMBER_OF + LOST_UNITS + " 2";
+        final String AVG_LOST_L3 = AVERAGE_NUMBER_OF + LOST_UNITS + " 3";
+        final String AVG_LOST_UNITS = AVERAGE_NUMBER_OF + LOST_UNITS;
+        final String AVG_LEFT_L0 = AVERAGE_NUMBER_OF + LEFT_UNITS + L0;
+        final String AVG_LEFT_L1 = AVERAGE_NUMBER_OF + LEFT_UNITS + L1;
+        final String AVG_LEFT_L2 = AVERAGE_NUMBER_OF + LEFT_UNITS + L2;
+        final String AVG_LEFT_L3 = AVERAGE_NUMBER_OF + LEFT_UNITS + L3;
+        final String AVG_LEFT_UNITS = AVERAGE_NUMBER_OF + LEFT_UNITS;
 
         labelsIsland = new ArrayList<Label>();
         labelsGlobal = new ArrayList<Label>();
@@ -779,11 +775,13 @@ public class LevelSelection implements Screen {
         statsList.put(AVG_LEFT_L3, Statistics.L3);
         statsList.put(AVG_LEFT_UNITS, Statistics.UNITS);
 
+        String colon = " : ";
+
         // Creates all labels
         Label labelScroll = new Label("", skinSgx);
         Label labelScrollG = new Label("", skinSgx);
-        Label labelGames = new Label(GAMES + levelS.get(Statistics.GAMES), skinSgx, "white");
-        Label labelGamesG = new Label(GAMES + globalS.get(Statistics.GAMES), skinSgx, "white");
+        Label labelGames = new Label(GAMES + colon + levelS.get(Statistics.GAMES), skinSgx, "white");
+        Label labelGamesG = new Label(GAMES + colon + globalS.get(Statistics.GAMES), skinSgx, "white");
         createLabel(labelsIsland, levelS, playerStatistics, player.getGlobalStats());
         createLabel(labelsGlobal, globalS, playerStatistics, player.getGlobalStats());
 
@@ -837,9 +835,22 @@ public class LevelSelection implements Screen {
      * @param hashmapStats the hashmap of statistics
      */
     private void createLabel(ArrayList<Label> labelList, LinkedHashMap<String, Integer> hashmapStats, LevelStats levelStat, GlobalStats globalStats) {
+        int i = 0;
+
         for (Map.Entry<String, String> entry : statsList.entrySet()) {
-            String text = entry.getKey();
             String value = entry.getValue();
+
+            // Makes different colors in the same label
+            skinSgx.getFont("font").getData().markupEnabled = true;
+            Label.LabelStyle style = new Label.LabelStyle(skinSgx.getFont("font"), null);
+            String colorWhite = "[#ffffff]";
+            String colorBlue = "[#aec0ff]";
+            String colorText;
+            if (i % 2 == 0)
+                colorText = colorBlue;
+            else
+                colorText = colorWhite;
+            String text = colorText + entry.getKey() + " : ";
 
             // Average statistics are calculated, not stored in a hashmap
             if (text.substring(0, 3).equals(AVERAGE_BEGINNING)) {
@@ -847,29 +858,30 @@ public class LevelSelection implements Screen {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
                     if (hashmapStats.equals(levelStat.getStats())) {
                         labelList.add(new Label(text + levelStat.calculateAvgLeft(value),
-                                skinSgx, "white"));
+                                style));
                     }
                     // The average statistic is calculated with statistics from GlobalStats
                     else {
                         labelList.add(new Label(text + globalStats.calculateAvgLeft(value),
-                                skinSgx, "white"));
+                                style));
                     }
                 } else {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
                     if (hashmapStats.equals(levelStat.getStats())) {
                         labelList.add(new Label(text + levelStat.calculateAvg(value),
-                                skinSgx, "white"));
+                                style));
                     }
                     // The average statistic is calculated with statistics from GlobalStats
                     else {
                         labelList.add(new Label(text + globalStats.calculateAvg(value),
-                                skinSgx, "white"));
+                                style));
                     }
                 }
             }
             // Other statistics are retrieved from the hashmap
             else
-                labelList.add(new Label(text + hashmapStats.get(value), skinSgx, "white"));
+                labelList.add(new Label(text + hashmapStats.get(value), style));
+            i++;
         }
     }
 
@@ -948,9 +960,9 @@ public class LevelSelection implements Screen {
             skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
             skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
             skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
-        }
-   //     init();
-        stage.getViewport().update(width, height, true);
+        } else
+            stage.getViewport().update(width, height, true);
+        //     init();
     }
 
     @Override
@@ -967,9 +979,5 @@ public class LevelSelection implements Screen {
 
     @Override
     public void dispose() {
- /*       currentIslandNumber = 1;
-        numberHumans = 0;
-        difficulty1 = 1;
-        difficulty2 = 2;  */
     }
 }
