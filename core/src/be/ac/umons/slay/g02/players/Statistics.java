@@ -224,13 +224,6 @@ public class Statistics {
         calculateMax(UNITS, "");
         calculateMax(ARMY, "");
         calculateMax(LANDS_TURN, "");
-
-
-        for (String key : currentStats.keySet()) {
-            System.out.println(key + " : " + currentStats.get(key));
-        }
-
-        System.out.println("--------------");
     }
 
     /**

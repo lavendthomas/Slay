@@ -392,6 +392,37 @@ public class LevelSelection implements Screen {
 
             boolean isNext = true;
 
+            // Hall of fame is empty
+            if (!iter.hasNext()) {
+                Texture transparence = new Texture(Gdx.files.internal("profile/transparence.jpg"));
+                currentColor = Color.CLEAR;
+                cell = new TextButton("", skinSgxTable);
+                cell.getLabel().setColor(currentColor);
+                tableStats.add(cell).fill();
+                cell.setColor(currentColor);
+                TextureRegionDrawable imageAvatar = new TextureRegionDrawable(new TextureRegion(transparence));
+                ImageButton avatarButton = new ImageButton(imageAvatar);
+                avatarButton.setSize(SCREEN_HEIGHT * 6 / 100, SCREEN_HEIGHT * (6 / 100) * 95 / 100);
+                avatarButton.getImage().setColor(currentColor);
+                tableStats.add(avatarButton).height(Value.percentHeight(1.27f)).width(Value.percentWidth(1.24f)).fill();
+                Label labelEmpty = new Label("", skinSgxTable, "title-white");
+                tableStats.add(labelEmpty).height(Value.percentHeight(1.3f)).width(SCREEN_WIDTH * 16 / 100).fill();
+                cell = new TextButton("", skinSgxTable);
+                cell.setColor(currentColor);
+                cell.setHeight(cellHeight);
+                tableStats.add(cell).height(Value.percentHeight(1.3f)).fill();
+                tableStats.row();
+
+                Label label0 = new Label("", skinSgxTable, "title-white");
+                tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
+                tableStats.row();
+                label0 = new Label("EMPTY\n", skinSgxTable, "title-white");
+                label0.setAlignment(1);
+                tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
+                tableStats.row();
+            }
+
+            // Hall of fame is not empty
             int i = 0;
             while ((iter.hasNext()) && (i < 5)) {
                 if (isNext) {
@@ -408,6 +439,7 @@ public class LevelSelection implements Screen {
 
                 tableStats = displayHall(stats.getGlobalStats().getRank(), stats.getName(), stats.getAvatar(), stats.getGlobalStats().getScore(), tableStats, currentColor, colorLabel);
             }
+
             Label label0 = new Label("", skinSgxTable, "title-white");
             label0.setHeight(cellHeight);
             tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
@@ -419,14 +451,17 @@ public class LevelSelection implements Screen {
             tableStats.add(label0).colspan(4).height(Value.percentHeight(1f));
             tableStats.row();
 
-            if (prefs.getBoolean("isPlayer1Logged")) {
+            if (prefs.getBoolean("isPlayer1Logged"))
                 tableStats = displayHall(player1.getGlobalStats().getRank(), player1.getName(), player1.getAvatar(), player1.getGlobalStats().getScore(), tableStats, colorGreen, colorLabel);
-            }
-
-            if (prefs.getBoolean("isPlayer2Logged")) {
+            if (prefs.getBoolean("isPlayer2Logged"))
                 tableStats = displayHall(player2.getGlobalStats().getRank(), player2.getName(), player2.getAvatar(), player2.getGlobalStats().getScore(), tableStats, colorGreen, colorLabel);
 
+            if (!(prefs.getBoolean("isPlayer1Logged") || prefs.getBoolean("isPlayer2Logged"))){
+                tableStats.row().padTop(cellHeight/2);
+                label0 = new Label("NONE", skinSgxTable, "title-white");
+                tableStats.add(label0).colspan(4);
             }
+
             stage.addActor(tableStats);
             stage.addActor(buttonStats);
 

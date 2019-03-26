@@ -315,8 +315,8 @@ public class Hall implements Screen {
             }
 
             // Displays the scroll
-            tableHall.row();//.padTop(SCREEN_HEIGHT - scrollHeight);
-            tableHall.add(labelScroll);
+            tableHall.row();//.padBottom(SCREEN_HEIGHT - scrollHeight);
+            tableHall.add(labelScroll).padTop(-2*SCREEN_HEIGHT);
 
             backButton.addListener(new ClickListener() {
                 @Override
