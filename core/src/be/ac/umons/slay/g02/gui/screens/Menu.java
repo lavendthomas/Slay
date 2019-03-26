@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.gui.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -212,24 +213,21 @@ public class Menu implements Screen {
 
         stage.clear();
 
-        /*
-        if (SCREEN_WIDTH < SCREEN_HEIGHT) {
-            buttonCenterWidth = SCREEN_WIDTH * 28 / 100;
-            buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
-            windowSettingsWidth = buttonCenterWidth * 3 / 4;
-            tableCenterPositionX = SCREEN_WIDTH / 2;
-            tableCenterPositionY = SCREEN_HEIGHT / 3;
-            buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
-        } else { */
-            buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
-            buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
-            windowSettingsWidth = buttonCenterWidth * 3 / 4;
-            tableCenterPositionX = SCREEN_WIDTH / 2;
-            tableCenterPositionY = SCREEN_HEIGHT / 3;
-            buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
-        //}
+        buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
+        buttonProfileHeight = SCREEN_HEIGHT * 10 / 100;
+        windowSettingsWidth = buttonCenterWidth * 3 / 4;
+        tableCenterPositionX = SCREEN_WIDTH / 2;
+        tableCenterPositionY = SCREEN_HEIGHT / 3;
+        buttonCenterHeight = VIRTUAL_HEIGHT * 7 / 100;
         buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
         labelProfileWidth = buttonCenterWidth * 35 / 100;
+
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+
+            buttonCenterWidth = (int) (SCREEN_WIDTH * 0.9);
+            buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
+            windowSettingsWidth = Math.min(buttonCenterWidth * 3 / 4, (int) (SCREEN_HEIGHT * 0.9));
+        }
 
         // background
         batch = new SpriteBatch();
@@ -316,7 +314,7 @@ public class Menu implements Screen {
             tableCenter.add(buttonSettings).width(buttonCenterWidth).height(buttonCenterHeight);
             tableCenter.row();
             tableCenter.add(buttonExit).width(buttonCenterWidth).height(buttonCenterHeight);
-            if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android) {
                 tableProfile.add(labelPlayer1).width(labelProfileWidth);
                 tableProfile.add(labelPlayer2).width(labelProfileWidth);
                 tableProfile.row().pad(10, 0, 0, 0);
@@ -343,16 +341,26 @@ public class Menu implements Screen {
     }
 
     public static void disableButton(Button... button) {
+        if (button == null) {
+            return;
+        }
         for (Button b : button) {
-            b.setDisabled(true);
-            b.setTouchable(Touchable.disabled);
+            if (b != null) {
+                b.setDisabled(true);
+                b.setTouchable(Touchable.disabled);
+            }
         }
     }
 
     public static void enableButton(Button... button) {
+        if (button == null) {
+            return;
+        }
         for (Button b : button) {
-            b.setDisabled(false);
-            b.setTouchable(Touchable.enabled);
+            if (b != null) {
+                b.setDisabled(false);
+                b.setTouchable(Touchable.enabled);
+            }
         }
     }
 
@@ -445,10 +453,15 @@ public class Menu implements Screen {
         if (prefs.getBoolean("isAccountEnabled"))
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
         windowSettings.clear();
-        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android) {
             windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
         } else {
-            windowSettings.setSize(windowSettingsWidth, 2 * windowSettingsWidth);
+            if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+                windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
+            } else {
+                windowSettings.setSize(windowSettingsWidth,  2 * windowSettingsWidth);
+            }
+
         }
         windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 - windowSettings.getHeight() / 2);
         windowSettings.setMovable(false);
@@ -482,32 +495,36 @@ public class Menu implements Screen {
         table.add(sliderVolume).height(Value.percentHeight(1f)).width(windowSettings.getWidth() / 3);
         table.row();
 
-        Label labelFullscreen = new Label("Fullscreen", skinSgx, "white");
-        labelFullscreen.setHeight(SCREEN_HEIGHT * 13 / 200);
+        if (Gdx.app.getType() != Application.ApplicationType.Android) {
 
-        switchFullscreen = new Button(skinSgx, "switch");
-        if (prefs.getBoolean("isFullScreenEnabled"))
-            switchFullscreen.setChecked(true);
+            Label labelFullscreen = new Label("Fullscreen", skinSgx, "white");
+            labelFullscreen.setHeight(SCREEN_HEIGHT * 13 / 200);
 
-        switchFullscreen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (!prefs.getBoolean("isFullScreenEnabled")) {
-                    soundButton2.play(prefs.getFloat("volume", 0.2f));
-                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-                    prefs.putBoolean("isFullScreenEnabled", true);
+            switchFullscreen = new Button(skinSgx, "switch");
+            if (prefs.getBoolean("isFullScreenEnabled"))
+                switchFullscreen.setChecked(true);
 
-                } else {
-                    soundButton2.play(prefs.getFloat("volume", 0.2f));
-                    Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
-                    prefs.putBoolean("isFullScreenEnabled", false);
+            switchFullscreen.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    if (!prefs.getBoolean("isFullScreenEnabled")) {
+                        soundButton2.play(prefs.getFloat("volume", 0.2f));
+                        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                        prefs.putBoolean("isFullScreenEnabled", true);
+
+                    } else {
+                        soundButton2.play(prefs.getFloat("volume", 0.2f));
+                        Gdx.graphics.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
+                        prefs.putBoolean("isFullScreenEnabled", false);
+                    }
+                    prefs.flush();
                 }
-                prefs.flush();
-            }
-        });
-        table.add(labelFullscreen).height(Value.percentHeight(1f)).padRight(windowSettingsWidth * 8 / 100);
-        table.add(switchFullscreen);
-        table.row();
+            });
+            table.add(labelFullscreen).height(Value.percentHeight(1f)).padRight(windowSettingsWidth * 8 / 100);
+            table.add(switchFullscreen);
+            table.row();
+        }
+
         Label labelRegistration = new Label(lang.get("label_registration"), skinSgx, "white");
         labelRegistration.setHeight(SCREEN_HEIGHT * 13 / 200);
 
@@ -530,7 +547,7 @@ public class Menu implements Screen {
         table.add(switchRegistration);
         table.row();
 
-        if (prefs.getBoolean("isAccountEnabled") && SCREEN_WIDTH <= SCREEN_HEIGHT) {
+        if (prefs.getBoolean("isAccountEnabled") && (SCREEN_WIDTH <= SCREEN_HEIGHT || Gdx.app.getType() == Application.ApplicationType.Android )) {
             Label labelPlayer1 = new Label("Player 1", skinSgx, "title");
             Label labelPlayer2 = new Label("Player 2", skinSgx, "title");
 
@@ -634,6 +651,11 @@ public class Menu implements Screen {
                 }
                 enableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
                 windowAlert.remove();
+
+                if (Gdx.app.getType() == Application.ApplicationType.Android) {
+                    prefs.putBoolean("isAccountEnabled", false);
+                    //TODO quit the settings window
+                }
             }
         });
         TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
@@ -655,6 +677,9 @@ public class Menu implements Screen {
     }
 
     private void showLoginWindow() {
+
+        int corner = (int) (Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) * 0.9);
+
         disableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
 
         Stack contentBack = new Stack();
@@ -663,7 +688,7 @@ public class Menu implements Screen {
         contentBack.addActor(tableBack);
         tableBackground = new Table();
         tableBackground.setFillParent(true);
-        tableBackground.add(contentBack).size(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100 - buttonCenterHeight);
+        tableBackground.add(contentBack).size(corner * 70 / 100, corner * 77 / 100 - buttonCenterHeight);
         stage.addActor(tableBackground);
         mainTableLogin.clear();
         stage.addActor(mainTableLogin);
@@ -740,8 +765,8 @@ public class Menu implements Screen {
             stage.setKeyboardFocus(fieldNameSignUp);
         }
         Table tableButtons = new Table();
-        tableButtons.add(buttonTabLogin).width((SCREEN_HEIGHT * 70 / 100) / 2);
-        tableButtons.add(buttonTabSignUp).width((SCREEN_HEIGHT * 70 / 100) / 2);
+        tableButtons.add(buttonTabLogin).width((corner * 70 / 100) / 2);
+        tableButtons.add(buttonTabSignUp).width((corner * 70 / 100) / 2);
 
         buttonTabSignUp.setTouchable(Touchable.enabled);
         mainTableLogin.add(tableButtons);
@@ -958,57 +983,57 @@ public class Menu implements Screen {
         });
         final Table tableSignUp = new Table();
         tableSignUp.setBackground(backgroundGrey);
-        tableSignUp.padTop(SCREEN_WIDTH * 1 / 100);
+        tableSignUp.padTop(corner * 1 / 100);
         Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
         avatarLabel.setAlignment(1);
         tableSignUp.add(avatarLabel).colspan(2).padBottom(SCREEN_HEIGHT * 2 / 100);
         tableSignUp.row();
-        tableSignUp.add(buttonLoginAvatar).width(SCREEN_WIDTH * 7 / 100).height(SCREEN_WIDTH * 7 / 100).padBottom(SCREEN_HEIGHT * 1 / 100).colspan(2);
+        tableSignUp.add(buttonLoginAvatar).width(corner * 7 / 100).height(corner * 7 / 100).padBottom(corner * 1 / 100).colspan(2);
         tableSignUp.row();
         cellSignUp = tableSignUp.getCell(buttonLoginAvatar);
         messageErrorNoAvatar.setAlignment(1);
         messageErrorLengthUsername.setAlignment(1);
         messageErrorPasswordNotMatch.setAlignment(1);
         messageErrorLengthPassword.setAlignment(1);
-        tableSignUp.add(noMessageError0).center().padBottom(SCREEN_HEIGHT * 20 / 1000).colspan(2);
+        tableSignUp.add(noMessageError0).center().padBottom(corner * 20 / 1000).colspan(2);
         tableSignUp.row();
         cellErrorAvatarSignUp = tableSignUp.getCell(noMessageError0);
-        labelUserName.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldNameSignUp.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        labelUserName.setWidth(corner * 70 / 100 * 55 / 100);
+        fieldNameSignUp.setWidth(corner * 70 / 100 * 45 / 100);
         labelUserName.setAlignment(1);
         tableSignUp.add(labelUserName).fill();
         tableSignUp.add(fieldNameSignUp).fill().left().width(Value.percentWidth(1f));
         tableSignUp.row();
-        tableSignUp.add(noMessageError1).center().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
+        tableSignUp.add(noMessageError1).center().padBottom(corner * 3 / 100).colspan(2);
         tableSignUp.row();
         cellErrorUsernameSignUp = tableSignUp.getCell(noMessageError1);
         labelNewPassword1.setAlignment(1);
-        labelNewPassword1.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldPassword1SignUp.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        labelNewPassword1.setWidth(corner * 70 / 100 * 55 / 100);
+        fieldPassword1SignUp.setWidth(corner * 70 / 100 * 45 / 100);
         tableSignUp.add(labelNewPassword1);
         tableSignUp.add(fieldPassword1SignUp).fill().width(Value.percentWidth(1f));
         tableSignUp.row();
-        tableSignUp.add(noMessageError2).center().padBottom(SCREEN_HEIGHT * 3 / 100).colspan(2);
+        tableSignUp.add(noMessageError2).center().padBottom(corner * 3 / 100).colspan(2);
         tableSignUp.row();
         cellErrorPasswordSignUp = tableSignUp.getCell(noMessageError2);
-        labelNewPassword2.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldPassword2SignUp.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        labelNewPassword2.setWidth(corner * 70 / 100 * 55 / 100);
+        fieldPassword2SignUp.setWidth(corner * 70 / 100 * 45 / 100);
         labelNewPassword2.setAlignment(1);
         tableSignUp.add(labelNewPassword2).width(Value.percentWidth(1f)).fill();//.padRight(SCREEN_WIDTH * 2 / 100);
         tableSignUp.add(fieldPassword2SignUp).fill();
         tableSignUp.row();
         tableSignUp.add(noMessageError3).center().colspan(2);
-        tableSignUp.row().padTop(SCREEN_HEIGHT * 70 / 100 * 4 / 100);
+        tableSignUp.row().padTop(corner * 70 / 100 * 4 / 100);
         cellErrorPassword2SignUp = tableSignUp.getCell(noMessageError3);
-        buttonSignUpCancel.setWidth(SCREEN_HEIGHT * 70 / 100 * 21 / 100);
+        buttonSignUpCancel.setWidth(corner * 70 / 100 * 21 / 100);
         buttonSignUp.setWidth(buttonSignUpCancel.getWidth());
-        tableSignUp.add(buttonSignUpCancel).width(Value.percentWidth(1f)).left().padLeft(SCREEN_WIDTH * 9 / 100).padBottom(SCREEN_HEIGHT * 2 / 100);
-        tableSignUp.add(buttonSignUp).width(Value.percentWidth(1f)).right().padRight(SCREEN_WIDTH * 9 / 100).padBottom(SCREEN_HEIGHT * 2 / 100);
+        tableSignUp.add(buttonSignUpCancel).width(Value.percentWidth(1f)).left().padLeft(corner * 9 / 100).padBottom(corner * 2 / 100);
+        tableSignUp.add(buttonSignUp).width(Value.percentWidth(1f)).right().padRight(corner * 9 / 100).padBottom(corner * 2 / 100);
         tableSignUp.row();
         final Table tableLogin = new Table();
         tableLogin.setBackground(backgroundGrey);
-        labelUserNameLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldNameLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        labelUserNameLogin.setWidth(corner * 70 / 100 * 55 / 100);
+        fieldNameLogin.setWidth(corner * 70 / 100 * 45 / 100);
         labelUserNameLogin.setAlignment(1);
         tableLogin.add(labelUserNameLogin).fill();
         tableLogin.add(fieldNameLogin).fill().left().width(Value.percentWidth(1f));
@@ -1016,15 +1041,15 @@ public class Menu implements Screen {
 
         if (messageErrorLogin.equals(prefs.getString("USER_NAME_NOT_EXIST"))) {
             messageErrorUsername.setAlignment(1);
-            tableLogin.add(messageErrorUsername).left().padBottom(SCREEN_HEIGHT * 6 / 100).colspan(2);
-        } else tableLogin.add(noMessageError4).left().padBottom(SCREEN_HEIGHT * 6 / 100).colspan(2);
+            tableLogin.add(messageErrorUsername).left().padBottom(corner * 6 / 100).colspan(2);
+        } else tableLogin.add(noMessageError4).left().padBottom(corner * 6 / 100).colspan(2);
         tableLogin.row();
 
         cellErrorUsernameLogin = tableLogin.getCell(noMessageError4);
 
         labelCurrentPasswordLogin.setAlignment(1);
-        labelCurrentPasswordLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 55 / 100);
-        fieldPasswordLogin.setWidth(SCREEN_HEIGHT * 70 / 100 * 45 / 100);
+        labelCurrentPasswordLogin.setWidth(corner * 70 / 100 * 55 / 100);
+        fieldPasswordLogin.setWidth(corner * 70 / 100 * 45 / 100);
         tableLogin.add(labelCurrentPasswordLogin);
         tableLogin.add(fieldPasswordLogin).fill().width(Value.percentWidth(1f));
         tableLogin.row();
@@ -1032,17 +1057,20 @@ public class Menu implements Screen {
         if (messageErrorLogin.equals(prefs.getString("INCORRECT_PASSWORD"))) {
             messageErrorLoginPassword.setAlignment(1);
             tableLogin.add(messageErrorLoginPassword).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
-        } else tableLogin.add(noMessageError5).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
+        } else {
+            tableLogin.add(noMessageError5).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
+        }
+
         tableLogin.row();
         cellErrorPasswordLogin = tableLogin.getCell(noMessageError5);
 
-        buttonLoginCancel.setWidth(SCREEN_HEIGHT * 70 / 100 * 21 / 100);
+        buttonLoginCancel.setWidth(corner * 70 / 100 * 21 / 100);
         buttonLogin.setWidth(buttonLoginCancel.getWidth());
-        tableLogin.add(buttonLoginCancel).width(Value.percentWidth(1f)).left().padLeft(SCREEN_HEIGHT * 70 / 100 * 15 / 100);
-        tableLogin.add(buttonLogin).width(Value.percentWidth(1f)).right().padRight(SCREEN_HEIGHT * 70 / 100 * 15 / 100);
+        tableLogin.add(buttonLoginCancel).width(Value.percentWidth(1f)).left().padLeft(corner * 70 / 100 * 15 / 100);
+        tableLogin.add(buttonLogin).width(Value.percentWidth(1f)).right().padRight(corner * 70 / 100 * 15 / 100);
         content.addActor(tableLogin);
         content.addActor(tableSignUp);
-        mainTableLogin.add(content).size(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100 - buttonLogin.getHeight());
+        mainTableLogin.add(content).size(SCREEN_HEIGHT * 70 / 100, corner * 77 / 100 - buttonLogin.getHeight());
 
         ChangeListener tabListener = new ChangeListener() {
             @Override
