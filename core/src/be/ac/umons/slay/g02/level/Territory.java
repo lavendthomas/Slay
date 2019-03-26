@@ -8,6 +8,7 @@ import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 import be.ac.umons.slay.g02.players.Statistics;
@@ -29,6 +30,8 @@ public class Territory {
     private int coins;
     private int income;
     private int wages;
+
+    private int islandNumber = LevelSelection.getCurrentIslandNumber();
 
     public Territory(Player owner, Tile... cells) {
         this.owner = owner;
@@ -274,10 +277,9 @@ public class Territory {
             coins = income - wages;
         }
         // Updates currentLands for stats - at each turn (currentLands += number of cells)
-        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+        if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName())) {
             updatePlayerStatsLands(player1, cells.size());
-
-        else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+        } else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
             updatePlayerStatsLands(player2, cells.size());
     }
 
@@ -286,8 +288,10 @@ public class Territory {
      * @param cellNumber
      */
     private void updatePlayerStatsLands(HumanPlayer player, int cellNumber) {
-        player.getStatistics().addToStat(player.getStatistics().getCurrentStats(),
+        player.getGlobalStats().addToStat(player.getGlobalStats().getCurrentStats(),
                 Statistics.CURRENT_LANDS, cellNumber);
+        player.getListLevelStats(islandNumber).addToStat(player.getListLevelStats(islandNumber)
+                .getCurrentStats(), Statistics.CURRENT_LANDS, cellNumber);
     }
 
     /**
@@ -295,8 +299,10 @@ public class Territory {
      * @param entity
      */
     private void updatePlayerStatsLost(HumanPlayer player, Entity entity) {
-        player.getStatistics().incrementStatInMap(player.getStatistics().getCurrentStats(),
+        player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getCurrentStats(),
                 "currentLost_" + entity.getName());
+        player.getListLevelStats(islandNumber).incrementStatInMap(player.getListLevelStats(islandNumber)
+                .getCurrentStats(), "currentLost_" + entity.getName());
     }
 
     /**

@@ -8,7 +8,6 @@ public class HumanPlayer extends Player {
     Account account;
     GlobalStats globalStats = new GlobalStats();
     List listLevelStats = new ArrayList();
-    Statistics statistics = new Statistics();
 
     public HumanPlayer(String name, Colors color) {
         this.name = name;
@@ -29,10 +28,6 @@ public class HumanPlayer extends Player {
 
     public void setAccount(Account account) {
         this.account = account;
-    }
-
-    public Statistics getStatistics() {
-        return statistics;
     }
 
     public GlobalStats getGlobalStats() {

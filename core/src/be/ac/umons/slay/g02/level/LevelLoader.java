@@ -27,6 +27,7 @@ import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 import be.ac.umons.slay.g02.gui.screens.Menu;
+import be.ac.umons.slay.g02.players.AIAdaptive;
 import be.ac.umons.slay.g02.players.AIAdvanced;
 import be.ac.umons.slay.g02.players.AIEasy;
 import be.ac.umons.slay.g02.players.AIMedium;
@@ -36,6 +37,8 @@ import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.prefs;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
+import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 public class LevelLoader {
 
@@ -244,8 +247,11 @@ public class LevelLoader {
             case 3 :
                 player = new AIAdvanced(color, name);
                 break;
-            default:
+            case 4 :
                 player = new AIRandom(color, name);
+                break;
+            default:
+                player = new AIAdaptive(color, name);
                 break;
         }
         return player;
@@ -358,6 +364,18 @@ public class LevelLoader {
                                 throw new FileFormatException("A soldier has to belong to a territory");
                             }
                             level.set(s, coord);
+
+                                                        /*
+                                Updates currentL. for stats - when a unit is assigned to the player
+                                at the beginning of the game
+                            */
+                            if (prefs.getBoolean("isPlayer1Logged") && level.get(coord)
+                                    .getTerritory().getOwner().getName().equals(player1.getName()))
+                                updatePlayerStatsUnits(player1, s);
+
+                            else if (prefs.getBoolean("isPlayer2Logged") && level.get(coord)
+                                    .getTerritory().getOwner().getName().equals(player2.getName()))
+                                updatePlayerStatsUnits(player2, s);
                         }
                     }
                 }
@@ -388,6 +406,21 @@ public class LevelLoader {
         public TiledMap getMap() {
             return this.map;
         }
+    }
 
+    /**
+     * Updates the currentStats for a unit given to the player at the start of the game
+     * The currentStats in question are CURRENT_L0 to CURRENT_L3
+     *
+     * @param player the owner of the unit
+     * @param soldier the unit assigned to the player
+     */
+    private static void updatePlayerStatsUnits(HumanPlayer player, Soldier soldier) {
+        int islandNumber = LevelSelection.getCurrentIslandNumber();
+
+        player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getCurrentStats(),
+                "current" + soldier.getName());
+        player.getListLevelStats(islandNumber).incrementStatInMap(player.getListLevelStats(islandNumber)
+                .getCurrentStats(), "current" + soldier.getName());
     }
 }

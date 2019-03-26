@@ -107,8 +107,10 @@ public class StatsLoader {
                         playerHuman.setAccount(account);
                         playerHuman.setGlobalStats(globalStats);
                         playerHuman.setListLevelStats(listStatsLevel);
-                        prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
-                        prefs.flush();
+                        if(playerHuman.getGlobalStats().getScore()!=0){
+                            prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
+                            prefs.flush();
+                        }else   playerHuman.getGlobalStats().setRank(0);
                     }
                 }
                 tabScore.add(playerHuman);

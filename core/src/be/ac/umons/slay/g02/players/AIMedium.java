@@ -45,10 +45,15 @@ public class AIMedium extends Player implements AI {
      */
 
     @Override
-    public boolean play() {
+    public boolean play(Player player, boolean forMe) {
         AIMethods.sleep();
         level = GameScreen.getLevel();
-        List<List<Coordinate>> allTerritories = AIMethods.loadTerritories(level, this, false);
+        List<List<Coordinate>> allTerritories;
+        if (forMe) {
+            allTerritories = AIMethods.loadTerritories(level, this, false);
+        } else {
+            allTerritories = AIMethods.loadTerritories(level, player, false);
+        }
         for (List<Coordinate> territory : allTerritories) {
             // Pour chaque territoire
             tryToAddUnit(territory);
