@@ -51,8 +51,6 @@ public class AIAdaptive extends Player implements AI {
     public boolean play(Player player, boolean forMe) {
         level = GameScreen.getLevel();
         players = Level.getPlayers();
-
-
         int [] scores = scoreCount();
         int hard = 0; // Random by default
 
@@ -78,7 +76,7 @@ public class AIAdaptive extends Player implements AI {
 
             }
         }
-        System.out.println(hard);
+
         boolean bool;
         switch (hard) {
             case 1 :
@@ -97,7 +95,11 @@ public class AIAdaptive extends Player implements AI {
         return bool;
     }
 
-
+    /**
+     * Calculate the score of each player to estimate who wins
+     *
+     * @return Table of integers containing the score of each player
+     */
 
     private int[] scoreCount() {
 
