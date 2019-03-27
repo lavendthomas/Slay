@@ -229,7 +229,6 @@ public class GameScreen implements Screen {
             translateY += 5;
             camera.translate(0, 5, 0);
         }
-        System.out.println(camera.zoom);
 
     }
 
