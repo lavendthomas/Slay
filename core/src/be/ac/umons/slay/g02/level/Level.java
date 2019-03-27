@@ -282,7 +282,7 @@ public class Level implements Playable {
                 int fromLvl = ((Soldier) entity).getSoldierLevel().getLevel();
 
                 // Checks if the soldiers can merge
-                if (toLvl == fromLvl && toLvl + fromLvl < 3) {
+                if (toLvl == fromLvl && toLvl + 1 <= 3) {
                     visited.add(terr);
                 }
             } else {
@@ -418,7 +418,7 @@ public class Level implements Playable {
                     int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
 
                     // Checks if the soldiers can merge
-                    return toLvl == fromLvl && toLvl + fromLvl < 3;
+                    return toLvl == fromLvl && toLvl + 1 <= 3;
                 }
                 return true;
             } else {
@@ -495,10 +495,10 @@ public class Level implements Playable {
                         // Prevents movement on its own capital
 
                         if (to.getEntity() instanceof Soldier) {
-                            // Soldier fusion
+                            // Soldier merge
                             int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
                             int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                            int newLvl = toLvl + fromLvl + 1;
+                            int newLvl = fromLvl + 1;
                             // If "to" soldier has already moved (no need to check each other because it can move)
                             to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
                                     ((Soldier) to.getEntity()).getMoved()));
