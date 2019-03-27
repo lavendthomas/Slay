@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.gui.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -127,6 +128,7 @@ public class GameScreen implements Screen {
     private int nbreH;
     private boolean AIisPaused = false;
     private boolean endPlay = false; // partie continue tant que faux
+    private ImageButton lastButtonCLicked;
 
     private int worldW;
     private int worldH;
@@ -723,7 +725,7 @@ public class GameScreen implements Screen {
      *
      */
     private void loadButtons() {
-        
+
         int image_corner = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
         hudCam = new OrthographicCamera();
         if (hud == null) {
@@ -748,25 +750,32 @@ public class GameScreen implements Screen {
             final ImageButton buttonV0 = new ImageButton(imagePause);
 
             // Bien positionner les boutons
+
             float offsetW = 10;
             float offsetH = buttonV4.getHeight();
-            buttonV4.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
+            buttonV4.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_HEIGHT * 1 / 200, offsetH);
             offsetW += buttonV3.getWidth() + 10;
-            buttonV3.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
+            buttonV3.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_HEIGHT * 1 / 200, offsetH);
             offsetW += buttonV2.getWidth() + 10;
-            buttonV2.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
+            buttonV2.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_HEIGHT * 1 / 200, offsetH);
             offsetW += buttonV1.getWidth() + 10;
-            buttonV1.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
+            buttonV1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_HEIGHT * 1 / 200, offsetH);
             offsetW += buttonV0.getWidth() + 10;
-            buttonV0.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
-            makeButtonGreen(true, buttonV3);
+            buttonV0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_HEIGHT * 1 / 200, offsetH);
 
+
+            if (lastButtonCLicked == null) {
+                makeButtonGreen(true, buttonV3);
+            } else {
+                makeButtonGreen(true, lastButtonCLicked);
+            }
             // Ajouter les actions
 
             buttonV4.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
+                        lastButtonCLicked = buttonV4;
                         makeButtonGreen(true, buttonV4);
                         makeButtonGreen(false, buttonV0, buttonV1, buttonV2, buttonV3);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
@@ -780,6 +789,7 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
+                        lastButtonCLicked = buttonV3;
                         makeButtonGreen(true, buttonV3);
                         makeButtonGreen(false, buttonV0, buttonV1, buttonV2, buttonV4);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
@@ -793,6 +803,7 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
+                        lastButtonCLicked = buttonV2;
                         makeButtonGreen(true, buttonV2);
                         makeButtonGreen(false, buttonV0, buttonV1, buttonV3, buttonV4);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
@@ -806,6 +817,7 @@ public class GameScreen implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
+                        lastButtonCLicked = buttonV1;
                         makeButtonGreen(true, buttonV1);
                         makeButtonGreen(false, buttonV0, buttonV2, buttonV3, buttonV4);
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
@@ -820,6 +832,7 @@ public class GameScreen implements Screen {
                 public void clicked(InputEvent event, float x, float y) {
                     if (!windowPause.isVisible()) {
                         soundButton3.play(prefs.getFloat("volume", 0.1f));
+                        lastButtonCLicked = buttonV0;
                         makeButtonGreen(true, buttonV0);
                         makeButtonGreen(false, buttonV1, buttonV2, buttonV3, buttonV4);
                         AIisPaused = true;
@@ -838,7 +851,7 @@ public class GameScreen implements Screen {
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
             buttonNext = new ImageButton(imageNext);
-            buttonNext.setSize(image_corner * 4 / 100, image_corner * 12 / 100);
+            buttonNext.setSize(image_corner * 8 / 100, image_corner * 12 / 100);
             buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() / 2);
             buttonNext.addListener(new ClickListener() {
                 @Override
@@ -945,6 +958,8 @@ public class GameScreen implements Screen {
             }
         });
 
+
+
         // Player 1
 
         checkboxPlayer1 = new CheckBox("", skinSgx, "radio");
@@ -998,21 +1013,35 @@ public class GameScreen implements Screen {
         labelWages.setVisible(false);
 
         Table screenTablePlayers = new Table();
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
         screenTablePlayers.setFillParent(true);
         screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
         screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
-        screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
-        screenTablePlayers.add(labelP1).left();
+            screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
+            screenTablePlayers.add(labelP1).left();
+        }
         screenTablePlayers.row();
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
         screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
-        screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
-        screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
-
+            screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
+            screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
+        }
         Table tableMarket = new Table();
-        tableMarket.add(buttonL0).padRight(1.5f * buttonL1.getWidth());
-        tableMarket.add(buttonL1).padRight(1.5f * buttonL1.getWidth());
-        tableMarket.add(buttonL2).padRight(1.5f * buttonL1.getWidth());
-        tableMarket.add(buttonL3).padRight(1.5f * buttonL1.getWidth());
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            tableMarket.add(buttonL0).padRight(1.5f * buttonL1.getWidth());
+            tableMarket.add(buttonL1).padRight(1.5f * buttonL1.getWidth());
+            tableMarket.add(buttonL2).padRight(1.5f * buttonL1.getWidth());
+            tableMarket.add(buttonL3).padRight(1.5f * buttonL1.getWidth());
+        } else {
+            tableMarket.add(buttonL3).padTop(1.5f * buttonL1.getHeight());
+            tableMarket.row();
+            tableMarket.add(buttonL2).padTop(1.5f * buttonL1.getHeight());
+            tableMarket.row();
+            tableMarket.add(buttonL1).padTop(1.5f * buttonL1.getHeight());
+            tableMarket.row();
+            tableMarket.add(buttonL0).padTop(1.5f * buttonL1.getHeight());
+        }
+
 
         Table tableIncome = new Table();
         tableIncome.add(labelIncome);
@@ -1027,8 +1056,12 @@ public class GameScreen implements Screen {
         screenTableMarket.setFillParent(true);
         screenTableMarket.addActor(buttonChest);
         screenTableMarket.addActor(labelCoins);
-        screenTableMarket.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
 
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+            screenTableMarket.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
+        } else {
+            screenTableMarket.add(tableMarket).padTop((SCREEN_HEIGHT - buttonL0.getHeight()) / 2 ).padRight(SCREEN_WIDTH - buttonL0.getWidth());
+        }
         hud.addActor(buttonPause);
         hud.addActor(screenTableMarket);
         hud.addActor(screenTableIncome);
