@@ -40,7 +40,7 @@ public class Tile {
                         // Place in my territory and there is already a soldier
                         int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                         int fromLvl = ((Soldier) e).getSoldierLevel().getLevel();
-                        int newLvl = toLvl + fromLvl + 1;
+                        int newLvl = fromLvl + 1;
                         to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl), ((Soldier) to.getEntity()).getMoved()));
                         return true;
                     } else if (to.getEntity() == StaticEntity.CAPITAL) {
