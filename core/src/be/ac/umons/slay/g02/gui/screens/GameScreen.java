@@ -32,6 +32,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
@@ -141,19 +142,14 @@ public class GameScreen implements Screen {
         this.levelName = levelName;
         this.numberHumans = numberHumans;
 
-        init();
-
-    }
-    private void init() {
-        if (hud != null) {
-            hud.clear();
-        }
-
         click = ClickState.NOTHING_SELECTED;
         windowPause.setVisible(false);
         windowEnd.setVisible(false);
 
+        init();
 
+    }
+    private void init() {
 
         try {
             camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -238,8 +234,9 @@ public class GameScreen implements Screen {
      *
      */
     private void showPauseWindow() {
+        int CORNER_SIZE = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT);
         windowPause.clear();
-        windowPause.setSize(SCREEN_WIDTH / 3, SCREEN_HEIGHT / 3);
+        windowPause.setSize( CORNER_SIZE / 2, CORNER_SIZE / 2);
         windowPause.setPosition(SCREEN_WIDTH / 2 - windowPause.getWidth() / 2, SCREEN_HEIGHT / 2 - windowPause.getHeight() / 2);
         windowPause.setMovable(false);
         // place le titre de la fenetre au milieu
@@ -270,8 +267,8 @@ public class GameScreen implements Screen {
                 showWindowQuit();
             }
         });
-        buttonResume.setWidth(windowPause.getWidth() * 40 / 100);
-        buttonQuit.setWidth(windowPause.getWidth() * 40 / 100);
+        buttonResume.setWidth(windowPause.getWidth() * 90 / 100);
+        buttonQuit.setWidth(windowPause.getWidth() * 90 / 100);
 
         windowPause.add(buttonResume).padBottom(windowPause.getWidth() * 7 / 100).fill().width(Value.percentWidth(1f));
         windowPause.row();
@@ -284,8 +281,9 @@ public class GameScreen implements Screen {
      *
      */
     private void showWindowQuit() {
+        int CORNER_SIZE = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT);
         windowQuit.clear();
-        windowQuit.setSize(SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4);
+        windowQuit.setSize(CORNER_SIZE / 4, CORNER_SIZE / 4);
         windowQuit.setPosition(SCREEN_WIDTH / 2 - windowQuit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowQuit.getHeight() / 2);
         windowQuit.setMovable(false);
         // place le titre de la fenetre au milieu
@@ -296,7 +294,7 @@ public class GameScreen implements Screen {
         table.setFillParent(true);
         table.padTop(windowQuit.getHeight() * 17 / 100);
 
-        Label labelQuitConfirm = new Label("Are you sure ?", skinSgx, "white");
+        Label labelQuitConfirm = new Label("Are you sure?", skinSgx, "white");
 
         TextButton buttonYes = new TextButton("Yes", skinSgx, "big");
         buttonYes.addListener(new ClickListener() {
@@ -318,8 +316,8 @@ public class GameScreen implements Screen {
 
         table.add(labelQuitConfirm).width(Value.percentWidth(1f)).colspan(2).padBottom(SCREEN_WIDTH / 3 * 8 / 100);
         table.row();
-        buttonYes.setWidth(SCREEN_WIDTH / 3 * 20 / 100);
-        buttonNo.setWidth(SCREEN_WIDTH / 3 * 20 / 100);
+        buttonYes.setWidth(CORNER_SIZE / 3 * 20 / 100);
+        buttonNo.setWidth(CORNER_SIZE / 3 * 20 / 100);
         table.add(buttonYes).padRight(windowQuit.getWidth() * 8 / 100).width(Value.percentWidth(1f));
         table.add(buttonNo).width(Value.percentWidth(1f));
 
@@ -695,6 +693,10 @@ public class GameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.setScreenBounds(0, 0, width, height);
+        loadButtons();
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+        camera.update();
     }
 
     @Override
@@ -721,8 +723,17 @@ public class GameScreen implements Screen {
      *
      */
     private void loadButtons() {
+        
+        int image_corner = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
         hudCam = new OrthographicCamera();
-        hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
+        if (hud == null) {
+            //hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
+            hud = new Stage(new ScreenViewport());
+        } else {
+            hud.clear();
+        }
+
+
         if (numberHumans == 0) {
             // Initialisation des boutons
             TextureRegionDrawable imageV4 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v4.png"))));
@@ -739,15 +750,15 @@ public class GameScreen implements Screen {
             // Bien positionner les boutons
             float offsetW = 10;
             float offsetH = buttonV4.getHeight();
-            buttonV4.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            buttonV4.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
             offsetW += buttonV3.getWidth() + 10;
-            buttonV3.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            buttonV3.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
             offsetW += buttonV2.getWidth() + 10;
-            buttonV2.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            buttonV2.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
             offsetW += buttonV1.getWidth() + 10;
-            buttonV1.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            buttonV1.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
             offsetW += buttonV0.getWidth() + 10;
-            buttonV0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_WIDTH * 1 / 200, offsetH);
+            buttonV0.setPosition((image_corner - offsetW) * 96 / 100 + image_corner * 1 / 200, offsetH);
             makeButtonGreen(true, buttonV3);
 
             // Ajouter les actions
@@ -827,7 +838,7 @@ public class GameScreen implements Screen {
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
             buttonNext = new ImageButton(imageNext);
-            buttonNext.setSize(SCREEN_WIDTH * 4 / 100, SCREEN_HEIGHT * 6 / 100);
+            buttonNext.setSize(image_corner * 4 / 100, image_corner * 12 / 100);
             buttonNext.setPosition((SCREEN_WIDTH - buttonNext.getWidth()) * 96 / 100 + SCREEN_WIDTH * 1 / 200, buttonNext.getHeight() / 2);
             buttonNext.addListener(new ClickListener() {
                 @Override
@@ -850,7 +861,7 @@ public class GameScreen implements Screen {
 
         TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/dots.png"))));
         buttonPause = new ImageButton(imageDots);
-        buttonPause.setSize(SCREEN_WIDTH * 2 / 100, SCREEN_HEIGHT * 5 / 100);
+        buttonPause.setSize(image_corner * 2 / 100, image_corner * 5 / 100);
         buttonPause.setPosition((SCREEN_WIDTH - buttonPause.getWidth()) * 97 / 100, (SCREEN_HEIGHT - buttonPause.getHeight()) * 94 / 100);
         buttonPause.addListener(new ClickListener() {
             @Override
@@ -1047,9 +1058,11 @@ public class GameScreen implements Screen {
         });
 
         // Creates a multiplexer to handle the input in hud
-        multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(hud);
-        multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
+        if (multiplexer == null) {
+            multiplexer = new InputMultiplexer();
+            multiplexer.addProcessor(hud);
+            multiplexer.addProcessor(new GestureDetector(new LevelGestureListener(this, camera)));
+        }
     }
 
     /**
