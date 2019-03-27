@@ -47,7 +47,7 @@ public class LevelGestureListener implements GestureDetector.GestureListener {
 
     @Override
     public boolean zoom(float initialDistance, float distance) {
-        camera.zoom += (initialDistance - distance) / 100000;
+        game.changeZoom((initialDistance - distance) / 100000);
         return false;
     }
 

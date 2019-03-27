@@ -208,10 +208,10 @@ public class GameScreen implements Screen {
      */
     private void handleInput() { //TODO Bloquer dépassements (trop zoom, trop à gauche ...)
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
-            camera.zoom += 0.02;
+            changeZoom(0.02f);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.Q) || Gdx.input.isKeyPressed(Input.Keys.EQUALS)) {
-            camera.zoom -= 0.02;
+            changeZoom(-0.02f);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             translateX -= 5;
@@ -229,7 +229,12 @@ public class GameScreen implements Screen {
             translateY += 5;
             camera.translate(0, 5, 0);
         }
+        System.out.println(camera.zoom);
 
+    }
+
+    void changeZoom(float delta) {
+        camera.zoom = (float) Math.max(0.2, Math.min(2.0, camera.zoom + delta));
     }
 
     /**
