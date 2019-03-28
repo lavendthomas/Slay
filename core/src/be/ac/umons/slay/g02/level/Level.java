@@ -414,21 +414,8 @@ public class Level implements Playable {
         if (to.getType().equals(TileType.NEUTRAL) && from.getEntity() instanceof Soldier && !(((Soldier) from.getEntity()).getMoved())) {
             //Prevents movement in the water, verifies that you are trying to move a soldier and that no entity has already moved
 
-            if (to.getTerritory() == null) {
+            if (to.getTerritory() == null || to.hasSameOwner(from)) {
                 // Moving to a cell that does not belong to anyone
-                return true;
-            } else if (to.hasSameOwner(from)) {
-                // Moving in the same territory
-
-                if (to.getEntity() != null && to.getEntity() instanceof Soldier) {
-                    // Moving on another soldier
-
-                    int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                    int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
-
-                    // Checks if the soldiers can merge
-                    return toLvl == fromLvl && toLvl + 1 <= 3;
-                }
                 return true;
             } else {
                 // Moving in another territory
@@ -505,19 +492,21 @@ public class Level implements Playable {
                             // Soldier merge
                             int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
                             int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
-                            int newLvl = fromLvl + 1;
-                            // If "to" soldier has already moved (no need to check each other because it can move)
-                            to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
-                                    ((Soldier) to.getEntity()).getMoved()));
+                            if (fromLvl == toLvl) {
+                                int newLvl = fromLvl + 1;
+                                // If "to" soldier has already moved (no need to check each other because it can move)
+                                to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
+                                        ((Soldier) to.getEntity()).getMoved()));
 
-                            // Updates currentL. for stats - when two soldiers merge, they are deleted and another type is added
-                            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
-                                updatePlayerStatsMerge(player1, fromLvl, toLvl, newLvl);
+                                // Updates currentL. for stats - when two soldiers merge, they are deleted and another type is added
+                                if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+                                    updatePlayerStatsMerge(player1, fromLvl, toLvl, newLvl);
 
-                            else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
-                                updatePlayerStatsMerge(player2, fromLvl, toLvl, newLvl);
+                                else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+                                    updatePlayerStatsMerge(player2, fromLvl, toLvl, newLvl);
 
-                            from.setEntity(null);
+                                from.setEntity(null);
+                            }
 
                         } else {
                             // Just moves the Entity

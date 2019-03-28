@@ -115,6 +115,13 @@ public class LevelTests {
         Coordinate c6 = new Coordinate(3, 2);
         level.get(c6).setTerritory(new Territory(p2, level.get(c6)));
 
+        System.out.println(p1.equals(p2));
+        System.out.println(level.get(c2).getTerritory().getOwner());
+        System.out.println(level.get(c3).getTerritory().getOwner());
+        System.out.println(level.get(c4).getTerritory().getOwner());
+        System.out.println(level.get(c5).getTerritory().getOwner());
+        System.out.println(level.get(c6).getTerritory().getOwner());
+
         Territory t1 = level.get(c1).getTerritory();
         t1.setCapital(level.get(c1));
         t1.setCoins(20);
@@ -160,6 +167,30 @@ public class LevelTests {
         level.move(c0, c1);
         assertEquals("L1",level.get(c1).getEntity().getName());
     }
+
+    @Test
+    public void conquerEnemyTerritory() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(2, 2);
+        Coordinate c1 = new Coordinate(2, 1);
+
+        level.move(c0, c1);
+        level.mergeTerritories();
+        assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
+    }
+
+    @Test
+    public void conquerNeutreTerritory() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(2, 2);
+        Coordinate c1 = new Coordinate(1, 2);
+        level.move(c0, c1);
+        assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
+    }
+
+
 
     @Test
     public void attackCapital() {
