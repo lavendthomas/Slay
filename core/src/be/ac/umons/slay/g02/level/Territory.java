@@ -295,12 +295,11 @@ public class Territory {
             for (Tile c : cells) {
                 if (c.getEntity() != null && c.getEntity().getCost() > 0) {
                     // Updates currentLostL. for stats - when a soldier dies because of bankrupt
-                    if (prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+                    if (prefs != null && prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
                         Level.updatePlayerStatsLost(player1, c.getEntity());
 
-                    else if (prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+                    else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
                         Level.updatePlayerStatsLost(player2, c.getEntity());
-
                     c.setEntity(StaticEntity.GRAVE);
                 }
             }

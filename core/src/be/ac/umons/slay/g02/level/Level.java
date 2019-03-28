@@ -353,10 +353,12 @@ public class Level implements Playable {
             fringes.add(new ArrayList<Coordinate>());
             for (Coordinate c : fringes.get(k - 1)) {
                 for (Coordinate neighbour : c.getNeighbors()) {
+
                     if (!visited.contains(neighbour) && canMove(start, neighbour)) {
                         // Not already visited and can move to
 
                         if (!get(neighbour).hasSameOwner(get(start))) {
+
                             // Not same owner so stop in this direction
 
                             visited.add(neighbour);
@@ -475,7 +477,6 @@ public class Level implements Playable {
          *	and checks that the coordinates are different
          */
         if (listMoves.contains(toC) && !fromC.equals(toC)) {
-
             Tile to = get(toC);
             Tile from = get(fromC);
 
@@ -519,8 +520,9 @@ public class Level implements Playable {
                 // "to" territory is null
                 moveEntity(from, to);
             }
-            splitTerritories(); //TODO find a better approach
+            splitTerritories();
             mergeTerritories();
+
         }
     }
 
@@ -600,7 +602,7 @@ public class Level implements Playable {
 
             for (Coordinate nb : neighbors) {
                 if (isInLevel(nb)) {
-                    if (tileMap[x][y].mergeTerritories(tileMap[nb.getX()][nb.getY()]))
+                    if (get(x, y).mergeTerritories(get(nb)))
                         mergeTerritories(nb, processed);
                 }
             }

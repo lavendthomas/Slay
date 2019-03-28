@@ -61,18 +61,18 @@ public class Tile {
                         // Place in my territory and there is already a soldier
                         int toLvl = ((Soldier) to.getEntity()).getSoldierLevel().getLevel();
                         int fromLvl = ((Soldier) e).getSoldierLevel().getLevel();
-                        int newLvl = toLvl + fromLvl + 1;
+                        int newLvl = fromLvl + 1;
                         to.setEntity(new Soldier(SoldierLevel.fromLevel(newLvl),
                                 ((Soldier) to.getEntity()).getMoved()));
                         /*
                             Updates currentL. for stats - when two soldiers merge, they are deleted
                             and another type is added
                         */
-                        if (prefs.getBoolean("isPlayer1Logged") && to.getTerritory().getOwner()
+                        if (prefs != null && prefs.getBoolean("isPlayer1Logged") && to.getTerritory().getOwner()
                                 .getName().equals(player1.getName()))
                             Level.updatePlayerStatsMerge(player1, fromLvl, toLvl, newLvl);
 
-                        else if (prefs.getBoolean("isPlayer2Logged") && to.getTerritory().getOwner()
+                        else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && to.getTerritory().getOwner()
                                 .getName().equals(player2.getName()))
                             Level.updatePlayerStatsMerge(player2, fromLvl, toLvl, newLvl);
 
@@ -86,11 +86,11 @@ public class Tile {
                     else {
                         // Tree
                         if (to.getEntity() == StaticEntity.TREE) {
-                            if (prefs.getBoolean("isPlayer1Logged") && to.getTerritory().getOwner()
+                            if (prefs != null && prefs.getBoolean("isPlayer1Logged") && to.getTerritory().getOwner()
                                     .getName().equals(player1.getName()))
                                 Level.updatePlayerStatsTrees(player1);
 
-                            else if (prefs.getBoolean("isPlayer2Logged") && to.getTerritory().getOwner()
+                            else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && to.getTerritory().getOwner()
                                     .getName().equals(player2.getName()))
                                 Level.updatePlayerStatsTrees(player2);
                         }
@@ -111,11 +111,11 @@ public class Tile {
                         Updates currentLostL. for stats - when a soldier is killed by the enemy
                         The stats are updated for the player who is not the current player
                     */
-                    if (prefs.getBoolean("isPlayer1Logged") && (to.getTerritory().getOwner()
+                    if (prefs != null && prefs.getBoolean("isPlayer1Logged") && (to.getTerritory().getOwner()
                             .getName().equals(player1.getName())))
                         Level.updatePlayerStatsLost(player1, to.getEntity());
 
-                    else if (prefs.getBoolean("isPlayer2Logged") && (to.getTerritory().getOwner()
+                    else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && (to.getTerritory().getOwner()
                             .getName().equals(player2.getName())))
                         Level.updatePlayerStatsLost(player2, to.getEntity());
                 }

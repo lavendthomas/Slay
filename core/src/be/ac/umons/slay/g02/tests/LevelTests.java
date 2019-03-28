@@ -109,13 +109,13 @@ public class LevelTests {
         Tile t32 = new Tile(TileType.NEUTRAL);
         Tile t33 = new Tile(TileType.NEUTRAL);
 
-        t13.setTerritory(new Territory(p1, t13));
-        t22.setTerritory(new Territory(p1, t22));
-        t23.setTerritory(new Territory(p1, t23));
+        t13.setTerritory(new Territory(p1, t13, t22, t23));
+        t22.setTerritory(new Territory(p1, t13, t22, t23));
+        t23.setTerritory(new Territory(p1, t13, t22, t23));
 
-        t21.setTerritory(new Territory(p2, t21));
-        t31.setTerritory(new Territory(p2, t31));
-        t32.setTerritory(new Territory(p2, t32));
+        t21.setTerritory(new Territory(p2, t21, t31, t32));
+        t31.setTerritory(new Territory(p2, t21, t31, t32));
+        t32.setTerritory(new Territory(p2, t21, t31, t32));
 
         level.set(t11, c11);
         level.set(t12, c12);
@@ -144,8 +144,10 @@ public class LevelTests {
         level.set(s1, c22);
         level.set(StaticEntity.CAPITAL, c13);
         level.set(StaticEntity.CAPITAL, c31);
+        level.get(c13).getTerritory().setCoins(200);
+        level.get(c31).getTerritory().setCoins(200);
 
-
+        level.mergeTerritories();
 
         return level;
     }
@@ -155,10 +157,10 @@ public class LevelTests {
      */
     @Test
     public void mergeSoldier() {
-        Playable level = loadLvl();
-
         Coordinate c0 = new Coordinate(2, 1);
         Coordinate c1 = new Coordinate(3, 2);
+        Playable level = loadLvl();
+        level.nextTurn();
         level.move(c0, c1);
         assertEquals("L1",level.get(c1).getEntity().getName());
     }
@@ -196,40 +198,6 @@ public class LevelTests {
         Coordinate c1 = new Coordinate(1, 2);
         level.move(c0, c1);
         assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
-    }
-
-
-
-    @Test
-    public void attackCapital() {
-        /*
-			Tests that if we attack a capital and the territory is split in 2 territories,
-			then a new capital will be created
-         */
-        Level lvl = null;
-        try {
-            lvl = (Level) LevelLoader.load("test_01", 1).getLevel();
-        } catch (FileFormatException e) {
-            fail("Level could not be loaded");
-        }
-
-        lvl.move(new Coordinate(5,6), new Coordinate(9,5));
-        lvl.nextTurn();
-        lvl.move(new Coordinate(16,4), new Coordinate(14,5));
-        lvl.nextTurn();
-        lvl.move(new Coordinate(9,5), new Coordinate(13,4));
-        lvl.nextTurn();
-        lvl.move(new Coordinate(14,5), new Coordinate(13,6));
-        lvl.nextTurn();
-        lvl.move(new Coordinate(14,4),new Coordinate(14,4));
-        lvl.nextTurn();
-        lvl.nextTurn();
-        lvl.move(new Coordinate(14,4), new Coordinate(15,5));
-
-        // Checks that the right territory has a capital
-        //assertEquals(1,lvl.get(new Coordinate(14, 5)).getTerritory().getCapitals().size());
-        // Checks that the left territory has a capital()
-        //assertEquals(1,lvl.get(new Coordinate(16, 4)).getTerritory().getCapitals().size());
     }
 
     /**
