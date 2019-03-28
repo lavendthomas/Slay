@@ -402,7 +402,7 @@ public class Level implements Playable {
      * @param toC   the arrival coordinate
      * @return True if it is possible, false otherwise
      */
-    private boolean canMove(Coordinate fromC, Coordinate toC) {
+    public boolean canMove(Coordinate fromC, Coordinate toC) {
         if (fromC.equals(toC) || !get(fromC).getTerritory().getOwner().equals(currentPlayer)) {
             // Prevents movement on the starting cell
             return false;
@@ -479,12 +479,11 @@ public class Level implements Playable {
         if (listMoves.contains(toC) && !fromC.equals(toC)) {
             Tile to = get(toC);
             Tile from = get(fromC);
-
             // Prevents movement in water
             if (to.getTerritory() != null) {
-
                 if (to.hasSameOwner(from)) {
                     // Moves in own territory
+
                     if (to.getEntity() != StaticEntity.CAPITAL) {
                         // Prevents movement on its own capital
                         if (to.getEntity() instanceof Soldier) {
@@ -522,15 +521,14 @@ public class Level implements Playable {
             }
             splitTerritories();
             mergeTerritories();
-
         }
     }
 
     /**
-     *   TODO
+     * Move a entity from a tile to a other tile
      *
-     * @param from
-     * @param to
+     * @param from  Original tile
+     * @param to    Arrival tile
      */
     private void moveEntity(Tile from, Tile to) {
         // Updates currentTrees for stats - when the player cuts a tree
@@ -555,7 +553,8 @@ public class Level implements Playable {
                 updatePlayerStatsLost(player2, to.getEntity());
         }
 
-        if (to.getEntity() != null && to.getEntity() == StaticEntity.CAPITAL) {
+        if (from.getTerritory() != null && to.getTerritory() != null &&
+                to.getEntity() != null && to.getEntity() == StaticEntity.CAPITAL) {
             // The enemy gets rewarded with half the resources that would be generated
             from.getTerritory().setCoins(from.getTerritory().getCoins() + (to.getTerritory().getCoins() / 2));
         }
@@ -563,7 +562,6 @@ public class Level implements Playable {
         to.setTerritory(from.getTerritory());
         to.setEntity(from.getEntity());
         from.setEntity(null);
-
         ((Soldier) to.getEntity()).setMoved(true);
     }
 
@@ -585,8 +583,8 @@ public class Level implements Playable {
     /**
      * Merges the territories from a specific position
      *
-     * @param pos
-     * @param processed  TODO
+     * @param pos        Original coordinate
+     * @param processed  List coordinates already visited
      */
     private void mergeTerritories(Coordinate pos, List<Coordinate> processed) {
         // Source: https://codereview.stackexchange.com/questions/90108/recursively-evaluate-neighbors-in-a-two-dimensional-grid
@@ -612,7 +610,7 @@ public class Level implements Playable {
     /**
      *   TODO
      */
-    public void splitTerritories() {
+    private void splitTerritories() {
         /*
          *	Idea: We start from one cell and we keep in this territory all the cells that are
          *	adjacent to this one and in the same territory. All the others are separated in another
@@ -624,7 +622,7 @@ public class Level implements Playable {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 Coordinate pos = new Coordinate(i, j);
-                Tile cell = tileMap[i][j];
+                Tile cell = get(pos);
 
                 if (!cell.hasTerritory())
                     continue;

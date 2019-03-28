@@ -6,7 +6,7 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.players.Player;
 
 /**
- *  TODO
+ *  An interface for level
  */
 public interface Playable {
     int width();
@@ -44,4 +44,6 @@ public interface Playable {
     void setPlayers(Player[] players);
 
     void mergeTerritories();
+
+    boolean canMove(Coordinate fromC, Coordinate toC);
 }

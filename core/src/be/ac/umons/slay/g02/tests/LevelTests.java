@@ -112,6 +112,7 @@ public class LevelTests {
         t13.setTerritory(new Territory(p1, t13, t22, t23));
         t22.setTerritory(new Territory(p1, t13, t22, t23));
         t23.setTerritory(new Territory(p1, t13, t22, t23));
+        t33.setTerritory(new Territory(p1, t33));
 
         t21.setTerritory(new Territory(p2, t21, t31, t32));
         t31.setTerritory(new Territory(p2, t21, t31, t32));
@@ -187,11 +188,24 @@ public class LevelTests {
         Coordinate c1 = new Coordinate(2, 1);
 
         level.move(c0, c1);
+        //TODO Comportement bizarre après le split dans move
         assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
     }
 
     @Test
-    public void conquerNeutreTerritory() {
+    public void cantConquerEnemyTerritory() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(3, 2);
+        Coordinate c1 = new Coordinate(3, 3);
+
+        assertEquals(false, level.canMove(c0, c1));
+    }
+
+
+
+    @Test
+    public void conquerNeutralTerritory() {
         Playable level = loadLvl();
 
         Coordinate c0 = new Coordinate(2, 2);
@@ -199,6 +213,17 @@ public class LevelTests {
         level.move(c0, c1);
         assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
     }
+
+    @Test
+    public void cantAttack() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(2, 1);
+        Coordinate c1 = new Coordinate(2, 2);
+        assertEquals(false,level.canMove(c0, c1));
+    }
+
+
 
     /**
      *  Tests if the counter currentLostL. (for global statistics) is correctly updated
