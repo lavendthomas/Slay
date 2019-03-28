@@ -810,7 +810,7 @@ public class Menu implements Screen {
             }
         });
 
-        // To know if we are in LogIn or SignUp tab
+        // To know if we are in Log In or Sign Up tab
         if (!isInSignUp) {
             stage.setKeyboardFocus(fieldNameLogin);
             buttonTabLogin.setDisabled(true);
@@ -843,35 +843,18 @@ public class Menu implements Screen {
             }
         });
         Label labelUserNameLogin = new Label(lang.get("label_username"), skinSgx, "white");
+        labelUserNameLogin.setWidth(corner * 70 / 100 * 55 / 100);
+        Label labelCurrentPasswordLogin = new Label(lang.get("label_password"), skinSgx, "white");
         Label labelUserName = new Label(lang.get("label_username"), skinSgx, "white");
         Label labelNewPassword1 = new Label(lang.get("label_password"), skinSgx, "white");
         Label labelNewPassword2 = new Label(lang.get("label_password_again"), skinSgx, "white");
 
-        resetField(fieldNameSignUp);
-        fieldNameSignUp.setTextFieldListener(new TextField.TextFieldListener() {
-            @Override
-            public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n'))
-                    textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-            }
-        });
-        resetField(fieldPassword1SignUp);
-        fieldPassword1SignUp.setTextFieldListener(new TextField.TextFieldListener() {
-            @Override
-            public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n'))
-                    textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-            }
-        });
-        resetField(fieldPassword2SignUp);
-        fieldPassword2SignUp.setTextFieldListener(new TextField.TextFieldListener() {
-            @Override
-            public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n'))
-                    textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-            }
-        });
-        Label labelCurrentPasswordLogin = new Label(lang.get("label_password"), skinSgx, "white");
+        // Log In tab :
+
+        final Table tableLogin = new Table();
+        tableLogin.setBackground(backgroundGrey);
+
+        // Username in Log In tab :
 
         resetField(fieldNameLogin);
         fieldNameLogin.setTextFieldListener(new TextField.TextFieldListener() {
@@ -881,6 +864,25 @@ public class Menu implements Screen {
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
             }
         });
+        fieldNameLogin.setWidth(corner * 70 / 100 * 45 / 100);
+
+        tableLogin.add(labelUserNameLogin).fill();
+        tableLogin.add(fieldNameLogin).fill().left().width(Value.percentWidth(1f));
+        tableLogin.row();
+
+        // Error message wrong username in Log In tab :
+
+        if (messageErrorLogin.equals(prefs.getString("USER_NAME_NOT_EXIST"))) {
+            setAlignment1(messageErrorUsername);
+            tableLogin.add(messageErrorUsername).left().padBottom(corner * 6 / 100).colspan(2);
+        } else
+            tableLogin.add(noMessageError4).left().padBottom(corner * 6 / 100).colspan(2);
+        tableLogin.row();
+
+        cellErrorUsernameLogin = tableLogin.getCell(noMessageError4);
+
+        // Password in Log In tab :
+
         resetField(fieldPasswordLogin);
         fieldPasswordLogin.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
@@ -889,14 +891,47 @@ public class Menu implements Screen {
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
             }
         });
-        setPasswordMode(fieldPassword1SignUp, fieldPassword2SignUp, fieldPasswordLogin);
+        labelCurrentPasswordLogin.setWidth(corner * 70 / 100 * 55 / 100);
+        fieldPasswordLogin.setWidth(corner * 70 / 100 * 45 / 100);
+        tableLogin.add(labelCurrentPasswordLogin);
+        tableLogin.add(fieldPasswordLogin).fill().width(Value.percentWidth(1f));
+        tableLogin.row();
 
-        setLabelRed(messageErrorLoginPassword, messageErrorLengthPassword, messageErrorPasswordNotMatch,
-                messageErrorUsername, messageErrorLengthUsername, messageUsernameNotAvailable,
-				messageErrorUserLogged, messageErrorNoAvatar);
+        // Error message wrong password in Log In tab :
+
+        if (messageErrorLogin.equals(prefs.getString("INCORRECT_PASSWORD"))) {
+            setAlignment1(messageErrorLoginPassword);
+            tableLogin.add(messageErrorLoginPassword).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
+        } else
+            tableLogin.add(noMessageError5).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
+
+        tableLogin.row();
+        cellErrorPasswordLogin = tableLogin.getCell(noMessageError5);
+
+        // Button Cancel in Log In tab :
+
+        TextButton buttonLoginCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
+        buttonLoginCancel.setWidth(corner * 70 / 100 * 21 / 100);
+        buttonLoginCancel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton2.play(prefs.getFloat("volume", 0.2f));
+                tableBackground.remove();
+                mainTableLogin.remove();
+                cellErrorUsernameLogin.clearActor();
+                cellErrorPasswordLogin.clearActor();
+                cellErrorUsernameLogin.setActor(noMessageError4);
+                cellErrorPasswordLogin.setActor(noMessageError5);
+                enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
+                resetButtonsProfileLooks();
+            }
+        });
+        tableLogin.add(buttonLoginCancel).width(Value.percentWidth(1f)).left().padLeft(corner * 70 / 100 * 15 / 100);
+
+        // Button Log In in Log In tab :
+
         buttonLogin = new TextButton(lang.get("text_log_in"), skinSgx, "big");
-        buttonLogin.setWidth(buttonCenterWidth / 2);
-
+        buttonLogin.setWidth(corner * 70 / 100 * 21 / 100);
         buttonLogin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -939,6 +974,36 @@ public class Menu implements Screen {
                 }
             }
         });
+        tableLogin.add(buttonLogin).width(Value.percentWidth(1f)).right().padRight(corner * 70 / 100 * 15 / 100);
+
+
+        // Sign Up tab :
+
+        resetField(fieldNameSignUp);
+        fieldNameSignUp.setTextFieldListener(new TextField.TextFieldListener() {
+            @Override
+            public void keyTyped(TextField textField, char key) {
+                if ((key == '\r' || key == '\n'))
+                    textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
+            }
+        });
+        resetField(fieldPassword1SignUp);
+        fieldPassword1SignUp.setTextFieldListener(new TextField.TextFieldListener() {
+            @Override
+            public void keyTyped(TextField textField, char key) {
+                if ((key == '\r' || key == '\n'))
+                    textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
+            }
+        });
+        resetField(fieldPassword2SignUp);
+        fieldPassword2SignUp.setTextFieldListener(new TextField.TextFieldListener() {
+            @Override
+            public void keyTyped(TextField textField, char key) {
+                if ((key == '\r' || key == '\n'))
+                    textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
+            }
+        });
+
         buttonSignUp = new TextButton(lang.get("text_sign_up"), skinSgx, "big");
         buttonSignUp.setWidth(buttonCenterWidth / 2);
 
@@ -996,22 +1061,6 @@ public class Menu implements Screen {
                 }
             }
         });
-        TextButton buttonLoginCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
-        buttonLoginCancel.setWidth(buttonCenterWidth / 2);
-        buttonLoginCancel.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(prefs.getFloat("volume", 0.2f));
-                tableBackground.remove();
-                mainTableLogin.remove();
-                cellErrorUsernameLogin.clearActor();
-                cellErrorPasswordLogin.clearActor();
-                cellErrorUsernameLogin.setActor(noMessageError4);
-                cellErrorPasswordLogin.setActor(noMessageError5);
-                enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
-                resetButtonsProfileLooks();
-            }
-        });
         buttonSignUpCancel = new TextButton(lang.get("text_cancel"), skinSgx, "big");
         buttonSignUpCancel.setWidth(buttonCenterWidth / 2);
         buttonSignUpCancel.addListener(new ClickListener() {
@@ -1040,29 +1089,22 @@ public class Menu implements Screen {
         tableSignUp.setBackground(backgroundGrey);
         tableSignUp.padTop(corner * 1 / 100);
         Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
-        setAlignment1(avatarLabel);
         tableSignUp.add(avatarLabel).colspan(2).padBottom(SCREEN_HEIGHT * 2 / 100);
         tableSignUp.row();
         tableSignUp.add(buttonLoginAvatar).width(corner * 7 / 100).height(corner * 7 / 100).padBottom(corner * 1 / 100).colspan(2);
         tableSignUp.row();
         cellSignUp = tableSignUp.getCell(buttonLoginAvatar);
-        messageErrorNoAvatar.setAlignment(1);
-        messageErrorLengthUsername.setAlignment(1);
-        messageErrorPasswordNotMatch.setAlignment(1);
-        messageErrorLengthPassword.setAlignment(1);
         tableSignUp.add(noMessageError0).center().padBottom(corner * 20 / 1000).colspan(2);
         tableSignUp.row();
         cellErrorAvatarSignUp = tableSignUp.getCell(noMessageError0);
         labelUserName.setWidth(corner * 70 / 100 * 55 / 100);
         fieldNameSignUp.setWidth(corner * 70 / 100 * 45 / 100);
-        labelUserName.setAlignment(1);
         tableSignUp.add(labelUserName).fill();
         tableSignUp.add(fieldNameSignUp).fill().left().width(Value.percentWidth(1f));
         tableSignUp.row();
         tableSignUp.add(noMessageError1).center().padBottom(corner * 3 / 100).colspan(2);
         tableSignUp.row();
         cellErrorUsernameSignUp = tableSignUp.getCell(noMessageError1);
-        labelNewPassword1.setAlignment(1);
         labelNewPassword1.setWidth(corner * 70 / 100 * 55 / 100);
         fieldPassword1SignUp.setWidth(corner * 70 / 100 * 45 / 100);
         tableSignUp.add(labelNewPassword1);
@@ -1073,7 +1115,6 @@ public class Menu implements Screen {
         cellErrorPasswordSignUp = tableSignUp.getCell(noMessageError2);
         labelNewPassword2.setWidth(corner * 70 / 100 * 55 / 100);
         fieldPassword2SignUp.setWidth(corner * 70 / 100 * 45 / 100);
-        labelNewPassword2.setAlignment(1);
         tableSignUp.add(labelNewPassword2).width(Value.percentWidth(1f)).fill();//.padRight(SCREEN_WIDTH * 2 / 100);
         tableSignUp.add(fieldPassword2SignUp).fill();
         tableSignUp.row();
@@ -1085,47 +1126,25 @@ public class Menu implements Screen {
         tableSignUp.add(buttonSignUpCancel).width(Value.percentWidth(1f)).left().padLeft(corner * 9 / 100).padBottom(corner * 2 / 100);
         tableSignUp.add(buttonSignUp).width(Value.percentWidth(1f)).right().padRight(corner * 9 / 100).padBottom(corner * 2 / 100);
         tableSignUp.row();
-        final Table tableLogin = new Table();
-        tableLogin.setBackground(backgroundGrey);
-        labelUserNameLogin.setWidth(corner * 70 / 100 * 55 / 100);
-        fieldNameLogin.setWidth(corner * 70 / 100 * 45 / 100);
-        labelUserNameLogin.setAlignment(1);
-        tableLogin.add(labelUserNameLogin).fill();
-        tableLogin.add(fieldNameLogin).fill().left().width(Value.percentWidth(1f));
-        tableLogin.row();
 
-        if (messageErrorLogin.equals(prefs.getString("USER_NAME_NOT_EXIST"))) {
-            setAlignment1(messageErrorUsername);
-            tableLogin.add(messageErrorUsername).left().padBottom(corner * 6 / 100).colspan(2);
-        } else
-			tableLogin.add(noMessageError4).left().padBottom(corner * 6 / 100).colspan(2);
-        tableLogin.row();
+        // Displays asterisks instead of real characters
+        setPasswordMode(fieldPassword1SignUp, fieldPassword2SignUp, fieldPasswordLogin);
 
-        cellErrorUsernameLogin = tableLogin.getCell(noMessageError4);
+        // Aligns correctly all labels
+        setAlignment1(labelUserNameLogin, labelCurrentPasswordLogin, avatarLabel, messageErrorNoAvatar,
+                messageErrorLengthUsername, messageErrorPasswordNotMatch, messageErrorLengthPassword,
+                labelUserName, labelNewPassword1, labelNewPassword2);
 
-        labelCurrentPasswordLogin.setAlignment(1);
-        labelCurrentPasswordLogin.setWidth(corner * 70 / 100 * 55 / 100);
-        fieldPasswordLogin.setWidth(corner * 70 / 100 * 45 / 100);
-        tableLogin.add(labelCurrentPasswordLogin);
-        tableLogin.add(fieldPasswordLogin).fill().width(Value.percentWidth(1f));
-        tableLogin.row();
+        // Displays all error messages in red
+        setLabelRed(messageErrorLoginPassword, messageErrorLengthPassword, messageErrorPasswordNotMatch,
+                messageErrorUsername, messageErrorLengthUsername, messageUsernameNotAvailable,
+                messageErrorUserLogged, messageErrorNoAvatar);
 
-        if (messageErrorLogin.equals(prefs.getString("INCORRECT_PASSWORD"))) {
-            setAlignment1(messageErrorLoginPassword);
-            tableLogin.add(messageErrorLoginPassword).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
-        } else
-            tableLogin.add(noMessageError5).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
-       
-        tableLogin.row();
-        cellErrorPasswordLogin = tableLogin.getCell(noMessageError5);
+        // Adds the tabs to a stack:
 
-        buttonLoginCancel.setWidth(corner * 70 / 100 * 21 / 100);
-        buttonLogin.setWidth(buttonLoginCancel.getWidth());
-        tableLogin.add(buttonLoginCancel).width(Value.percentWidth(1f)).left().padLeft(corner * 70 / 100 * 15 / 100);
-        tableLogin.add(buttonLogin).width(Value.percentWidth(1f)).right().padRight(corner * 70 / 100 * 15 / 100);
         content.addActor(tableLogin);
         content.addActor(tableSignUp);
-        mainTableLogin.add(content).size(SCREEN_HEIGHT * 70 / 100, corner * 77 / 100 - buttonLogin.getHeight());
+        mainTableLogin.add(content).size(corner * 70 / 100, corner * 77 / 100 - buttonLogin.getHeight());
 
         ChangeListener tabListener = new ChangeListener() {
             @Override
