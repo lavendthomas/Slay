@@ -45,6 +45,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import be.ac.umons.slay.g02.players.Account;
 import be.ac.umons.slay.g02.players.Colors;
+import be.ac.umons.slay.g02.players.DataHashing;
 import be.ac.umons.slay.g02.players.FileBuilder;
 import be.ac.umons.slay.g02.players.GlobalStats;
 import be.ac.umons.slay.g02.players.HumanPlayer;
@@ -68,7 +69,7 @@ import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.gui.Main.tabPlayers;
 
 /**
- * classe qui affiche le menu principal
+ * classe qui affiche le menu principal   TODO
  */
 public class Menu implements Screen {
     public static Drawable imageRobot = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(prefs.getString("pathImageRobot")))));
@@ -162,7 +163,6 @@ public class Menu implements Screen {
     private String messageErrorLogin = "";
     private String messageErrorSignUp = "";
     private String messageErrorEdit = "";
-    private String messageErrorDelete = "";
     private boolean isProfileLeft = false;
     private boolean hasImportedAvatar = false;
     private boolean hasChangedAvatar = false;
@@ -204,13 +204,20 @@ public class Menu implements Screen {
     private int tableCenterPositionX;
     private int tableCenterPositionY;
 
+    /**
+     *   TODO
+     *
+     * @param aGame
+     */
     public Menu(Game aGame) {
         game = aGame;
         init();
     }
 
+    /**
+     *   TODO
+     */
     public void init() {
-
         stage.clear();
 
         buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
@@ -223,13 +230,12 @@ public class Menu implements Screen {
         labelProfileWidth = buttonCenterWidth * 35 / 100;
 
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
-
             buttonCenterWidth = (int) (SCREEN_WIDTH * 0.9);
             buttonCenterHeight = SCREEN_HEIGHT * 7 / 100;
             windowSettingsWidth = Math.min(buttonCenterWidth * 3 / 4, (int) (SCREEN_HEIGHT * 0.9));
         }
 
-        // background
+        // Background
         batch = new SpriteBatch();
         Texture texture = new Texture(Gdx.files.internal("backgrounds/background-title.png"));
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -285,14 +291,12 @@ public class Menu implements Screen {
             Label labelPlayer2 = new Label("Player 2", skinSgx, "title");
             labelProfileLeft = new Label("Not Logged", skinSgx, "medium");
             labelProfileRight = new Label("Not Logged", skinSgx, "medium");
-            labelPlayer1.setAlignment(1);
-            labelPlayer2.setAlignment(1);
-            labelProfileLeft.setAlignment(1);
-            labelProfileRight.setAlignment(1);
+			setAlignment1(labelPlayer1, labelPlayer2, labelProfileLeft, labelProfileRight);
+
             if (prefs.getBoolean("isPlayer1Logged")) {
                 imageProfile = imagePlayer1;
                 labelProfileLeft = new Label("Logged", skinSgx, "medium");
-                labelProfileLeft.setAlignment(1);
+                setAlignment1(labelProfileLeft);
             } else {
                 imageProfile = imageAnonymous;
             }
@@ -301,7 +305,7 @@ public class Menu implements Screen {
             if (prefs.getBoolean("isPlayer2Logged")) {
                 imageProfile = imagePlayer2;
                 labelProfileRight = new Label("Logged", skinSgx, "medium");
-                labelProfileRight.setAlignment(1);
+                setAlignment1(labelProfileRight);
             } else {
                 imageProfile = imageAnonymous;
             }
@@ -340,6 +344,33 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param labels
+     */
+    private void setLabelRed(Label... labels) {
+        for (Label label : labels) {
+            label.setColor(Color.RED);
+        }
+    }
+
+    /**
+     *   TODO
+     *
+     * @param labels
+     */
+    private void setAlignment1(Label... labels) {
+        for (Label label : labels) {
+            label.setAlignment(1);
+        }
+    }
+
+    /**
+     *   TODO
+     *
+     * @param button
+     */
     public static void disableButton(Button... button) {
         if (button == null) {
             return;
@@ -352,6 +383,11 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param button
+     */
     public static void enableButton(Button... button) {
         if (button == null) {
             return;
@@ -364,6 +400,11 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param box
+     */
     public static void disableBox(SelectBox... box) {
         for (SelectBox b : box) {
             b.setDisabled(true);
@@ -371,6 +412,11 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param box
+     */
     public static void enableBox(SelectBox... box) {
         for (SelectBox b : box) {
             b.setDisabled(false);
@@ -378,24 +424,44 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param field
+     */
     public static void disableField(TextField... field) {
         for (TextField f : field) {
             f.setDisabled(true);
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param field
+     */
     public static void enableField(TextField... field) {
         for (TextField f : field) {
             f.setDisabled(false);
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param field
+     */
     public static void resetField(TextField... field) {
         for (TextField f : field) {
             f.setText("");
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param field
+     */
     public static void setPasswordMode(TextField... field) {
         for (TextField f : field) {
             f.setPasswordCharacter('*');
@@ -448,20 +514,21 @@ public class Menu implements Screen {
         stage.dispose();
     }
 
+    /**
+     *   TODO
+     */
     private void showSettings() {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (prefs.getBoolean("isAccountEnabled"))
             disableButton(buttonHall, buttonProfileLeft, buttonProfileRight);
         windowSettings.clear();
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android) {
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android)
             windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
-        } else {
-            if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+        else {
+            if (SCREEN_WIDTH > SCREEN_HEIGHT)
                 windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
-            } else {
+			else
                 windowSettings.setSize(windowSettingsWidth,  2 * windowSettingsWidth);
-            }
-
         }
         windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 - windowSettings.getHeight() / 2);
         windowSettings.setMovable(false);
@@ -494,16 +561,12 @@ public class Menu implements Screen {
         table.add(labelVolume).height(Value.percentHeight(1f)).width(windowSettings.getWidth() / 3);
         table.add(sliderVolume).height(Value.percentHeight(1f)).width(windowSettings.getWidth() / 3);
         table.row();
-
         if (Gdx.app.getType() != Application.ApplicationType.Android) {
-
             Label labelFullscreen = new Label("Fullscreen", skinSgx, "white");
             labelFullscreen.setHeight(SCREEN_HEIGHT * 13 / 200);
-
             switchFullscreen = new Button(skinSgx, "switch");
             if (prefs.getBoolean("isFullScreenEnabled"))
                 switchFullscreen.setChecked(true);
-
             switchFullscreen.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -524,7 +587,6 @@ public class Menu implements Screen {
             table.add(switchFullscreen);
             table.row();
         }
-
         Label labelRegistration = new Label(lang.get("label_registration"), skinSgx, "white");
         labelRegistration.setHeight(SCREEN_HEIGHT * 13 / 200);
 
@@ -536,11 +598,10 @@ public class Menu implements Screen {
         switchRegistration.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (!switchRegistration.isChecked()) {
+                if (!switchRegistration.isChecked())
                     showAlertSettings();
-                } else {
+                else
                     soundButton2.play(prefs.getFloat("volume", 0.2f));
-                }
             }
         });
         table.add(labelRegistration).height(Value.percentHeight(1f)).padRight(windowSettingsWidth * 7 / 200);
@@ -553,27 +614,24 @@ public class Menu implements Screen {
 
             Label labelProfileLeft = new Label("Not Logged", skinSgx, "medium");
             Label labelProfileRight = new Label("Not Logged", skinSgx, "medium");
-            labelPlayer1.setAlignment(1);
-            labelPlayer2.setAlignment(1);
+			
+			setAlignment1(labelPlayer1, labelPlayer2, labelProfileLeft, labelProfileRight);
 
-            labelProfileLeft.setAlignment(1);
-            labelProfileRight.setAlignment(1);
             if (prefs.getBoolean("isPlayer1Logged")) {
                 imageProfile = imagePlayer1;
                 labelProfileLeft = new Label("Logged", skinSgx, "medium");
-                labelProfileLeft.setAlignment(1);
-            } else {
+                setAlignment1(labelProfileLeft);
+            } else
                 imageProfile = imageAnonymous;
-            }
             createButtonProfileLeft();
 
             if (prefs.getBoolean("isPlayer2Logged")) {
                 imageProfile = imagePlayer2;
                 labelProfileRight = new Label("Logged", skinSgx, "medium");
-                labelProfileRight.setAlignment(1);
-            } else {
+                setAlignment1(labelProfileRight);
+            } else
                 imageProfile = imageAnonymous;
-            }
+			
             createButtonProfileRight();
             table.add(labelPlayer1).width(labelProfileWidth);
             table.add(labelPlayer2).width(labelProfileWidth);
@@ -589,7 +647,6 @@ public class Menu implements Screen {
             Label labelProfile = new Label("", skinSgx);
             table.add(labelProfile);
             table.add(labelProfile);
-
         }
         buttonSettingsBack = new TextButton(lang.get("button_back"), skinSgx, "big");
         buttonSettingsBack.setWidth(buttonCenterWidth / 2);
@@ -617,6 +674,9 @@ public class Menu implements Screen {
         stage.addActor(windowSettings);
     }
 
+    /**
+     *   TODO
+     */
     private void showAlertSettings() {
         disableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
         windowAlert.clear();
@@ -631,7 +691,7 @@ public class Menu implements Screen {
         table.top().padTop(windowSettingsWidth * 1 / 3);
 
         Label labelAlertSettings = new Label(lang.get("label_all_users_will_be_deconnected"), skinSgx, "white");
-        labelAlertSettings.setAlignment(1);
+        setAlignment1(labelAlertSettings);
         table.add(labelAlertSettings).center().colspan(2).padBottom(windowSettingsWidth * 1 / 7);
         table.row();
 
@@ -676,8 +736,10 @@ public class Menu implements Screen {
         stage.addActor(windowAlert);
     }
 
+    /**
+     *   TODO
+     */
     private void showLoginWindow() {
-
         int corner = (int) (Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) * 0.9);
 
         disableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
@@ -789,27 +851,24 @@ public class Menu implements Screen {
         fieldNameSignUp.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         resetField(fieldPassword1SignUp);
         fieldPassword1SignUp.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         resetField(fieldPassword2SignUp);
         fieldPassword2SignUp.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         Label labelCurrentPasswordLogin = new Label(lang.get("label_password"), skinSgx, "white");
@@ -818,29 +877,23 @@ public class Menu implements Screen {
         fieldNameLogin.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         resetField(fieldPasswordLogin);
         fieldPasswordLogin.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         setPasswordMode(fieldPassword1SignUp, fieldPassword2SignUp, fieldPasswordLogin);
-        messageErrorLoginPassword.setColor(Color.RED);
-        messageErrorUsername.setColor(Color.RED);
-        messageErrorLengthPassword.setColor(Color.RED);
-        messageErrorLengthUsername.setColor(Color.RED);
-        messageUsernameNotAvailable.setColor(Color.RED);
-        messageErrorPasswordNotMatch.setColor(Color.RED);
-        messageErrorUserLogged.setColor(Color.RED);
-        messageErrorNoAvatar.setColor(Color.RED);
+
+        setLabelRed(messageErrorLoginPassword, messageErrorLengthPassword, messageErrorPasswordNotMatch,
+                messageErrorUsername, messageErrorLengthUsername, messageUsernameNotAvailable,
+				messageErrorUserLogged, messageErrorNoAvatar);
         buttonLogin = new TextButton(lang.get("text_log_in"), skinSgx, "big");
         buttonLogin.setWidth(buttonCenterWidth / 2);
 
@@ -850,9 +903,8 @@ public class Menu implements Screen {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 messageErrorLogin = "";
                 if (isProfileLeft && prefs.getBoolean("isPlayer2Logged")) {
-                    if (player2.getName().equals(fieldNameLogin.getText())) {
+                    if (player2.getName().equals(fieldNameLogin.getText()))
                         messageErrorLogin = prefs.getString("USER_LOGGED");
-                    }
                 }
                 if (!(isProfileLeft) && prefs.getBoolean("isPlayer1Logged")) {
                     if (player1.getName().equals(fieldNameLogin.getText()))
@@ -878,11 +930,10 @@ public class Menu implements Screen {
                 } else {
                     tableBackground.remove();
                     mainTableLogin.remove();
-                    if (isProfileLeft) {
+                    if (isProfileLeft)
                         prefs.putBoolean("isPlayer1Logged", true);
-                    } else {
+					else
                         prefs.putBoolean("isPlayer2Logged", true);
-                    }
                     prefs.flush();
                     showProfile(prefs.getInteger("numPlayer"));
                 }
@@ -953,6 +1004,10 @@ public class Menu implements Screen {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 tableBackground.remove();
                 mainTableLogin.remove();
+                cellErrorUsernameLogin.clearActor();
+                cellErrorPasswordLogin.clearActor();
+                cellErrorUsernameLogin.setActor(noMessageError4);
+                cellErrorPasswordLogin.setActor(noMessageError5);
                 enableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
                 resetButtonsProfileLooks();
             }
@@ -985,7 +1040,7 @@ public class Menu implements Screen {
         tableSignUp.setBackground(backgroundGrey);
         tableSignUp.padTop(corner * 1 / 100);
         Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
-        avatarLabel.setAlignment(1);
+        setAlignment1(avatarLabel);
         tableSignUp.add(avatarLabel).colspan(2).padBottom(SCREEN_HEIGHT * 2 / 100);
         tableSignUp.row();
         tableSignUp.add(buttonLoginAvatar).width(corner * 7 / 100).height(corner * 7 / 100).padBottom(corner * 1 / 100).colspan(2);
@@ -1040,9 +1095,10 @@ public class Menu implements Screen {
         tableLogin.row();
 
         if (messageErrorLogin.equals(prefs.getString("USER_NAME_NOT_EXIST"))) {
-            messageErrorUsername.setAlignment(1);
+            setAlignment1(messageErrorUsername);
             tableLogin.add(messageErrorUsername).left().padBottom(corner * 6 / 100).colspan(2);
-        } else tableLogin.add(noMessageError4).left().padBottom(corner * 6 / 100).colspan(2);
+        } else
+			tableLogin.add(noMessageError4).left().padBottom(corner * 6 / 100).colspan(2);
         tableLogin.row();
 
         cellErrorUsernameLogin = tableLogin.getCell(noMessageError4);
@@ -1055,12 +1111,11 @@ public class Menu implements Screen {
         tableLogin.row();
 
         if (messageErrorLogin.equals(prefs.getString("INCORRECT_PASSWORD"))) {
-            messageErrorLoginPassword.setAlignment(1);
+            setAlignment1(messageErrorLoginPassword);
             tableLogin.add(messageErrorLoginPassword).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
-        } else {
+        } else
             tableLogin.add(noMessageError5).left().padBottom(SCREEN_HEIGHT * 8 / 100).colspan(2);
-        }
-
+       
         tableLogin.row();
         cellErrorPasswordLogin = tableLogin.getCell(noMessageError5);
 
@@ -1091,11 +1146,11 @@ public class Menu implements Screen {
     }
 
     /**
-     * initialisation d'une joueur
+     * initialisation d'un joueur    TODO
      *
-     * @param username:     username du joueur
-     * @param password      : password du joueur
-     * @param avatar:avatar du joueur
+     * @param username player's username
+     * @param password player's password
+     * @param avatar player's avatar
      */
     private void initializeStatsPlayer(String username, String password, String avatar) {
         Account account = new Account();
@@ -1120,7 +1175,7 @@ public class Menu implements Screen {
     }
 
     /**
-     * initialise les statistiques des 10 niveaux
+     * initialise les statistiques des 10 niveaux   TODO
      *
      * @return listLevelStats
      */
@@ -1135,21 +1190,20 @@ public class Menu implements Screen {
     }
 
     /**
-     * initialise les statistiques globales
+     * initialise les statistiques globales   TODO
      *
      * @return globalStats
      */
-
     private GlobalStats initializeGlobalStats() {
         GlobalStats globalStats = new GlobalStats();
         return globalStats;
     }
 
     /**
-     * récupération du joueur dans la table des joueurs
+     * vérifie que le joueur est dans la table des joueurs enregistrés (quand il se co dans Log In)
      *
      * @param userName
-     * @param currentPasswordLogin
+     * @param currentPasswordLogin    TODO
      * @return message d'anomalie
      */
     private String getPlayer(String userName, String currentPasswordLogin) {
@@ -1160,19 +1214,18 @@ public class Menu implements Screen {
             HumanPlayer player = (HumanPlayer) iter.next();
 
             if (player.getName().equals(userName)) {
-                if (player.getAccount().getPassword().equals(currentPasswordLogin)) {
+                if (player.getAccount().getPassword().equals(DataHashing.hash(currentPasswordLogin))) {
                     createPlayer(player);
                     return messageError;
-                } else {
+                } else
                     return prefs.getString("INCORRECT_PASSWORD");
-                }
             }
         }
         return prefs.getString("USER_NAME_NOT_EXIST");
     }
 
     /**
-     * création d'un joueur à partir du joueur 1 ou joueur 2
+     * création d'un joueur à partir du joueur 1 ou joueur 2    TODO
      *
      * @param player joueur 1 ou joueur 2
      */
@@ -1199,10 +1252,10 @@ public class Menu implements Screen {
     }
 
     /**
-     * récupération des 10 niveaux de statistique d'un joueur
+     * récupération des 10 niveaux de statistiques d'un joueur   TODO
      *
      * @param player
-     * @return liste des 10 niveaux de statistique
+     * @return liste des 10 niveaux de statistiques
      */
     private static ArrayList getLevelStatsPlayer(HumanPlayer player) {
         ArrayList listLevelStats = new ArrayList();
@@ -1213,7 +1266,7 @@ public class Menu implements Screen {
     }
 
     /**
-     * Validation de la saisie
+     * Validation de la saisie    TODO
      *
      * @param userName
      * @param newPassword1
@@ -1238,20 +1291,24 @@ public class Menu implements Screen {
         while (iter.hasNext()) {
             HumanPlayer statis = (HumanPlayer) iter.next();
 
-            if (statis.getName().equals(userName)) {
+            if (statis.getName().equals(userName))
                 return prefs.getString("USER_NAME_NOT_AVAILABLE");
-            }
         }
-        if (newPassword1.length() < 4) {
+        if (newPassword1.length() < 4)
             return prefs.getString("INCORRECT_LENGTH_PASSWORD");
-        }
-        if (!(newPassword1.equals(newPassword2))) {
+        if (!(newPassword1.equals(newPassword2)))
             return prefs.getString("PASSWORDS_NOT_MATCH");
-        }
+		
         return messageError;
     }
 
-    // int player = 1 si c'est le joueur du bouton gauche, 2 sinon
+    /**
+     *   TODO
+     *
+     *   int player = 1 si c'est le joueur du bouton gauche, 2 sinon
+     *
+     * @param player
+     */
     private void showProfile(int player) {
         disableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
         windowProfile.clear();
@@ -1291,9 +1348,9 @@ public class Menu implements Screen {
             cellProfileRight.setActor(buttonProfileRight);
             labelProfileRight.setText("Logged");
 
-        } else {
+        } else
             imageAvatar = new ImageButton(imageAnonymous);
-        }
+		
         prefs.flush();
 
         Label labelWelcome = new Label("Welcome " + playerName + " !", skinSgx, "title-white");
@@ -1367,6 +1424,9 @@ public class Menu implements Screen {
         stage.addActor(windowProfile);
     }
 
+    /**
+     *   TODO
+     */
     private void showEdit() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
         windowEdit.clear();
@@ -1383,8 +1443,6 @@ public class Menu implements Screen {
         tableEdit.left().padTop(windowEdit.getHeight() * 6 / 100);
         tableEdit.setSize(windowProfile.getWidth(), windowProfile.getWidth());
 
-        float widthImage = windowEdit.getHeight() * 14 / 100;
-        float heightImage = windowEdit.getHeight() * 14 / 100;
         buttonEditCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
         buttonEditCancel.addListener(new ClickListener() {
             @Override
@@ -1399,11 +1457,10 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
-                if (isProfileLeft) {
+                if (isProfileLeft)
                     messageErrorEdit = validateEdit(fieldCurrentPassword, player1, fieldNewPassword1, fieldNewPassword2);
-                } else {
+				else
                     messageErrorEdit = validateEdit(fieldCurrentPassword, player2, fieldNewPassword1, fieldNewPassword2);
-                }
                 // If there is an error message
                 if (!(messageErrorEdit.equals(""))) {
                     isInSignUp = false;
@@ -1463,27 +1520,24 @@ public class Menu implements Screen {
         fieldCurrentPassword.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         resetField(fieldNewPassword1);
         fieldNewPassword1.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         resetField(fieldNewPassword2);
         fieldNewPassword2.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
             public void keyTyped(TextField textField, char key) {
-                if ((key == '\r' || key == '\n')) {
+                if ((key == '\r' || key == '\n'))
                     textField.next(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyPressed(Input.Keys.SHIFT_RIGHT));
-                }
             }
         });
         setPasswordMode(fieldCurrentPassword, fieldNewPassword1, fieldNewPassword2);
@@ -1493,22 +1547,15 @@ public class Menu implements Screen {
         Label noMessageError1 = new Label("", skinSgx, "white");
         Label noMessageError2 = new Label("", skinSgx, "white");
         Label noMessageError3 = new Label("", skinSgx, "white");
-        messageErrorLoginPassword.setColor(Color.RED);
-        messageErrorLoginPassword.setAlignment(1);
-        messageErrorLengthPassword.setColor(Color.RED);
-        messageErrorLengthPassword.setAlignment(1);
-        messageErrorPasswordNotMatch.setColor(Color.RED);
-        messageErrorPasswordNotMatch.setAlignment(1);
+        setLabelRed(messageErrorLoginPassword, messageErrorLengthPassword, messageErrorPasswordNotMatch);
 
         Label avatarLabel = new Label("Click on the image to change it", skinSgx);
-        avatarLabel.setAlignment(1);
         tableEdit.add(avatarLabel).colspan(2).width(Value.percentWidth(1f)).padBottom(SCREEN_HEIGHT * 2 / 100);
         tableEdit.row();
         tableEdit.add(buttonEditAvatar).width(heightImageEdit).height(heightImageEdit).padBottom(SCREEN_HEIGHT * 4 / 100).colspan(2);
         tableEdit.row();
         labelCurrentPassword.setWidth(windowEdit.getWidth() * 55 / 100);
         fieldCurrentPassword.setWidth(windowEdit.getWidth() * 45 / 100);
-        labelCurrentPassword.setAlignment(1);
         tableEdit.add(labelCurrentPassword).fill();
         tableEdit.add(fieldCurrentPassword).fill().left().width(Value.percentWidth(1f));
         tableEdit.row();
@@ -1525,7 +1572,6 @@ public class Menu implements Screen {
         tableEdit.row();
         labelNewPassword2.setWidth(windowEdit.getWidth() * 55 / 100);
         fieldNewPassword2.setWidth(windowEdit.getWidth() * 45 / 100);
-        labelNewPassword2.setAlignment(1);
         tableEdit.add(labelNewPassword2).width(Value.percentWidth(1f)).fill();//.padRight(SCREEN_WIDTH * 2 / 100);
         tableEdit.add(fieldNewPassword2).fill();
         tableEdit.row();
@@ -1536,6 +1582,9 @@ public class Menu implements Screen {
         buttonEditSave.setWidth(buttonEditCancel.getWidth());
         tableEdit.add(buttonEditCancel).width(Value.percentWidth(1f)).left().padLeft(windowEdit.getWidth() * 15 / 100);
         tableEdit.add(buttonEditSave).width(Value.percentWidth(1f)).right().padRight(windowEdit.getWidth() * 15 / 100);
+
+        setAlignment1(messageErrorLoginPassword, messageErrorLengthPassword, messageErrorPasswordNotMatch,
+                avatarLabel, labelCurrentPassword, labelNewPassword2);
 
         cellEdit = tableEdit.getCell(buttonEditAvatar);
         cellEdit.clearActor();
@@ -1554,6 +1603,9 @@ public class Menu implements Screen {
         stage.addActor(windowEdit);
     }
 
+    /**
+     *   TODO
+     */
     private void createButtonProfileRight() {
         buttonProfileRight = new ImageButton(imageProfile);
         buttonProfileRight.addListener(new ClickListener() {
@@ -1574,6 +1626,9 @@ public class Menu implements Screen {
         });
     }
 
+    /**
+     *   TODO
+     */
     private void createButtonProfileLeft() {
         buttonProfileLeft = new ImageButton(imageProfile);
         buttonProfileLeft.addListener(new ClickListener() {
@@ -1586,7 +1641,6 @@ public class Menu implements Screen {
                 buttonProfileLeft.getImage().setColor(Color.WHITE);
                 buttonProfileRight.getImage().setColor(Color.DARK_GRAY);
                 if (!prefs.getBoolean("isPlayer1Logged"))
-
                     showLoginWindow();
                 else
                     showProfile(prefs.getInteger("numPlayer"));
@@ -1594,6 +1648,11 @@ public class Menu implements Screen {
         });
     }
 
+    /**
+     *   TODO
+     *
+     * @param player
+     */
     private void changeAvatar(HumanPlayer player) {
         if (hasImportedAvatar) {
             if (player.getAvatar().substring(0, player.getAvatar().length() - 5).equals("profile/" + "_" + player.getName()))
@@ -1610,6 +1669,15 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param fieldCurrentPassword
+     * @param player
+     * @param fieldNewPassword1
+     * @param fieldNewPassword2
+     * @return
+     */
     private String validateEdit(TextField fieldCurrentPassword, HumanPlayer player, TextField fieldNewPassword1, TextField fieldNewPassword2) {
         String messageErrorEdit = "";
 
@@ -1628,6 +1696,9 @@ public class Menu implements Screen {
         return messageErrorEdit;
     }
 
+    /**
+     *   TODO
+     */
     private void showAvatarSelectionWindow() {
         if (isInEdit)
             disableButton(buttonEditAvatar, buttonEditSave, buttonEditCancel);
@@ -1790,7 +1861,6 @@ public class Menu implements Screen {
                 imageTmp = imagePanda;
                 prefs.putString("pathImageTmp", prefs.getString("pathImagePanda"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
                 hasChangedAvatar = true;
@@ -1803,7 +1873,6 @@ public class Menu implements Screen {
                 imageTmp = imagePink;
                 prefs.putString("pathImageTmp", prefs.getString("pathImagePink"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
                 hasChangedAvatar = true;
@@ -1816,10 +1885,8 @@ public class Menu implements Screen {
                 imageTmp = imageBanana;
                 prefs.putString("pathImageTmp", prefs.getString("pathImageBanana"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
-
                 hasChangedAvatar = true;
             }
         });
@@ -1832,7 +1899,6 @@ public class Menu implements Screen {
                 prefs.flush();
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
-
                 hasChangedAvatar = true;
             }
         });
@@ -1843,10 +1909,8 @@ public class Menu implements Screen {
                 imageTmp = imageBurger;
                 prefs.putString("pathImageTmp", prefs.getString("pathImageBurger"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
-
                 hasChangedAvatar = true;
             }
         });
@@ -1857,7 +1921,6 @@ public class Menu implements Screen {
                 imageTmp = imageGirl;
                 prefs.putString("pathImageTmp", prefs.getString("pathImageGirl"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
                 hasChangedAvatar = true;
@@ -1870,7 +1933,6 @@ public class Menu implements Screen {
                 imageTmp = imageRobot;
                 prefs.putString("pathImageTmp", prefs.getString("pathImageRobot"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
                 hasChangedAvatar = true;
@@ -1883,10 +1945,8 @@ public class Menu implements Screen {
                 imageTmp = imagePenguin;
                 prefs.putString("pathImageTmp", prefs.getString("pathImagePenguin"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
-
                 hasChangedAvatar = true;
             }
         });
@@ -1897,10 +1957,8 @@ public class Menu implements Screen {
                 imageTmp = imageBlue;
                 prefs.putString("pathImageTmp", prefs.getString("pathImageBlue"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
-
                 hasChangedAvatar = true;
             }
         });
@@ -1911,14 +1969,11 @@ public class Menu implements Screen {
                 imageTmp = imageSquid;
                 prefs.putString("pathImageTmp", prefs.getString("pathImageSquid"));
                 prefs.flush();
-
                 buttonSelectionAvatar = new ImageButton(imageTmp);
                 cellAvatarSelect.setActor(buttonSelectionAvatar);
-
                 hasChangedAvatar = true;
             }
         });
-
         tableSelection.add(buttonSave).colspan(2).width(buttonImport.getWidth()).right();
         tableSelection.row().padTop(windowAvatarSelection.getHeight() * 8 / 100);
         buttonCancel.setWidth(buttonImport.getWidth());
@@ -1927,6 +1982,9 @@ public class Menu implements Screen {
         stage.addActor(windowAvatarSelection);
     }
 
+    /**
+     *   TODO
+     */
     private void showLogOut() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
         windowLogOut.clear();
@@ -1947,6 +2005,7 @@ public class Menu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
+
                 if (prefs.getInteger("numPlayer") == 1) {
                     resetButtonProfile(cellProfileLeft, player1, labelProfileLeft, "isPlayer1Logged");
                     saveStatsPlayer(player1);
@@ -1954,11 +2013,16 @@ public class Menu implements Screen {
                     resetButtonProfile(cellProfileRight, player2, labelProfileRight, "isPlayer2Logged");
                     saveStatsPlayer(player2);
                 }
-
                 windowLogOut.remove();
                 windowProfile.remove();
                 enableButton(buttonPlay, buttonHall, buttonSettings, buttonExit, buttonProfileLeft, buttonProfileRight);
                 resetButtonsProfileLooks();
+
+   // TODO a changer, il faudrait faire autrement (enregistrer en faisant log out sans devoir faire exit), un truc comme :
+                /*    if (tabPlayers.isEmpty()) {
+                        FileBuilder fileBuilder = new FileBuilder();
+                        fileBuilder.createFile();
+                    } */
             }
         });
         TextButton buttonNo = new TextButton(lang.get("text_no"), skinSgx, "big");
@@ -1980,6 +2044,14 @@ public class Menu implements Screen {
         stage.addActor(windowLogOut);
     }
 
+    /**
+     *   TODO
+     *
+     * @param cell
+     * @param player
+     * @param labelProfile
+     * @param string
+     */
     private void resetButtonProfile(Cell cell, HumanPlayer player, Label labelProfile, String string) {
         cell.clearActor();
         imageProfile = imageAnonymous;
@@ -1996,19 +2068,22 @@ public class Menu implements Screen {
 
     }
 
+    /**
+     *   TODO
+     *
+     * @param player
+     */
     public static void saveStatsPlayer(HumanPlayer player) {
         boolean isFound = isPlayerInTabStats(player.getName());
         if (isFound) {
-            if (getScorePlayerInTabStats(player.getName()) == 0) {
-                if (player.getGlobalStats().getScore() != 0)
-                    prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
-            }
+            if (getScorePlayerInTabStats(player.getName()) == 0 && player.getGlobalStats().getScore() != 0)
+                prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
+
             deletePlayer(player);
 
-        } else {
-            if (player.getGlobalStats().getScore() != 0)
-                prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
-        }
+        } else if (player.getGlobalStats().getScore() != 0)
+            prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
+
         HumanPlayer player3 = new HumanPlayer(player.getName(), player.getColor());
         Account account3 = new Account();
         account3.setPassword(player.getAccount().getPassword());
@@ -2019,10 +2094,17 @@ public class Menu implements Screen {
         ArrayList listLevelStats3 = getLevelStatsPlayer(player);
         player3.setListLevelStats(listLevelStats3);
         player3.setAvatar(player.getAvatar());
-        storePlayer(player3);
+        int rankPlayer = storePlayer(player3);
+        player.getGlobalStats().setRank(rankPlayer);
         prefs.flush();
     }
 
+    /**
+     *   TODO
+     *
+     * @param player
+     * @return
+     */
     private static GlobalStats setGlobalStats(HumanPlayer player) {
         GlobalStats globalStats = new GlobalStats();
         globalStats.setScore(player.getGlobalStats().getScore());
@@ -2038,14 +2120,18 @@ public class Menu implements Screen {
     }
 
     /**
-     * réinitialise l'apparence des boutons grisés
+     * réinitialise l'apparence des boutons grisés   TODO
      */
     private void resetButtonsProfileLooks() {
         buttonProfileLeft.getImage().setColor(Color.WHITE);
         buttonProfileRight.getImage().setColor(Color.WHITE);
-
     }
 
+    /**
+     *   TODO
+     *
+     * @param name
+     */
     private void updateAvatar(String name) {
         Iterator iter = tabPlayers.iterator();
         while (iter.hasNext()) {
@@ -2056,6 +2142,12 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     *
+     * @param name
+     * @return
+     */
     private static boolean isPlayerInTabStats(String name) {
         Iterator iter = tabPlayers.iterator();
         while (iter.hasNext()) {
@@ -2067,18 +2159,29 @@ public class Menu implements Screen {
         return false;
     }
 
+    /**
+     *   TODO
+     *
+     * @param name
+     * @return
+     */
     private static int getScorePlayerInTabStats(String name) {
         Iterator iter = tabPlayers.iterator();
         while (iter.hasNext()) {
             HumanPlayer player = (HumanPlayer) iter.next();
-            if (player.getName().equals(name)) {
+            if (player.getName().equals(name))
                 return player.getGlobalStats().getScore();
-            }
         }
         return 0;
     }
 
-    private static void storePlayer(HumanPlayer player) {
+    /**
+     *   TODO
+     *
+     * @param player
+     * @return
+     */
+    private static int storePlayer(HumanPlayer player) {
         boolean isFound = false;
         int i = 0;
         while (i < tabPlayers.size() && !isFound) {
@@ -2094,11 +2197,21 @@ public class Menu implements Screen {
         int j = i + 1;
         while (j < tabPlayers.size()) {
             HumanPlayer playerTab = (HumanPlayer) tabPlayers.get(j);
-            playerTab.getGlobalStats().setRank(j + 1);
+
+            if (playerTab.getGlobalStats().getScore() != 0)
+                playerTab.getGlobalStats().setRank(j + 1);
+            else 
+				playerTab.getGlobalStats().setRank(0);
             j++;
         }
+        return i + 1;
     }
 
+    /**
+     *   TODO
+     *
+     * @param player
+     */
     private static void deletePlayer(HumanPlayer player) {
         int i = 0;
         boolean isFound = false;
@@ -2113,6 +2226,9 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     */
     private void recalculateRank() {
         for (int i = 0; i < tabPlayers.size(); i++) {
             HumanPlayer playerTab = (HumanPlayer) tabPlayers.get(i);
@@ -2120,6 +2236,9 @@ public class Menu implements Screen {
         }
     }
 
+    /**
+     *   TODO
+     */
     private void showExit() {
         disableButton(buttonPlay, buttonSettings, buttonExit);
         if (prefs.getBoolean("isAccountEnabled"))
@@ -2174,6 +2293,9 @@ public class Menu implements Screen {
         stage.addActor(windowExit);
     }
 
+    /**
+     *   TODO
+     */
     private void showDelete() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
         windowDelete.clear();
@@ -2190,8 +2312,7 @@ public class Menu implements Screen {
         Label labelWarning2 = new Label(lang.get("label_including_achievements_in_hof"), skinSgx, "white");
         Label labelPassword = new Label(lang.get("label_password"), skinSgx, "white");
         Label noMessagePassword = new Label("", skinSgx, "white");
-        messageErrorDeletePassword.setColor(Color.RED);
-
+        setLabelRed(messageErrorDeletePassword);
 
         fieldPasswordDelete.setTextFieldListener(new TextField.TextFieldListener() {
             @Override
@@ -2219,7 +2340,7 @@ public class Menu implements Screen {
                     cellErrorPasswordDelete.clearActor();
                     cellErrorPasswordDelete.setActor(messageErrorDeletePassword);
                 } else {
-                    // suppression du joueur dans la table des statistiques
+                    // Deletes a player from tabPlayers
 
                     cellErrorPasswordDelete.clearActor();
                     cellErrorPasswordDelete.setActor(noMessageError9);
@@ -2238,8 +2359,6 @@ public class Menu implements Screen {
                     enableButton(buttonPlay, buttonHall, buttonSettings, buttonExit, buttonProfileLeft, buttonProfileRight);
                     resetButtonsProfileLooks();
                 }
-
-
             }
         });
         TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
@@ -2252,7 +2371,6 @@ public class Menu implements Screen {
                 enableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
                 resetField(fieldPasswordDelete);
                 windowDelete.remove();
-
             }
         });
         table.padTop(windowDelete.getWidth() / 20);
@@ -2261,7 +2379,7 @@ public class Menu implements Screen {
         table.add(labelWarning2).colspan(2);
         table.row().padTop(windowDelete.getHeight() * 11 / 100);
         table.add(labelPassword);
-        labelPassword.setAlignment(1);
+        setAlignment1(labelPassword);
         table.add(fieldPasswordDelete).fill().width(windowDelete.getWidth() * 60 / 100);
 
         table.row();

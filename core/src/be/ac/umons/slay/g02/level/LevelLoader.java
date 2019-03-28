@@ -40,35 +40,35 @@ import static be.ac.umons.slay.g02.gui.Main.prefs;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
+/**
+ * TODO juste ça, le reste est fait
+ */
 public class LevelLoader {
-
     private static final String LEVELS_PATH = "worlds";
     private static int numberHumans;
-
     private static Player[] players;
+
     /**
-     * .
      * Returns a Map object from the the following files :
-     *  - assets/world/filename.tmx
-     *  - assets/world/filename.xml
-     *
-     *  Loads the world using the pattern mentioned in the requirements.
+     * - assets/world/filename.tmx
+     * - assets/world/filename.xml
+     * <p>
+     * Loads the world using the pattern mentioned in the requirements
      *
      * @param levelName the name of the level (filename without extension)
-     * @return a Map object consisting of a Slay Level and a libGDX TiledMap for the GUI.
+     * @return a Map object consisting of a Slay Level and a libGDX TiledMap for the GUI
      * @throws FileFormatException If the file don't use the correct format
      */
-
     public static Map load(String levelName, int nbrHumans) throws FileFormatException {
-        String tmxName = LEVELS_PATH + File.separator +levelName + ".tmx";
-        String xmlName = LEVELS_PATH + File.separator +levelName + ".xml";
+        String tmxName = LEVELS_PATH + File.separator + levelName + ".tmx";
+        String xmlName = LEVELS_PATH + File.separator + levelName + ".xml";
         numberHumans = nbrHumans;
 
-        // Init level and load water and playable territories
+        // Initializes level and load water and playable territories
         TiledMap map = new TmxMapLoader().load(tmxName);
         Playable level = loadBackground(map);
 
-        //Load xml file
+        // Loads xml file
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         Element root;
         try {
@@ -79,13 +79,13 @@ public class LevelLoader {
             Gdx.files.local("currentLevel.xml").delete();
             root = xml.getDocumentElement();
 
-            // Add players
+            // Adds players
             loadPlayers(root);
 
-            // Add territories
+            // Adds territories
             loadTerritories(root, level);
 
-            // Add entities
+            // Adds entities
             loadEntities(root, level);
 
         } catch (ParserConfigurationException e) {
@@ -103,13 +103,12 @@ public class LevelLoader {
     }
 
     /**
-     * Load map bottom from the TiledMap
+     * Loads map bottom from the TiledMap
      *
      * @param map TiledMap
      * @return The level with the bottom
      */
-
-    private static Level loadBackground (TiledMap map) {
+    private static Level loadBackground(TiledMap map) {
         MapProperties prop = map.getProperties();
 
         int width = prop.get("width", Integer.class);
@@ -138,29 +137,34 @@ public class LevelLoader {
     }
 
     /**
-     * Retrieve players from the game (number and type) and initialize them
+     * Retrieves players from the game (number and type) and initializes them
      *
      * @param root The root of XML file
      */
-
-    private static void loadPlayers (Element root) {
+    private static void loadPlayers(Element root) {
         List<Colors> alreadyUsed = new ArrayList<Colors>();
+
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
             Node n = root.getChildNodes().item(i);
-            // Load players numbers and init players tab
+
+            // Loads players numbers and init players tab
             if (n.getNodeName().equals("players")) {
+
                 Element plys = (Element) n;
                 int nbPlayers = Integer.parseInt(plys.getAttribute("number"));
                 players = new Player[nbPlayers];
                 int countHuman = 0;
                 int countAI = 0;
+
                 for (int p = 0; p < players.length; p++) {
                     int rand = new Random().nextInt(8);
                     Colors color = Colors.fromId(rand);
+
                     while (alreadyUsed.contains(color)) {
                         rand = new Random().nextInt(8);
                         color = Colors.fromId(rand);
                     }
+
                     alreadyUsed.add(color);
                     Player player;
                     int difficulty;
@@ -170,11 +174,11 @@ public class LevelLoader {
                             // Two AIs
                             if (countAI == 0) {
                                 difficulty = LevelSelection.difficulty1;
-                                countAI ++;
-                            } else {
+                                countAI++;
+                            } else
                                 difficulty = LevelSelection.difficulty2;
-                            }
-                            player = fromDifficulty (difficulty, color, "P" + (p+1));
+
+                            player = fromDifficulty(difficulty, color, "P" + (p + 1));
                             break;
                         case 1:
                             // One AI and One human player
@@ -184,33 +188,28 @@ public class LevelLoader {
                                 break;
                             } else {
                                 difficulty = LevelSelection.difficulty1;
-                                player = fromDifficulty(difficulty, color, "P" + (p+1));
+                                player = fromDifficulty(difficulty, color, "P" + (p + 1));
                                 break;
                             }
-
                         default:
                             // Two human players
                             player = loadHumanPlayer(countHuman, color);
                             countHuman += 1;
-                            break;
                     }
-
                     players[p] = player;
                 }
             }
-
         }
     }
 
     /**
-     * Init human players
+     * Initializes human players
      *
-     * @param countHuman    Human number already create
-     * @param color         The color to assign
-     * @return              The initialized player
+     * @param countHuman Human number already created
+     * @param color      The color to assign
+     * @return The initialized player
      */
-
-    private static Player loadHumanPlayer (int countHuman, Colors color) {
+    private static Player loadHumanPlayer(int countHuman, Colors color) {
         Player player;
         if (countHuman == 0) {
             if (prefs.getBoolean("isPlayer1Logged")) {
@@ -235,27 +234,27 @@ public class LevelLoader {
     }
 
     /**
-     * Method initiating artificial intelligence from its difficulty level
+     * Initiates artificial intelligence from its difficulty level
      *
      * @param difficulty Integer representing AI difficulty
      * @param color      Color assigned to AI
      * @param name       Name assigned to AI
-     * @return           The artificial intelligence corresponding
+     * @return The respective artificial intelligence
      */
-
-    private static Player fromDifficulty (int difficulty, Colors color, String name) {
+    private static Player fromDifficulty(int difficulty, Colors color, String name) {
         Player player;
+
         switch (difficulty) {
-            case 1 :
+            case 1:
                 player = new AIEasy(color, name);
                 break;
-            case 2 :
+            case 2:
                 player = new AIMedium(color, name);
                 break;
-            case 3 :
+            case 3:
                 player = new AIAdvanced(color, name);
                 break;
-            case 4 :
+            case 4:
                 player = new AIRandom(color, name);
                 break;
             default:
@@ -266,14 +265,13 @@ public class LevelLoader {
     }
 
     /**
-     * Load territories in the level
+     * Loads territories in the level
      *
-     * @param root                  The root of XML file
-     * @param level                 The level in which the territories
-     * @throws FileFormatException  If the file don't use the correct format
+     * @param root  The root of XML file
+     * @param level The level in which the territories
+     * @throws FileFormatException If the file do not use the correct format
      */
-
-    private static void loadTerritories (Element root, Playable level) throws FileFormatException {
+    private static void loadTerritories(Element root, Playable level) throws FileFormatException {
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
             Node n = root.getChildNodes().item(i);
 
@@ -297,38 +295,35 @@ public class LevelLoader {
                     }
                 }
             }
-
         }
         level.setPlayers(players);
         level.mergeTerritories();
     }
 
     /**
-     * Load entities in the level
+     * Loads entities in the level
      *
-     * @param root                  The root of XML file
-     * @param level                 The level in which the territories
-     * @throws FileFormatException  If the file don't use the correct format
+     * @param root  The root of XML file
+     * @param level The level in which the territories
+     * @throws FileFormatException If the file do not use the correct format
      */
-
-    private static void loadEntities (Element root, Playable level) throws FileFormatException {
+    private static void loadEntities(Element root, Playable level) throws FileFormatException {
         for (int i = 0; i < root.getChildNodes().getLength(); i++) {
             Node n = root.getChildNodes().item(i);
 
             if (n.getNodeName().equals("items")) {
-                // handle items
+                // Handles items
                 for (int j = 0; j < n.getChildNodes().getLength(); j++) {
-                    // add each item and soldier to the map
+                    // Adds each item and soldier to the map
 
                     Node item = n.getChildNodes().item(j);
                     if (item.getNodeName().equals("item")) {
-                        // Add each static entity
+                        // Adds each static entity
                         Element itm = (Element) item;
                         String type = itm.getAttribute("type");
                         int x = Integer.parseInt(itm.getAttribute("x"));
                         int y = Integer.parseInt(itm.getAttribute("y"));
                         Coordinate coord = new Coordinate(x, y);
-
 
                         StaticEntity entity = StaticEntity.fromString(type);
 
@@ -336,7 +331,6 @@ public class LevelLoader {
                             // A capital has to belong to a territory
                             throw new FileFormatException("A static entity has to belong to a territory");
                         }
-
                         level.set(entity, coord);
 
                         if (entity == StaticEntity.CAPITAL) {
@@ -346,17 +340,16 @@ public class LevelLoader {
                             territory.setCapital(level.get(coord));
                             territory.setCoins(coins);
                         }
-
                     }
                 }
-            }  else if (n.getNodeName().equals("units")) {
-                // handle units
+            } else if (n.getNodeName().equals("units")) {
+                // Handles units
                 for (int j = 0; j < n.getChildNodes().getLength(); j++) {
-                    // add each soldier to the map
+                    // Adds each soldier to the map
 
                     Node unit = n.getChildNodes().item(j);
                     if (unit.getNodeName().equals("unit")) {
-                        // Add each Soldier
+                        // Adds each Soldier
 
                         Element unt = (Element) unit;
                         String type = unt.getAttribute("type");
@@ -372,8 +365,7 @@ public class LevelLoader {
                                 throw new FileFormatException("A soldier has to belong to a territory");
                             }
                             level.set(s, coord);
-
-                                                        /*
+                            /*
                                 Updates currentL. for stats - when a unit is assigned to the player
                                 at the beginning of the game
                             */
@@ -389,15 +381,13 @@ public class LevelLoader {
                 }
             }
         }
-
-
     }
 
-
     /**
-     * Return object for loading the world. Consists of a Level object and a libGDX TiledMap.
+     * Returns object for loading the world
+     *
+     * Consists of a Level object and a libGDX TiledMap
      */
-
     public static class Map {
         private Playable level;
         private TiledMap map;
@@ -420,7 +410,7 @@ public class LevelLoader {
      * Updates the currentStats for a unit given to the player at the start of the game
      * The currentStats in question are CURRENT_L0 to CURRENT_L3
      *
-     * @param player the owner of the unit
+     * @param player  the owner of the unit
      * @param soldier the unit assigned to the player
      */
     private static void updatePlayerStatsUnits(HumanPlayer player, Soldier soldier) {

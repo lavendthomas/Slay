@@ -72,7 +72,9 @@ import static be.ac.umons.slay.g02.players.Statistics.resetCurrentStats;
 import static java.lang.Math.round;
 import static java.lang.StrictMath.sqrt;
 
-// classe qui affiche l'interface pendant une partie
+/**
+ *   TODO   classe qui affiche l'interface pendant une partie
+ */
 public class GameScreen implements Screen {
     private Game game;
 
@@ -136,6 +138,8 @@ public class GameScreen implements Screen {
     private String levelName;
 
     /**
+     *   TODO
+     *
      * @param aGame
      * @param levelName
      */
@@ -147,12 +151,13 @@ public class GameScreen implements Screen {
         click = ClickState.NOTHING_SELECTED;
         windowPause.setVisible(false);
         windowEnd.setVisible(false);
-
         init();
-
     }
-    private void init() {
 
+    /**
+     *   TODO
+     */
+    private void init() {
         try {
             camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             LevelLoader.Map lvlLoader = LevelLoader.load(levelName, numberHumans);
@@ -169,16 +174,13 @@ public class GameScreen implements Screen {
             size = prop.get("hexsidelength", Integer.class);
             errorOffset = size * sqrt(3) - round(size * sqrt(3));
 
-
             // Chargement des couches utiles et du tileset
             territories = (TiledMapTileLayer) map.getLayers().get("Territories");
             entities = (TiledMapTileLayer) map.getLayers().get("Entities");
             effects = (TiledMapTileLayer) map.getLayers().get("Effects");
 
             set = map.getTileSets().getTileSet("tileset");
-
             tileMap = loadTileHashMap();
-
             worldH = nbreH * tileH + tileH / 2;
 
             if (nbreW % 2 == 0) {
@@ -186,25 +188,22 @@ public class GameScreen implements Screen {
             } else {
                 worldW = (int) (Math.ceil(nbreW / 2f) * tileW + Math.floor(nbreW / 2f) * (tileW / 2));
             }
-
             viewport = new FitViewport(worldW, worldH, camera);
 
             int midScreenW = SCREEN_WIDTH / 2;
             int midScreenH = SCREEN_HEIGHT / 2;
             translateX = midScreenW - (worldW / 2);
             translateY = midScreenH - (worldH / 2);
-
             camera.translate(-translateX, -translateY, 0);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            new Exception(/*TODO*/);
         }
         loadButtons();
-
     }
 
     /**
-     *
+     *  TODO
      */
     private void handleInput() { //TODO Bloquer dépassements (trop zoom, trop à gauche ...)
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
@@ -229,7 +228,6 @@ public class GameScreen implements Screen {
             translateY += 5;
             camera.translate(0, 5, 0);
         }
-
     }
 
     void changeZoom(float delta) {
@@ -237,7 +235,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *
+     *  TODO
      */
     private void showPauseWindow() {
         int CORNER_SIZE = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -284,7 +282,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *
+     *  TODO
      */
     private void showWindowQuit() {
         int CORNER_SIZE = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -337,7 +335,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
         loadLevel();
         if (!endPlay) {
             handleInput();
@@ -364,7 +361,7 @@ public class GameScreen implements Screen {
     /**
      * Updates all stats for winner and loser (if logged)
      *
-     * @param winner
+     * @param winner  TODO
      */
     private void updatePlayerStats(Player winner) {
         // Player 1
@@ -413,7 +410,7 @@ public class GameScreen implements Screen {
     /**
      * on incrémente pour globalstats et le levelstats du niveau joué
      *
-     * @param player
+     * @param player  TODO
      */
     private void updatePlayerGames(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.GAMES);
@@ -424,7 +421,7 @@ public class GameScreen implements Screen {
     /**
      * on incrémente pour globalstats et le levelstats du niveau joué
      *
-     * @param player
+     * @param player  TODO
      */
     private void updatePlayerWins(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.WINS);
@@ -435,7 +432,7 @@ public class GameScreen implements Screen {
     /**
      * on incrémente pour globalstats et le levelstats du niveau joué
      *
-     * @param player
+     * @param player  TODO
      */
     private void updatePlayerDefeats(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.DEFEATS);
@@ -446,12 +443,11 @@ public class GameScreen implements Screen {
     /**
      * on met à jour pour globalstats et le levelstats du niveau joué puis on calcule le score (pour le niveau joué)
      *
-     * @param player
+     * @param player  TODO
      */
     private void updatePlayerScore(HumanPlayer player, boolean hasWon) {
-        player.getGlobalStats().updateStats();
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).updateStats();
-
+        player.getGlobalStats().updateStats(player);
         // The score is calculated with the global statistics to be displayed in the hall of fame
         int score = player.getGlobalStats().calculateScore(hasWon);
 
@@ -463,6 +459,8 @@ public class GameScreen implements Screen {
     }
 
     /**
+     *   TODO
+     *
      * @param x
      * @param y
      * @return
@@ -476,6 +474,12 @@ public class GameScreen implements Screen {
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
+    /**
+     *   TODO
+     *
+     * @param x
+     * @param y
+     */
     void onTap(float x, float y) {
         if (!windowPause.isVisible() && level.getCurrentPlayer() instanceof HumanPlayer) {
 
@@ -531,6 +535,8 @@ public class GameScreen implements Screen {
     }
 
     /**
+     *   TODO
+     *
      * @param clickPos
      */
     private void showEffects(Coordinate clickPos) {
@@ -577,6 +583,8 @@ public class GameScreen implements Screen {
     }
 
     /**
+     *   TODO
+     *
      * @param c
      * @param hidden
      */
@@ -590,7 +598,6 @@ public class GameScreen implements Screen {
                     canBuy.add(e.getName());
                 }
             }
-
             boolean isVisibleL0 = isShown && canBuy.contains("L0");
             boolean isVisibleL1 = isShown && canBuy.contains("L1");
             boolean isVisibleL2 = isShown && canBuy.contains("L2");
@@ -606,6 +613,8 @@ public class GameScreen implements Screen {
     }
 
     /**
+     *   TODO
+     *
      * @param isShown
      * @param isVisibleL
      * @param buttonL
@@ -726,19 +735,19 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *
+     *  TODO + traduire en dessous
      */
     private void loadButtons() {
-
         int image_corner = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
         hudCam = new OrthographicCamera();
         if (hud == null) {
+
             //hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
+
             hud = new Stage(new ScreenViewport());
         } else {
             hud.clear();
         }
-
 
         if (numberHumans == 0) {
             // Initialisation des boutons
@@ -962,8 +971,6 @@ public class GameScreen implements Screen {
             }
         });
 
-
-
         // Player 1
 
         checkboxPlayer1 = new CheckBox("", skinSgx, "radio");
@@ -1017,20 +1024,23 @@ public class GameScreen implements Screen {
         labelWages.setVisible(false);
 
         Table screenTablePlayers = new Table();
+		
         if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
-        screenTablePlayers.setFillParent(true);
-        screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
-        screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
+			screenTablePlayers.setFillParent(true);
+			screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
+			screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
             screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP1).left();
         }
         screenTablePlayers.row();
+		
         if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
-        screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
+			screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
             screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
         }
         Table tableMarket = new Table();
+		
         if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             tableMarket.add(buttonL0).padRight(1.5f * buttonL1.getWidth());
             tableMarket.add(buttonL1).padRight(1.5f * buttonL1.getWidth());
@@ -1045,8 +1055,6 @@ public class GameScreen implements Screen {
             tableMarket.row();
             tableMarket.add(buttonL0).padTop(1.5f * buttonL1.getHeight());
         }
-
-
         Table tableIncome = new Table();
         tableIncome.add(labelIncome);
         tableIncome.row();
@@ -1060,7 +1068,6 @@ public class GameScreen implements Screen {
         screenTableMarket.setFillParent(true);
         screenTableMarket.addActor(buttonChest);
         screenTableMarket.addActor(labelCoins);
-
         if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             screenTableMarket.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
         } else {
@@ -1103,7 +1110,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *
+     *  TODO
      */
     private void showNextTurnEffects() {
         if (level.getCurrentPlayer() == getPlayers()[0]) {
@@ -1126,9 +1133,9 @@ public class GameScreen implements Screen {
      * @param buttonL    the units in the market
      */
     private void makeButtonGreen(boolean isSelected, ImageButton... buttonL) {
-        if (isSelected) {
+        if (isSelected)
             buttonL[0].getImage().setColor(Color.GREEN);
-        } else {
+        else {
             for (ImageButton button : buttonL) {
                 if (!listButtonLDark.contains(button))
                     button.getImage().setColor(Color.WHITE);
@@ -1137,12 +1144,17 @@ public class GameScreen implements Screen {
     }
 
     /**
+     *   TODO
+     *
      * @return
      */
     public static Playable getLevel() {
         return level;
     }
 
+    /**
+     *   TODO
+     */
     enum ClickState {
         NOTHING_SELECTED,
         ON_TERRITORY,

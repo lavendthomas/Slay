@@ -18,13 +18,22 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import be.ac.umons.slay.g02.gui.Main;
+import be.ac.umons.slay.g02.gui.screens.Menu;
+
 import static be.ac.umons.slay.g02.gui.Main.tabPlayers;
 
+/**
+ *  //TODO
+ */
 public class FileBuilder {
     Document doc;
-    StatsLoader statsloader = new StatsLoader();
-    private String nameFile = statsloader.getNameFile();
 
+    private String nameFile = Main.getNameFile();
+
+    /**
+     *  //TODO
+     */
     public void createFile() {
 
         if (!tabPlayers.isEmpty()) {
@@ -56,7 +65,7 @@ public class FileBuilder {
                     newElement.appendChild(nom);
 
                     Element pass = doc.createElement("password");
-                    pass.appendChild(doc.createTextNode(encrypt(player.getAccount().getPassword())));
+                    pass.appendChild(doc.createTextNode(DataHashing.hash(player.getAccount().getPassword())));
                     newElement.appendChild(pass);
 
                     Element avatar = doc.createElement("avatar");
@@ -102,6 +111,13 @@ public class FileBuilder {
         }
     }
 
+    /**
+     *  //TODO
+     *
+     * @param doc
+     * @param newElement
+     * @param hashmapStats
+     */
     private void writeValues(Document doc, Element newElement, HashMap<String, Integer> hashmapStats) {
         int i = 1;
         for (Map.Entry<String, Integer> entry : hashmapStats.entrySet()) {
@@ -117,14 +133,5 @@ public class FileBuilder {
             elementStat.appendChild(doc.createTextNode(String.valueOf(value)));
             newElement.appendChild(elementStat);
         }
-    }
-
-    private String encrypt(String password) {
-        String encrypted = "";
-        for (int i = 0; i < password.length(); i++) {
-            int c = password.charAt(i) ^ 48;
-            encrypted = encrypted + (char) c;
-        }
-        return encrypted;
     }
 }

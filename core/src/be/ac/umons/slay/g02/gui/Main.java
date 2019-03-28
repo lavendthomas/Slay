@@ -20,7 +20,9 @@ import java.util.Locale;
 import be.ac.umons.slay.g02.gui.screens.Menu;
 import be.ac.umons.slay.g02.players.StatsLoader;
 
-// gere les changements d'ecran
+/**
+ * gere les changements d'ecran	 TODO
+ */
 public class Main extends Game {
     public static Skin skinSgx;
     public static Skin skinSgxTable;
@@ -48,6 +50,32 @@ public class Main extends Game {
     private static boolean isStatsLoad = false;
     public static ArrayList tabPlayers;
 
+   // Used for unit testing
+    private static final String DATA = "data/";
+    private static String nameFile = "PlayerData3.xml";
+    public static boolean isInTest = false;
+
+    /**
+     *   TODO
+     *
+     * @param nameFile
+     */
+    public static void setNameFile(String nameFile) {
+        Main.nameFile = nameFile;
+    }
+
+    /**
+     *   TODO
+     *
+     * @return
+     */
+    public static String getNameFile() {
+        return DATA + nameFile;
+    }
+
+    /**
+     *	TODO
+     */
     @Override
     public void create() {
         // Language support

@@ -2,6 +2,9 @@ package be.ac.umons.slay.g02.players;
 
 import com.badlogic.gdx.graphics.Color;
 
+/**
+ *  TODO
+ */
 public enum Colors {
     C1("LIGHT_GREEN", 1),
     C2("RED", 2),
@@ -14,15 +17,32 @@ public enum Colors {
     private String name;
     private int id;
 
+    /**
+     *  TODO
+     *
+     * @param name
+     * @param id
+     */
     Colors (String name, int id) {
         this.name = name;
         this.id = id;
     }
 
+    /**
+     *  TODO
+     *
+     * @return
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     *  TODO
+     *
+     * @param id
+     * @return
+     */
     public static Colors fromId(int id) {
         for (Colors color: Colors.values()) {
             if (id == color.id) {
@@ -32,6 +52,11 @@ public enum Colors {
         return C1; // Give a default value if the level doesn't exist
     }
 
+    /**
+     *  TODO
+     *
+     * @return
+     */
     public Color toColor() {
         Color color = new Color();
 

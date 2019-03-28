@@ -7,14 +7,16 @@ import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 
 /**
- *
+ * Class containing the statistics used to calculate the player's score and the ones to be displayed
+ * in game
  */
 public class Statistics {
     private static final String LOST_ = "Lost_";
-    private static final String MIN_ = "min_";
-    private static final String MAX_ = "max_";
+    public static final String MIN_ = "min_";
+    public static final String MAX_ = "max_";
     private static int currentArmy = 0;
 
+    // The hashmap containing the statistics to display and store in the xml file
     private LinkedHashMap<String, Integer> stats = new LinkedHashMap<String, Integer>();
 
     /*
@@ -54,6 +56,7 @@ public class Statistics {
     public static final String MAX_L3 = MAX_ + L3;
     public static final String MAX_UNITS = MAX_ + UNITS;
 
+    // The hashmap containing the counters used for the calculations of all the other statistics
     private LinkedHashMap<String, Integer> currentStats = new LinkedHashMap<String, Integer>();
 
     // All counters in game (they are called currentStats in comments)
@@ -72,7 +75,7 @@ public class Statistics {
     /**
      * Class constructor
      * It initializes the hashmaps containing the statistics for all worlds and the global ones
-     * All statistics are put to 0     (à part si tu changes les current .......)
+     * All statistics are put to 0 before the game
      */
     public Statistics() {
         putToZero(currentStats, CURRENT_TURNS);
@@ -81,13 +84,11 @@ public class Statistics {
         putToZero(currentStats, CURRENT_LOST_L1);
         putToZero(currentStats, CURRENT_LOST_L2);
         putToZero(currentStats, CURRENT_LOST_L3);
-        putToZero(currentStats, CURRENT_L0);// initialiser au nombre du début de partie si possible, pareil pour L1, 2 et 3
+        putToZero(currentStats, CURRENT_L0);
         putToZero(currentStats, CURRENT_L1);
         putToZero(currentStats, CURRENT_L2);
         putToZero(currentStats, CURRENT_L3);
-
         putToZero(currentStats, CURRENT_LANDS);
-
 
         putToZero(stats, GAMES);
         putToZero(stats, WINS);
@@ -185,48 +186,17 @@ public class Statistics {
 
     /**
      * Updates the values of the statistics in the hashmap stats by calculations with the currentStats
-     * Then resets the currentStats
      */
     public void updateStats() {
-        // Must be done before calculateTotal(ARMY)
-        calculateTotal(L0);
-        calculateTotal(L1);
-        calculateTotal(L2);
-        calculateTotal(L3);
-        calculateTotal(UNITS);
-
+        updateTotal();
         calculateCurrentArmy();
-
-        calculateTotal(TURNS);
-        calculateTotal(TREES);
-        calculateTotal(LOST_L0);
-        calculateTotal(LOST_L1);
-        calculateTotal(LOST_L2);
-        calculateTotal(LOST_L3);
-        calculateTotal(LOST_UNITS);
-
-        calculateTotal(ARMY);
-        calculateTotal(LANDS_TURN);
-
-        calculateMin(TURNS);
-        calculateMin(ARMY);
-
-        calculateMax(TREES, CURRENT_TREES);
-        calculateMax(LOST_L0, CURRENT_LOST_L0);
-        calculateMax(LOST_L1, CURRENT_LOST_L1);
-        calculateMax(LOST_L2, CURRENT_LOST_L2);
-        calculateMax(LOST_L3, CURRENT_LOST_L3);
-        calculateMax(LOST_UNITS, "");
-        calculateMax(L0, CURRENT_L0);
-        calculateMax(L1, CURRENT_L1);
-        calculateMax(L2, CURRENT_L2);
-        calculateMax(L3, CURRENT_L3);
-        calculateMax(UNITS, "");
-        calculateMax(ARMY, "");
-        calculateMax(LANDS_TURN, "");
+        updateMin();
+        updateMax();
     }
 
     /**
+     *  //TODO
+     *
      * @param key
      */
     private void calculateTotal(String key) {
@@ -259,12 +229,12 @@ public class Statistics {
         } else {
             // value in stats += currentStat
             String current = "current" + key;
-                addToStat(stats, key, currentStats.get(current));
+            addToStat(stats, key, currentStats.get(current));
         }
     }
 
     /**
-     * totalL0 - totalLostL0 (description a faire plus formellement .....)
+     * totalL0 - totalLostL0  //TODO
      *
      * @param key
      * @return
@@ -274,6 +244,8 @@ public class Statistics {
     }
 
     /**
+     *  //TODO
+     *
      * @param key
      * @return
      */
@@ -283,6 +255,8 @@ public class Statistics {
     }
 
     /**
+     *  //TODO
+     *
      * @param key
      * @return
      */
@@ -292,6 +266,8 @@ public class Statistics {
     }
 
     /**
+     *  //TODO
+     *
      * @param key
      */
     private void calculateMin(String key) {
@@ -314,6 +290,8 @@ public class Statistics {
     }
 
     /**
+     *  //TODO
+     *
      * @param key
      */
     private void calculateMax(String key, String current) {
@@ -343,6 +321,12 @@ public class Statistics {
             stats.put(MAX_ + key, Math.max(currentStats.get(current), stats.get(MAX_ + key)));
     }
 
+    /**
+     * Gets the army value from the game that has just been played (then used to determine MIN_ARMY and MAX_ARMY)
+     *
+     * It is the sum of all player's units values (= total number of units of type A multiplied by their price)
+     * It is stored in the variable currentArmy to simplify the reading of calculations in the other methods
+     */
     public void calculateCurrentArmy() {
         currentArmy = currentStats.get(CURRENT_L0) * SoldierLevel.L0.getPrice()
                 + currentStats.get(CURRENT_L1) * SoldierLevel.L1.getPrice()
@@ -351,9 +335,21 @@ public class Statistics {
     }
 
     /**
-     * on peut afficher le score global ou par level, mais on n'affiche que le global dans le hall
+     * Calculates the score of the player
      *
-     * @return
+     * The statistics used are :
+     * - number of cut trees [bonus]
+     * - number of tiles/turn [bonus]
+     * - army value [malus]
+     * - number of lost units (killed by the enemy or dead because of bankrupt) [malus]
+     * - number of turns to end the game [malus]
+     * - total number of games
+     * - total number of wins or defeat (depending on whether the player has won or has lost)
+     * The minimum possible score is 50
+     * This method could be used to calculate the score of any level played, but it is currently only
+     * used to display the score of global statistics
+     *
+     * @return true if the player for whom the score is calculated has won the game, false otherwise
      */
     public int calculateScore(boolean hasWon) {
         float multiplier = 0.75f;
@@ -363,10 +359,10 @@ public class Statistics {
         int factorArmy = 5;
         int factorLosses = 100;
         int factorWins = 5000;
-        int  factorDefeats = 500;
+        int factorDefeats = 500;
 
         double score = (factorTrees * stats.get(TREES)
-                + factorLandsTurn * 15/*stats.get(LANDS_TURN)*/
+                + factorLandsTurn * stats.get(LANDS_TURN)
                 - factorArmy * stats.get(ARMY)
                 - factorLosses * stats.get(LOST_UNITS))
                 - factorTurns * stats.get(TURNS);
@@ -382,5 +378,64 @@ public class Statistics {
             score = 50;
 
         return (int) score;
+    }
+
+    /**
+     * Updates the values of the "total" statistics (then used to calculate the "average" statistics)
+     * in the hashmap stats by calculations with the currentStats
+     */
+    public void updateTotal() {
+        // Must be done before calculateTotal(ARMY)
+        calculateTotal(L0);
+        calculateTotal(L1);
+        calculateTotal(L2);
+        calculateTotal(L3);
+        calculateTotal(UNITS);
+
+        calculateTotal(TURNS);
+
+        calculateTotal(TREES);
+
+        calculateTotal(LOST_L0);
+        calculateTotal(LOST_L1);
+        calculateTotal(LOST_L2);
+        calculateTotal(LOST_L3);
+        calculateTotal(LOST_UNITS);
+
+        calculateTotal(ARMY);
+
+        calculateTotal(LANDS_TURN);
+    }
+
+    /**
+     * Updates the values of the "min" statistics in the hashmap stats by calculations with the currentStats
+     */
+    private void updateMin() {
+        calculateMin(TURNS);
+
+        calculateMin(ARMY);
+    }
+
+    /**
+     * Updates the values of the "max" statistics in the hashmap stats by calculations with the currentStats
+     */
+    private void updateMax() {
+        calculateMax(TREES, CURRENT_TREES);
+
+        calculateMax(LOST_L0, CURRENT_LOST_L0);
+        calculateMax(LOST_L1, CURRENT_LOST_L1);
+        calculateMax(LOST_L2, CURRENT_LOST_L2);
+        calculateMax(LOST_L3, CURRENT_LOST_L3);
+        calculateMax(LOST_UNITS, "");
+
+        calculateMax(L0, CURRENT_L0);
+        calculateMax(L1, CURRENT_L1);
+        calculateMax(L2, CURRENT_L2);
+        calculateMax(L3, CURRENT_L3);
+        calculateMax(UNITS, "");
+
+        calculateMax(ARMY, "");
+
+        calculateMax(LANDS_TURN, "");
     }
 }

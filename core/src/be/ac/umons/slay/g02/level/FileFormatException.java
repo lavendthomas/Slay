@@ -1,5 +1,8 @@
 package be.ac.umons.slay.g02.level;
 
+/**
+ *  TODO
+ */
 public class FileFormatException extends Exception {
 
     public FileFormatException() { super(); }

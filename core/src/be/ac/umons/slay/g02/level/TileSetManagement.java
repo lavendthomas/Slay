@@ -42,12 +42,10 @@ public enum TileSetManagement {
         this(id, null);
     }
 
-
     /**
      * Returns the id of this TileType
      * @return
      */
-
     public int getId() {
         return id;
     }
@@ -77,7 +75,6 @@ public enum TileSetManagement {
      * @param name tile name
      * @return id of tile in TMX File
      */
-
     public static int fromName(String name) {
         for (TileSetManagement tile : TileSetManagement.values()) {
             if (tile.toString().equals(name)) {
@@ -92,7 +89,6 @@ public enum TileSetManagement {
      *
      * @return list of all tile names
      */
-
     public static List<String> getNames () {
         List<String> res = new ArrayList<String>();
         for (TileSetManagement tile : TileSetManagement.values()) {
@@ -100,5 +96,4 @@ public enum TileSetManagement {
         }
         return res;
     }
-
 }

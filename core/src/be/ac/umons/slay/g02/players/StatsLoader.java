@@ -14,34 +14,32 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import be.ac.umons.slay.g02.gui.Main;
+
+import static be.ac.umons.slay.g02.gui.Main.isInTest;
 import static be.ac.umons.slay.g02.gui.Main.prefs;
 
-
+/**
+ *  //TODO
+ */
 public class StatsLoader {
-    private String nameFile = "PlayerData1.xml";
-
-    public String getNameFile() {
-        return nameFile;
-    }
-
-    public void setNameFile(String nameFile) {
-        this.nameFile = nameFile;
-    }
-
+    /**
+     *  //TODO
+     *
+     * @return
+     */
     public ArrayList createTab() {
-
         ArrayList tabScore = new ArrayList();
         HumanPlayer playerHuman = new HumanPlayer("", Colors.C1);
         GlobalStats globalStats;
         LevelStats levelStats;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
-        File fileStats = new File(nameFile);
+        File fileStats = new File(Main.getNameFile());
         if (fileStats.exists() && fileStats.length() != 0) {
-
             try {
                 final DocumentBuilder builder = factory.newDocumentBuilder();
-                final Document document = builder.parse(new File(nameFile));
+                final Document document = builder.parse(new File(Main.getNameFile()));
                 Element root = document.getDocumentElement();
 
                 int levelLand = 1;
@@ -74,7 +72,7 @@ public class StatsLoader {
                                 isfound = true;
                             }
                             if (elem.getNodeName().equals("password")) {
-                                account.setPassword(decrypt(elem.getFirstChild().getNodeValue()));
+                                account.setPassword(elem.getFirstChild().getNodeValue());
                                 isfound = true;
                             }
                             if (elem.getNodeName().equals("avatar")) {
@@ -107,10 +105,11 @@ public class StatsLoader {
                         playerHuman.setAccount(account);
                         playerHuman.setGlobalStats(globalStats);
                         playerHuman.setListLevelStats(listStatsLevel);
-                        if(playerHuman.getGlobalStats().getScore()!=0){
+                        if (playerHuman.getGlobalStats().getScore() != 0) {
+                            if (!isInTest){
                             prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
-                            prefs.flush();
-                        }else   playerHuman.getGlobalStats().setRank(0);
+                            prefs.flush();}
+                        } else playerHuman.getGlobalStats().setRank(0);
                     }
                 }
                 tabScore.add(playerHuman);
@@ -126,6 +125,12 @@ public class StatsLoader {
         return tabScore;
     }
 
+    /**
+     * //TODO
+     *
+     * @param elementStat
+     * @param hashmapStats
+     */
     private void putInHashmapStats(Element elementStat, HashMap<String, Integer> hashmapStats) {
         // Deletes the numbers (used for easier reading) before the statistics
         String stat = elementStat.getNodeName().substring(2);
@@ -140,14 +145,5 @@ public class StatsLoader {
         if (hashmapStats.containsKey(stat)) {
             hashmapStats.put(stat, Integer.parseInt(elementStat.getFirstChild().getNodeValue()));
         }
-    }
-
-    private String decrypt(String password) {
-        String toEncrypt = "";
-        for (int i = 0; i < password.length(); i++) {
-            int c = password.charAt(i) ^ 48;
-            toEncrypt = toEncrypt + (char) c;
-        }
-        return toEncrypt;
     }
 }

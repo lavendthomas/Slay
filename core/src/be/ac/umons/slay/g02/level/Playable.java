@@ -5,6 +5,9 @@ import java.util.List;
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.players.Player;
 
+/**
+ *  TODO
+ */
 public interface Playable {
     int width();
 

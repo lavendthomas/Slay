@@ -56,7 +56,9 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.enableBox;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
-// classe qui affiche l'ecran de selection de niveau
+/**
+ *   TODO   // classe qui affiche l'ecran de selection de niveau
+ */
 public class LevelSelection implements Screen {
     private Drawable imageLevel1 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/level1.png"))));
     private Drawable imageLevel2 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("levels/level2.png"))));
@@ -72,7 +74,7 @@ public class LevelSelection implements Screen {
     private Game game;
     private SpriteBatch batch;
     private Sprite sprite;
-    private int cellHeight;
+    private int cellHeight;     //TODO : tout traduire
 
     // pour savoir quelle carte afficher pour la preview et quand on clique sur Play
     private static int currentIslandNumber = 1;
@@ -112,13 +114,13 @@ public class LevelSelection implements Screen {
     private final String LEFT_UNITS = "remaining units";
     public static final int TOTAL_NUMBER_ISLANDS = 10;
 
-    // dans la fenetre de stats, c'est pas forcement le meme que celui choisi dans l'ecran de selection
     private String humanPlayerStats;
-    // n'est utile que s'il n'y a qu'un joueur humain dans la partie, par defaut c'est P1
     private String humanPlayer;
+
     // permet de savoir s'il faut creer des IA au debut du jeu
     public static int numberHumans = 0;
-    // permet de selectionner le bon type d'IA, on peut mettre autre chose que int, par defaut c'est Easy = 1 (Medium = 2 ...)
+
+    // permet de selectionner le bon type d'IA
     public static int difficulty1 = 1;
     public static int difficulty2 = 1;
 
@@ -132,6 +134,9 @@ public class LevelSelection implements Screen {
         init();
     }
 
+    /**
+     *   TODO
+     */
     private void init() {
         stage.clear();
 
@@ -143,7 +148,7 @@ public class LevelSelection implements Screen {
         difficulty1 = 1;
         difficulty2 = 1;
 
-        // background
+        // Background
         batch = new SpriteBatch();
         Texture texture = new Texture(Gdx.files.internal("backgrounds/background.png"));
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -163,7 +168,7 @@ public class LevelSelection implements Screen {
         selectBoxIsland.setItems(islandNumbers);
         ChangeListener selectBoxIslandListener = new ChangeListener() {
             @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
 
                 currentIslandNumber = selectBoxIsland.getSelected();
@@ -217,7 +222,7 @@ public class LevelSelection implements Screen {
         selectBoxNumber.setItems(numberOfHumans);
         ChangeListener selectBoxNumberListener = new ChangeListener() {
             @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
 
                 if (selectBoxNumber.getSelected() == 1) {
@@ -254,7 +259,7 @@ public class LevelSelection implements Screen {
         humanPlayer = selectBoxPlayer.getItems().first();
         ChangeListener selectBoxPlayerListener = new ChangeListener() {
             @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
                 humanPlayer = selectBoxPlayer.getSelected();
             }
@@ -269,7 +274,7 @@ public class LevelSelection implements Screen {
         selectBoxDifficulty1.setItems(difficultyDegrees);
         ChangeListener selectBoxDifficultyListener1 = new ChangeListener() {
             @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
                 difficulty1 = selectBoxDifficulty1.getSelectedIndex() + 1;
             }
@@ -280,7 +285,7 @@ public class LevelSelection implements Screen {
         selectBoxDifficulty2.setItems(difficultyDegrees);
         ChangeListener selectBoxDifficultyListener2 = new ChangeListener() {
             @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
+            public void changed(ChangeEvent event, Actor actor) {
                 soundButton1.play(prefs.getFloat("volume", 0.2f));
                 difficulty2 = selectBoxDifficulty2.getSelectedIndex() + 1;
             }
@@ -394,13 +399,13 @@ public class LevelSelection implements Screen {
 
             // Hall of fame is empty
             if (!iter.hasNext()) {
-                Texture transparence = new Texture(Gdx.files.internal("profile/transparence.jpg"));
+                Texture transparency = new Texture(Gdx.files.internal("profile/transparency.jpg"));
                 currentColor = Color.CLEAR;
                 cell = new TextButton("", skinSgxTable);
                 cell.getLabel().setColor(currentColor);
                 tableStats.add(cell).fill();
                 cell.setColor(currentColor);
-                TextureRegionDrawable imageAvatar = new TextureRegionDrawable(new TextureRegion(transparence));
+                TextureRegionDrawable imageAvatar = new TextureRegionDrawable(new TextureRegion(transparency));
                 ImageButton avatarButton = new ImageButton(imageAvatar);
                 avatarButton.setSize(SCREEN_HEIGHT * 6 / 100, SCREEN_HEIGHT * (6 / 100) * 95 / 100);
                 avatarButton.getImage().setColor(currentColor);
@@ -436,8 +441,8 @@ public class LevelSelection implements Screen {
                 }
                 i++;
                 HumanPlayer stats = (HumanPlayer) iter.next();
-
-                tableStats = displayHall(stats.getGlobalStats().getRank(), stats.getName(), stats.getAvatar(), stats.getGlobalStats().getScore(), tableStats, currentColor, colorLabel);
+                if (stats.getGlobalStats().getScore() != 0)
+                    tableStats = displayHall(stats.getGlobalStats().getRank(), stats.getName(), stats.getAvatar(), stats.getGlobalStats().getScore(), tableStats, currentColor, colorLabel);
             }
 
             Label label0 = new Label("", skinSgxTable, "title-white");
@@ -456,8 +461,8 @@ public class LevelSelection implements Screen {
             if (prefs.getBoolean("isPlayer2Logged"))
                 tableStats = displayHall(player2.getGlobalStats().getRank(), player2.getName(), player2.getAvatar(), player2.getGlobalStats().getScore(), tableStats, colorGreen, colorLabel);
 
-            if (!(prefs.getBoolean("isPlayer1Logged") || prefs.getBoolean("isPlayer2Logged"))){
-                tableStats.row().padTop(cellHeight/2);
+            if (!(prefs.getBoolean("isPlayer1Logged") || prefs.getBoolean("isPlayer2Logged"))) {
+                tableStats.row().padTop(cellHeight / 2);
                 label0 = new Label("NONE", skinSgxTable, "title-white");
                 tableStats.add(label0).colspan(4);
             }
@@ -482,6 +487,9 @@ public class LevelSelection implements Screen {
         stage.addActor(buttonPlay);
     }
 
+    /**
+     *   TODO
+     */
     private void fillIslandNumbers() {
         for (int i = 1; i <= TOTAL_NUMBER_ISLANDS; i++) {
             islandNumbers.add(i);
@@ -495,7 +503,7 @@ public class LevelSelection implements Screen {
      * @param name         the player's name
      * @param avatar       the player's avatar
      * @param score        the player's score
-     * @param tableStats   -----  A  COMPLETER  -----
+     * @param tableStats   -----  A  COMPLETER  -----  TODO
      * @param currentColor
      * @param colorLabel
      * @return
@@ -514,7 +522,6 @@ public class LevelSelection implements Screen {
         cell.setColor(currentColor);
         tableStats.add(avatarButton).height(Value.percentHeight(1.27f)).width(Value.percentWidth(1.24f)).fill();
         cell = new TextButton(String.valueOf(name), skinSgxTable);
-        // coupe le nom s'il est trop long
         cell.setClip(true);
         cell.setColor(currentColor);
         cell.getLabel().setColor(colorLabel);
@@ -530,20 +537,8 @@ public class LevelSelection implements Screen {
         return tableStats;
     }
 
-    private HumanPlayer searchPlayer(String name) {
-        Iterator iter = Main.tabPlayers.iterator();
-        while (iter.hasNext()) {
-
-            HumanPlayer statis = (HumanPlayer) iter.next();
-            if (statis.getName().equals(name)) {
-                return statis;
-            }
-        }
-        return null;
-    }
-
     /**
-     * Displays the window containing the statistics of the current logged players
+     * Displays the window containing the statistics of the currently logged players
      */
     private void showStats() {
         Menu.disableButton(buttonBack, buttonPlay, buttonStats);
@@ -714,7 +709,7 @@ public class LevelSelection implements Screen {
         final String L3 = " 3";
         final String AVERAGE_NUMBER_OF = "Average number of ";
 
-        // texts displayed for all statistics
+        // Texts displayed for all statistics
 
         final String GAMES = "Games";
         final String WINS = "Wins";
@@ -869,7 +864,8 @@ public class LevelSelection implements Screen {
      * @param labelList    the list of the labels to display
      * @param hashmapStats the hashmap of statistics
      */
-    private void createLabel(ArrayList<Label> labelList, LinkedHashMap<String, Integer> hashmapStats, LevelStats levelStat, GlobalStats globalStats) {
+    private void createLabel(ArrayList<Label> labelList, LinkedHashMap<String, Integer> hashmapStats,
+                             LevelStats levelStat, GlobalStats globalStats) {
         int i = 0;
 
         for (Map.Entry<String, String> entry : statsList.entrySet()) {
@@ -891,25 +887,22 @@ public class LevelSelection implements Screen {
             if (text.substring(0, 3).equals(AVERAGE_BEGINNING)) {
                 if (text.contains(LEFT_UNITS)) {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
-                    if (hashmapStats.equals(levelStat.getStats())) {
-                        labelList.add(new Label(text + levelStat.calculateAvgLeft(value),
-                                style));
-                    }
+                    if (hashmapStats.equals(levelStat.getStats()))
+                       labelList.add(new Label(text + levelStat.calculateAvgLeft(value), style));
+
                     // The average statistic is calculated with statistics from GlobalStats
-                    else {
-                        labelList.add(new Label(text + globalStats.calculateAvgLeft(value),
-                                style));
-                    }
+                    else
+                        labelList.add(new Label(text + globalStats.calculateAvgLeft(value)
+                                / LevelSelection.TOTAL_NUMBER_ISLANDS, style));
                 } else {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
-                    if (hashmapStats.equals(levelStat.getStats())) {
-                        labelList.add(new Label(text + levelStat.calculateAvg(value),
-                                style));
-                    }
+                    if (hashmapStats.equals(levelStat.getStats()))
+                        labelList.add(new Label(text + levelStat.calculateAvg(value), style));
+
                     // The average statistic is calculated with statistics from GlobalStats
                     else {
-                        labelList.add(new Label(text + globalStats.calculateAvg(value),
-                                style));
+                        labelList.add(new Label(text + globalStats.calculateAvg(value)
+                                / LevelSelection.TOTAL_NUMBER_ISLANDS, style));
                     }
                 }
             }
