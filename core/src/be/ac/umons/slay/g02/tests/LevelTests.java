@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
+import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.FileFormatException;
@@ -46,6 +47,7 @@ public class LevelTests {
     /**
      *  Creates a player, a level and a soldier, then merges two units of player
      */
+    /*
     @BeforeClass
     public static void setUp() {
         Main.isInTest = true;
@@ -71,7 +73,7 @@ public class LevelTests {
 
         // Simulates the merge of two L0 belonging to player, it creates one L1
         level.updatePlayerStatsMerge(player, 0, 0, 1);
-    }
+    }*/
 
     /**
      * //TODO
@@ -80,16 +82,6 @@ public class LevelTests {
      */
     static Playable loadLvl() {
         Playable level = new Level(5, 5);
-        Tile back = new Tile(TileType.NEUTRAL);
-        Tile water = new Tile(TileType.WATER);
-        for(int i = 0; i < level.width(); i++) {
-            for(int j = 0; j < level.height(); j++) {
-                if(i == 0 || i == level.width()-1 || j == 0 || j == level.height())
-                    level.set(water, new Coordinate(i, j));
-                else
-                    level.set(back, new Coordinate(i, j));
-            }
-        }
         Player p1 = new HumanPlayer("P1", Colors.C1);
         p1.setAvatar("profile" + File.separator + "anonymous.png");
         Player p2 = new HumanPlayer("P2", Colors.C2);
@@ -97,47 +89,63 @@ public class LevelTests {
         Player[] players = {p1, p2};
         level.setPlayers(players);
 
-        Coordinate c1 = new Coordinate(1, 3);
-        level.get(c1).setTerritory(new Territory(p1, level.get(c1)));
+        Coordinate c11 = new Coordinate(1, 1);
+        Coordinate c12 = new Coordinate(1, 2);
+        Coordinate c13 = new Coordinate(1, 3);
+        Coordinate c21 = new Coordinate(2, 1);
+        Coordinate c22 = new Coordinate(2, 2);
+        Coordinate c23 = new Coordinate(2, 3);
+        Coordinate c31 = new Coordinate(3, 1);
+        Coordinate c32 = new Coordinate(3, 2);
+        Coordinate c33 = new Coordinate(3, 3);
 
-        Coordinate c2 = new Coordinate(2, 2);
-        level.get(c2).setTerritory(new Territory(p1, level.get(c2)));
+        Tile t11 = new Tile(TileType.NEUTRAL);
+        Tile t12 = new Tile(TileType.NEUTRAL);
+        Tile t13 = new Tile(TileType.NEUTRAL);
+        Tile t21 = new Tile(TileType.NEUTRAL);
+        Tile t22 = new Tile(TileType.NEUTRAL);
+        Tile t23 = new Tile(TileType.NEUTRAL);
+        Tile t31 = new Tile(TileType.NEUTRAL);
+        Tile t32 = new Tile(TileType.NEUTRAL);
+        Tile t33 = new Tile(TileType.NEUTRAL);
 
-        Coordinate c3 = new Coordinate(2, 3);
-        level.get(c3).setTerritory(new Territory(p1, level.get(c3)));
+        t13.setTerritory(new Territory(p1, t13));
+        t22.setTerritory(new Territory(p1, t22));
+        t23.setTerritory(new Territory(p1, t23));
 
-        Coordinate c4 = new Coordinate(2, 1);
-        level.get(c4).setTerritory(new Territory(p2, level.get(c4)));
+        t21.setTerritory(new Territory(p2, t21));
+        t31.setTerritory(new Territory(p2, t31));
+        t32.setTerritory(new Territory(p2, t32));
 
-        Coordinate c5 = new Coordinate(3, 1);
-        level.get(c5).setTerritory(new Territory(p2, level.get(c5)));
+        level.set(t11, c11);
+        level.set(t12, c12);
+        level.set(t13, c13);
+        level.set(t21, c21);
+        level.set(t22, c22);
+        level.set(t23, c23);
+        level.set(t31, c31);
+        level.set(t32, c32);
+        level.set(t33, c33);
 
-        Coordinate c6 = new Coordinate(3, 2);
-        level.get(c6).setTerritory(new Territory(p2, level.get(c6)));
+        Tile water = new Tile(TileType.WATER);
+        for(int i = 0; i < level.width(); i++) {
+            for(int j = 0; j < level.height(); j++) {
+                if (i == 0 || i == level.width() - 1 || j == 0 || j == level.height()-1)
+                    level.set(water, new Coordinate(i, j));
+            }
 
-        System.out.println(p1.equals(p2));
-        System.out.println(level.get(c2).getTerritory().getOwner());
-        System.out.println(level.get(c3).getTerritory().getOwner());
-        System.out.println(level.get(c4).getTerritory().getOwner());
-        System.out.println(level.get(c5).getTerritory().getOwner());
-        System.out.println(level.get(c6).getTerritory().getOwner());
+        }
 
-        Territory t1 = level.get(c1).getTerritory();
-        t1.setCapital(level.get(c1));
-        t1.setCoins(20);
+        Soldier s0 = new Soldier(SoldierLevel.fromLevel(0), false);
+        Soldier s1 = new Soldier(SoldierLevel.fromLevel(1), false);
 
-        Territory t2 = level.get(c5).getTerritory();
-        t2.setCapital(level.get(c5));
-        t2.setCoins(20);
+        level.set(s0, c21);
+        level.set(s0, c32);
+        level.set(s1, c22);
+        level.set(StaticEntity.CAPITAL, c13);
+        level.set(StaticEntity.CAPITAL, c31);
 
-        Soldier s1 = new Soldier(SoldierLevel.fromLevel(0), false);
-        level.set(s1, c4);
 
-        Soldier s2 = new Soldier(SoldierLevel.fromLevel(0), false);
-        level.set(s2, c6);
-
-        Soldier s3 = new Soldier(SoldierLevel.fromLevel(1), false);
-        level.set(s3, c2);
 
         return level;
     }
@@ -164,6 +172,7 @@ public class LevelTests {
 
         Coordinate c0 = new Coordinate(2, 2);
         Coordinate c1 = new Coordinate(2, 1);
+
         level.move(c0, c1);
         assertEquals("L1",level.get(c1).getEntity().getName());
     }
@@ -176,7 +185,6 @@ public class LevelTests {
         Coordinate c1 = new Coordinate(2, 1);
 
         level.move(c0, c1);
-        level.mergeTerritories();
         assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
     }
 

@@ -172,10 +172,10 @@ public class Level implements Playable {
 
             // Updates currentL. for stats - when a unit is bought
             if (isBought) {
-                if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+                if (prefs != null && prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
                     updatePlayerStatsBuy(player1, entity);
 
-                else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+                else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
                     updatePlayerStatsBuy(player2, entity);
             }
             return isBought;
@@ -212,14 +212,12 @@ public class Level implements Playable {
                         t.getTerritory().nextTurn();
 
                         // Updates currentLands for stats - at each turn (currentLands += number of cells)
-                        if (prefs.getBoolean("isPlayer1Logged") && previousPlayer == player1
+                        if (prefs != null && prefs.getBoolean("isPlayer1Logged") && previousPlayer == player1
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player1, t.getTerritory().getCells().size());
-                            System.out.println("P1 : " + t.getTerritory().getCells().size());
-                        } else if (prefs.getBoolean("isPlayer2Logged") && previousPlayer == player2
+                        } else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && previousPlayer == player2
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player2, t.getTerritory().getCells().size());
-                            System.out.println("P2 : " + t.getTerritory().getCells().size());
                         }
                         processed.add(terr);
                     }
@@ -235,10 +233,10 @@ public class Level implements Playable {
                 }
             }
             // Updates currentTurns for stats - when the player plays a new turn
-            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+            if (prefs != null && prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
                 updatePlayerStatsTurns(player1);
 
-            else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+            else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
                 updatePlayerStatsTurns(player2);
 
             return true;
@@ -477,6 +475,7 @@ public class Level implements Playable {
          *	and checks that the coordinates are different
          */
         if (listMoves.contains(toC) && !fromC.equals(toC)) {
+
             Tile to = get(toC);
             Tile from = get(fromC);
 
@@ -487,7 +486,6 @@ public class Level implements Playable {
                     // Moves in own territory
                     if (to.getEntity() != StaticEntity.CAPITAL) {
                         // Prevents movement on its own capital
-
                         if (to.getEntity() instanceof Soldier) {
                             // Soldier merge
                             int fromLvl = ((Soldier) from.getEntity()).getSoldierLevel().getLevel();
@@ -499,10 +497,10 @@ public class Level implements Playable {
                                         ((Soldier) to.getEntity()).getMoved()));
 
                                 // Updates currentL. for stats - when two soldiers merge, they are deleted and another type is added
-                                if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+                                if (prefs != null && prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
                                     updatePlayerStatsMerge(player1, fromLvl, toLvl, newLvl);
 
-                                else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+                                else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
                                     updatePlayerStatsMerge(player2, fromLvl, toLvl, newLvl);
 
                                 from.setEntity(null);
@@ -535,10 +533,10 @@ public class Level implements Playable {
     private void moveEntity(Tile from, Tile to) {
         // Updates currentTrees for stats - when the player cuts a tree
         if (to.contains(StaticEntity.TREE)) {
-            if (prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
+            if (prefs != null && prefs.getBoolean("isPlayer1Logged") && currentPlayer.getName().equals(player1.getName()))
                 updatePlayerStatsTrees(player1);
 
-            else if (prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
+            else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && currentPlayer.getName().equals(player2.getName()))
                 updatePlayerStatsTrees(player2);
         }
         if (to.getEntity() != null && to.getEntity() instanceof Soldier) {
@@ -546,11 +544,11 @@ public class Level implements Playable {
                 Updates currentLostL. for stats - when a soldier is killed by the enemy
                 The stats are updated for the player who is not the current player
             */
-            if (prefs.getBoolean("isPlayer1Logged") && players[0].equals(player1)
+            if (prefs != null && prefs.getBoolean("isPlayer1Logged") && players[0].equals(player1)
                     && (!currentPlayer.getName().equals(player1.getName())))
                 updatePlayerStatsLost(player1, to.getEntity());
 
-            else if (prefs.getBoolean("isPlayer2Logged") && players[1].equals(player2)
+            else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && players[1].equals(player2)
                     && (!currentPlayer.getName().equals(player2.getName())))
                 updatePlayerStatsLost(player2, to.getEntity());
         }
