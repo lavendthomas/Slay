@@ -1091,7 +1091,7 @@ public class Menu implements Screen {
         Label avatarLabel = new Label(lang.get("label_click_to_change_avatar"), skinSgx);
         tableSignUp.add(avatarLabel).colspan(2).padBottom(SCREEN_HEIGHT * 2 / 100);
         tableSignUp.row();
-        tableSignUp.add(buttonLoginAvatar).width(corner * 7 / 100).height(corner * 7 / 100).padBottom(corner * 1 / 100).colspan(2);
+        tableSignUp.add(buttonLoginAvatar).width(corner * 12 / 100).height(corner * 12 / 100).padBottom(corner * 1 / 100).colspan(2);
         tableSignUp.row();
         cellSignUp = tableSignUp.getCell(buttonLoginAvatar);
         tableSignUp.add(noMessageError0).center().padBottom(corner * 20 / 1000).colspan(2);
