@@ -6,7 +6,6 @@ import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
-import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.GameScreen;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Playable;
@@ -21,11 +20,12 @@ public class AIRandom extends Player implements AI {
 
     /**
      * Constructor of the class, initiating its name, its color and the path of its avatar
+     *
      * @param color Player color
      * @param name  Player name
      */
 
-    public AIRandom (Colors color, String name) {
+    public AIRandom(Colors color, String name) {
         this.name = name;
         this.color = color;
         avatar = "profile" + File.separator + "ai_random.png";
@@ -71,10 +71,10 @@ public class AIRandom extends Player implements AI {
                         List<Coordinate> moves = level.getMoves(coordinate, 4);
                         int rand = new Random().nextInt(moves.size());
                         level.move(coordinate, moves.get(rand));
-                        }
                     }
                 }
             }
+        }
         // finir son tour
         return level.nextTurn();
     }

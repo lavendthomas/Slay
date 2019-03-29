@@ -1,13 +1,10 @@
 package be.ac.umons.slay.g02.players;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
-import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.GameScreen;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Playable;
@@ -28,6 +25,7 @@ public class AIMedium extends Player implements AI {
 
     /**
      * Constructor of the class, initiating its name, its color and the path of its avatar
+     *
      * @param color Player color
      * @param name  Player name
      */
@@ -85,6 +83,7 @@ public class AIMedium extends Player implements AI {
 
     /**
      * Try to buy each type of unit
+     *
      * @param territory List of coordinates representing the territory in which searched
      */
 
@@ -111,7 +110,7 @@ public class AIMedium extends Player implements AI {
      *
      * @param moves List of accessible coordinates
      * @param cFrom Original coordinate
-     * @return      The best coordinate if found, null else
+     * @return The best coordinate if found, null else
      */
 
     private Coordinate findBestPlace(List<Coordinate> moves, Coordinate cFrom, Soldier soldier) {
@@ -159,10 +158,10 @@ public class AIMedium extends Player implements AI {
      *
      * @param soldier   Soldier to buy
      * @param territory Territory in which the soldier will be placed
-     * @return          True if can buy the soldier, false else
+     * @return True if can buy the soldier, false else
      */
 
-    private boolean canBuy (Soldier soldier, Territory territory) {
+    private boolean canBuy(Soldier soldier, Territory territory) {
         if (territory != null && territory.canBuy(soldier)) {
             // Coins remaining after purchase
             int rest = territory.getCoins() - soldier.getPrice();
@@ -179,10 +178,10 @@ public class AIMedium extends Player implements AI {
      * @param sold1     Soldier to merge
      * @param sold2     Soldier to merge
      * @param territory Territory in which soldiers are
-     * @return          True if can fusion the soldier, false else
+     * @return True if can fusion the soldier, false else
      */
 
-    private boolean canFusion (Soldier sold1, Soldier sold2, Territory territory) {
+    private boolean canFusion(Soldier sold1, Soldier sold2, Territory territory) {
         int newlvl = sold1.getSoldierLevel().getLevel() + sold2.getSoldierLevel().getLevel();
         int cost = SoldierLevel.fromLevel(newlvl).getCost();
         return territory.getCoins() > cost;

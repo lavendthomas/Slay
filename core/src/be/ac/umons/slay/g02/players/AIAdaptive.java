@@ -2,6 +2,7 @@ package be.ac.umons.slay.g02.players;
 
 import java.io.File;
 import java.util.HashMap;
+
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.GameScreen;
@@ -51,23 +52,23 @@ public class AIAdaptive extends Player implements AI {
     public boolean play(Player player, boolean forMe) {
         level = GameScreen.getLevel();
         players = Level.getPlayers();
-        int [] scores = scoreCount();
+        int[] scores = scoreCount();
         int hard = 0; // Random by default
 
-        for(int i = 0; i < players.length; i++) {
-            if(players[i].equals(this)) {
-                for (int j = 0; j < players.length; j++ ) {
-                    if(i != j) {
-                        if(scores[i]*0.5 > scores[j]) {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i].equals(this)) {
+                for (int j = 0; j < players.length; j++) {
+                    if (i != j) {
+                        if (scores[i] * 0.5 > scores[j]) {
                             // Enemy very loose => Random
                             hard = 0;
-                        } else if(scores[i]*0.75 > scores[j]) {
+                        } else if (scores[i] * 0.75 > scores[j]) {
                             // Enemy loose a bit => Easy
                             hard = 1;
-                        } else if(scores[i] < scores[j]*1.1 && scores[i] > scores[j]*.9) {
+                        } else if (scores[i] < scores[j] * 1.1 && scores[i] > scores[j] * .9) {
                             // Equal to plus or minus 10 percent => Medium
                             hard = 2;
-                        } else if(scores[i] < scores[j]*0.9) {
+                        } else if (scores[i] < scores[j] * 0.9) {
                             // AI loose
                             hard = 3;
                         }
@@ -79,13 +80,13 @@ public class AIAdaptive extends Player implements AI {
 
         boolean bool;
         switch (hard) {
-            case 1 :
+            case 1:
                 bool = easy.play(this, false);
                 break;
-            case 2 :
+            case 2:
                 bool = medium.play(this, false);
                 break;
-            case 3 :
+            case 3:
                 bool = advanced.play(this, false);
                 break;
             default:
@@ -106,7 +107,7 @@ public class AIAdaptive extends Player implements AI {
         int[] scores = new int[players.length];
 
         HashMap<Player, Integer> pl = new HashMap<Player, Integer>(players.length);
-        for (int i=0; i<players.length; i++) {
+        for (int i = 0; i < players.length; i++) {
             pl.put(players[i], i);
         }
 

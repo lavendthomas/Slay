@@ -3,6 +3,7 @@ package be.ac.umons.slay.g02.players;
 import java.io.File;
 import java.util.List;
 import java.util.Random;
+
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.gui.screens.GameScreen;
@@ -24,6 +25,7 @@ public class AIEasy extends Player implements AI {
 
     /**
      * Constructor of the class, initiating its name, its color and the path of its avatar
+     *
      * @param color Player color
      * @param name  Player name
      */
@@ -77,6 +79,7 @@ public class AIEasy extends Player implements AI {
 
     /**
      * Try to buy weak units
+     *
      * @param territory List of coordinates representing the territory in which searched
      */
 
@@ -100,7 +103,7 @@ public class AIEasy extends Player implements AI {
      *
      * @param moves List of accessible coordinates
      * @param cFrom Original coordinate
-     * @return      The best coordinate if found, null else
+     * @return The best coordinate if found, null else
      */
 
     private Coordinate findBestPlace(List<Coordinate> moves, Coordinate cFrom) {

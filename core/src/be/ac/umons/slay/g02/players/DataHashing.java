@@ -4,7 +4,7 @@ import java.security.MessageDigest;
 
 /**
  * Class containing the methods to hash user passwords
- *
+ * <p>
  * Source: https://dzone.com/articles/storing-passwords-java-web
  */
 public class DataHashing {

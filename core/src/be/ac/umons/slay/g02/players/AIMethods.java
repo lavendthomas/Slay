@@ -2,6 +2,7 @@ package be.ac.umons.slay.g02.players;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.StaticEntity;
 import be.ac.umons.slay.g02.gui.screens.HexManagement;
@@ -24,13 +25,13 @@ public class AIMethods {
     /**
      * Search all territories of a player or his enemies
      *
-     * @param level         Level in which searched
-     * @param player        Player starting the search
-     * @param searchEnemy   Boolean determining whether to search for the player's (false) or enemy's territories (true)
-     * @return              List of all territories represented by the list of coordinates belonging to it
+     * @param level       Level in which searched
+     * @param player      Player starting the search
+     * @param searchEnemy Boolean determining whether to search for the player's (false) or enemy's territories (true)
+     * @return List of all territories represented by the list of coordinates belonging to it
      */
 
-    static List<List<Coordinate>> loadTerritories (Playable level, Player player, boolean searchEnemy) {
+    static List<List<Coordinate>> loadTerritories(Playable level, Player player, boolean searchEnemy) {
         List<List<Coordinate>> allTerritories = new ArrayList<List<Coordinate>>();
         List<Coordinate> visited = new ArrayList<Coordinate>();
 
@@ -75,24 +76,25 @@ public class AIMethods {
 
     /**
      * Change speed value
-     * @param sp    New speed value
+     *
+     * @param sp New speed value
      */
 
-    public static void setSpeed (int sp) {
+    public static void setSpeed(int sp) {
         speed = sp;
     }
 
     /**
      * Search for trees to be cut in the player's territory
      *
-     * @param level     Level in which searched
-     * @param moves     List of coordinates in which to search
-     * @param cFrom     Original coordinate
-     * @param player    Player starting the search
-     * @return          Coordinate of a tile containing a tree to cut, null otherwise
+     * @param level  Level in which searched
+     * @param moves  List of coordinates in which to search
+     * @param cFrom  Original coordinate
+     * @param player Player starting the search
+     * @return Coordinate of a tile containing a tree to cut, null otherwise
      */
 
-    static Coordinate chopTree (Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
+    static Coordinate chopTree(Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
         for (Coordinate cTo : moves) {
             if (!cFrom.equals(cTo)) {
                 // Parcours de toutes les cases où mon soldat peut être placé
@@ -121,13 +123,13 @@ public class AIMethods {
     /**
      * Look for neutral tile to occupy
      *
-     * @param level     Level in which searched
-     * @param moves     List of coordinates in which to search
-     * @param cFrom     Original coordinate
-     * @param player    Player starting the search
-     * @return          Coordinate of a neutral tile, null otherwise
+     * @param level  Level in which searched
+     * @param moves  List of coordinates in which to search
+     * @param cFrom  Original coordinate
+     * @param player Player starting the search
+     * @return Coordinate of a neutral tile, null otherwise
      */
-    static Coordinate captureNeutral (Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
+    static Coordinate captureNeutral(Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
         for (Coordinate cTo : moves) {
             if (!cFrom.equals(cTo)) {
                 // Parcours de toutes les cases où mon soldat peut être placé
@@ -144,14 +146,14 @@ public class AIMethods {
     /**
      * Search for graves to be cut in the player's territory
      *
-     * @param level     Level in which searched
-     * @param moves     List of coordinates in which to search
-     * @param cFrom     Original coordinate
-     * @param player    Player starting the search
-     * @return          Coordinate of a tile containing a grave to clean, null otherwise
+     * @param level  Level in which searched
+     * @param moves  List of coordinates in which to search
+     * @param cFrom  Original coordinate
+     * @param player Player starting the search
+     * @return Coordinate of a tile containing a grave to clean, null otherwise
      */
 
-    static Coordinate cleanGraves (Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
+    static Coordinate cleanGraves(Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
 
         for (Coordinate cTo : moves) {
             if (!cFrom.equals(cTo)) {
@@ -175,14 +177,14 @@ public class AIMethods {
     /**
      * Look for enemy tile to occupy
      *
-     * @param level     Level in which searched
-     * @param moves     List of coordinates in which to search
-     * @param cFrom     Original coordinate
-     * @param player    Player starting the search
-     * @return          Coordinate of a enemy tile, null otherwise
+     * @param level  Level in which searched
+     * @param moves  List of coordinates in which to search
+     * @param cFrom  Original coordinate
+     * @param player Player starting the search
+     * @return Coordinate of a enemy tile, null otherwise
      */
 
-    static Coordinate attackEnemy (Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
+    static Coordinate attackEnemy(Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
         for (Coordinate cTo : moves) {
             if (!cFrom.equals(cTo)) {
                 Tile current = level.get(cTo);
@@ -199,14 +201,14 @@ public class AIMethods {
     /**
      * Search for soldier to fusion in the player's territory
      *
-     * @param level     Level in which searched
-     * @param moves     List of coordinates in which to search
-     * @param cFrom     Original coordinate
-     * @param player    Player starting the search
-     * @return          Coordinate of a tile containing a soldier to fusion, null otherwise
+     * @param level  Level in which searched
+     * @param moves  List of coordinates in which to search
+     * @param cFrom  Original coordinate
+     * @param player Player starting the search
+     * @return Coordinate of a tile containing a soldier to fusion, null otherwise
      */
 
-    static Coordinate fusion (Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
+    static Coordinate fusion(Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
         for (Coordinate cTo : moves) {
             if (!cFrom.equals(cTo)) {
                 Tile current = level.get(cTo);
@@ -229,12 +231,12 @@ public class AIMethods {
     /**
      * Find the nearest coordinate in the list of the original coordinate
      *
-     * @param cFrom         Original coordinate
-     * @param coordinates   List in which to look for the nearest coordinate
-     * @return              The nearest coordinate to the original coordinates
+     * @param cFrom       Original coordinate
+     * @param coordinates List in which to look for the nearest coordinate
+     * @return The nearest coordinate to the original coordinates
      */
 
-    private static Coordinate nearestCoordinates (Coordinate cFrom, List<Coordinate> coordinates) {
+    private static Coordinate nearestCoordinates(Coordinate cFrom, List<Coordinate> coordinates) {
         int dstMin = 1000;
         if (coordinates.size() != 0 && cFrom != null) {
             Coordinate cMin = coordinates.get(0);
@@ -253,14 +255,14 @@ public class AIMethods {
     /**
      * Find the coordinate in the territory of the player closest to enemy territory
      *
-     * @param cFrom     Original coordinate
-     * @param level     Level in which searched
-     * @param player    Player starting the search
-     * @param toBuy     Boolean to differentiate the case of a purchase (true) from the case of a move (false)
-     * @return          Coordinate found
+     * @param cFrom  Original coordinate
+     * @param level  Level in which searched
+     * @param player Player starting the search
+     * @param toBuy  Boolean to differentiate the case of a purchase (true) from the case of a move (false)
+     * @return Coordinate found
      */
 
-    static Coordinate searchEnnemy (Coordinate cFrom, Playable level, Player player, Soldier toBuy) {
+    static Coordinate searchEnnemy(Coordinate cFrom, Playable level, Player player, Soldier toBuy) {
         List<List<Coordinate>> allEnemy = loadTerritories(level, player, true);
 
         List<Coordinate> listNear = new ArrayList<Coordinate>();

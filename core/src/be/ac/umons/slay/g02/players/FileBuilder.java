@@ -19,12 +19,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import be.ac.umons.slay.g02.gui.Main;
-import be.ac.umons.slay.g02.gui.screens.Menu;
 
 import static be.ac.umons.slay.g02.gui.Main.tabPlayers;
 
 /**
- *  //TODO
+ * Class building the xml file containing the data of all players with an account
  */
 public class FileBuilder {
     Document doc;
@@ -32,7 +31,10 @@ public class FileBuilder {
     private String nameFile = Main.getNameFile();
 
     /**
-     *  //TODO
+     * Creates the xml file of players data
+     * <p>
+     * It retrieves all players in tabPlayers in which there is all players with an account, then
+     * writes all the values they have obtained for each statistic
      */
     public void createFile() {
 
@@ -40,6 +42,7 @@ public class FileBuilder {
             try {
                 DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder docBuilder = dbFactory.newDocumentBuilder();
+
                 // Root of the xml file
                 doc = docBuilder.newDocument();
                 Element root = doc.createElement("statistics");
@@ -112,7 +115,8 @@ public class FileBuilder {
     }
 
     /**
-     *  //TODO
+     * Get the values a player has obtained for the statistics, from the hasmap of statistics in
+     * the parameter entry, and writes them one by one in the file
      *
      * @param doc
      * @param newElement

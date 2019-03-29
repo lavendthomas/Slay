@@ -3,7 +3,7 @@ package be.ac.umons.slay.g02.players;
 import com.badlogic.gdx.graphics.Color;
 
 /**
- *  TODO
+ * Enumeration of all colors attributable to a player
  */
 public enum Colors {
     C1("LIGHT_GREEN", 1),
@@ -18,33 +18,33 @@ public enum Colors {
     private int id;
 
     /**
-     *  TODO
+     * The name and associated number of the color
      *
-     * @param name
-     * @param id
+     * @param name its name
+     * @param id   its identifier
      */
-    Colors (String name, int id) {
+    Colors(String name, int id) {
         this.name = name;
         this.id = id;
     }
 
     /**
-     *  TODO
+     * Gives the color's name
      *
-     * @return
+     * @return the color's name
      */
     public String getName() {
         return this.name;
     }
 
     /**
-     *  TODO
+     * Gives the color associated with the id
      *
-     * @param id
-     * @return
+     * @param id the id for which we want the corresponding color
+     * @return the corresponding color
      */
     public static Colors fromId(int id) {
-        for (Colors color: Colors.values()) {
+        for (Colors color : Colors.values()) {
             if (id == color.id) {
                 return color;
             }
@@ -53,9 +53,9 @@ public enum Colors {
     }
 
     /**
-     *  TODO
+     * Converts an instance of Colors into an instance of Color (no "s")
      *
-     * @return
+     * @return the corresponding instance of Color
      */
     public Color toColor() {
         Color color = new Color();
