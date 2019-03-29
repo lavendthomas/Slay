@@ -15,8 +15,7 @@ import be.ac.umons.slay.g02.level.TileType;
 public class EffectsManagement {
 
 
-
-    static void eraseCells (TiledMapTileLayer layer) {
+    static void eraseCells(TiledMapTileLayer layer) {
         for (int i = 0; i < layer.getWidth(); i++) {
             for (int j = 0; j < layer.getHeight(); j++) {
                 HexManagement.eraseTile(new Coordinate(i, j), layer);
@@ -25,7 +24,7 @@ public class EffectsManagement {
     }
 
     // Méthode pour surligner certaines cellules
-    static void highlightCells (TiledMapTileLayer layer, List<Coordinate> list, TiledMapTile tile) {
+    static void highlightCells(TiledMapTileLayer layer, List<Coordinate> list, TiledMapTile tile) {
         for (Coordinate cur : list) {
             HexManagement.drawTile(cur, tile, layer); //Surligne les tuiles de la liste
         }
@@ -35,7 +34,7 @@ public class EffectsManagement {
     static void shadowMap(TiledMapTileLayer layer, Playable level, TiledMapTileSet set) {
         for (int i = 0; i < layer.getWidth(); i++) {
             for (int j = 0; j < layer.getHeight(); j++) {
-                if (level.get(i,j).getType().equals(TileType.NEUTRAL)) {
+                if (level.get(i, j).getType().equals(TileType.NEUTRAL)) {
                     HexManagement.drawTile(new Coordinate(i, j), set.getTile(TileSetManagement.DARKEN_HIGHLIGHT.getId()), layer);
                 }
             }

@@ -1,8 +1,5 @@
 package be.ac.umons.slay.g02.entities;
 
-/**
- *   TODO
- */
 public enum SoldierLevel {
 
     L0(0, 10, 2, "L0"),
@@ -15,14 +12,6 @@ public enum SoldierLevel {
     private int cost;
     private String name;
 
-    /**
-     * Class constructor
-     *
-     * @param level  TODO
-     * @param price
-     * @param cost
-     * @param name
-     */
     SoldierLevel(int level, int price, int cost, String name) {
         this.level = level;
         this.price = price;
@@ -30,50 +19,24 @@ public enum SoldierLevel {
         this.name = name;
     }
 
-    /**
-     *   TODO
-     *
-     * @return
-     */
-    public int getLevel () {
+    public int getLevel() {
         return this.level;
     }
 
-    /**
-     *   TODO
-     *
-     * @return
-     */
     public int getPrice() {
         return this.price;
     }
 
-    /**
-     *   TODO
-     *
-     * @return
-     */
     public int getCost() {
         return this.cost;
     }
 
-    /**
-     *   TODO
-     *
-     * @return
-     */
     public String getName() {
         return this.name;
     }
 
-    /**
-     *   TODO
-     *
-     * @param lvl
-     * @return
-     */
     public static SoldierLevel fromLevel(int lvl) {
-        for (SoldierLevel soldierLevel: SoldierLevel.values()) {
+        for (SoldierLevel soldierLevel : SoldierLevel.values()) {
             if (lvl == soldierLevel.level) {
                 return soldierLevel;
             }

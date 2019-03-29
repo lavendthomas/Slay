@@ -13,7 +13,7 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- *  Represents a Territory, a group of linked tiles that share resources
+ * Represents a Territory, a group of linked tiles that share resources
  */
 public class Territory {
 
@@ -32,8 +32,8 @@ public class Territory {
     /**
      * Class constructor
      *
-     * @param owner  The owner of this territory
-     * @param cells  Tiles in the same territory
+     * @param owner The owner of this territory
+     * @param cells Tiles in the same territory
      */
     public Territory(Player owner, Tile... cells) {
         this.owner = owner;
@@ -62,7 +62,7 @@ public class Territory {
     }
 
     /**
-     *  Get territory incomes
+     * Get territory incomes
      *
      * @return Territory incomes
      */
@@ -145,7 +145,7 @@ public class Territory {
     }
 
     /**
-     *  Get tiles list of this territory
+     * Get tiles list of this territory
      *
      * @return Tiles list
      */
@@ -166,8 +166,8 @@ public class Territory {
      * Updates the income and wages of the territory
      * and makes sure there is one and only one capital on the territory
      *
-     * @param removed  Entity to remove
-     * @param added    Entity to add
+     * @param removed Entity to remove
+     * @param added   Entity to add
      */
     void update(Entity removed, Entity added) {
         if (removed != StaticEntity.TREE)
@@ -336,7 +336,7 @@ public class Territory {
      */
     private List<Tile> getCapitals() {
         List<Tile> capitals = new ArrayList<Tile>();
-		
+
         for (Tile cell : cells) {
             if (cell.contains(StaticEntity.CAPITAL))
                 capitals.add(cell);

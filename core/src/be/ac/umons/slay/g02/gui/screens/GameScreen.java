@@ -208,7 +208,7 @@ public class GameScreen implements Screen {
         loadButtons();
     }
 
-    private void handleInput() { //TODO Bloquer dépassements (trop zoom, trop à gauche ...)
+    private void handleInput() {
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             changeZoom(0.02f);
         }
@@ -369,7 +369,7 @@ public class GameScreen implements Screen {
      */
     private void updatePlayerStats(Player winner) {
         // Player 1
-        if ((prefs.getBoolean("isPlayer1Logged")) && (getPlayers()[0].getName().equals(player1.getName())||
+        if ((prefs.getBoolean("isPlayer1Logged")) && (getPlayers()[0].getName().equals(player1.getName()) ||
                 getPlayers()[1].getName().equals(player1.getName()))) {
             // Number of games ++
             updatePlayerGames(player1);
@@ -391,8 +391,8 @@ public class GameScreen implements Screen {
             }
         }
         // Player 2
-        if ((prefs.getBoolean("isPlayer2Logged")) && (getPlayers()[1].getName().equals(player2.getName())||
-                getPlayers()[0].getName().equals(player2.getName())) ) {
+        if ((prefs.getBoolean("isPlayer2Logged")) && (getPlayers()[1].getName().equals(player2.getName()) ||
+                getPlayers()[0].getName().equals(player2.getName()))) {
             // Number of games ++
             updatePlayerGames(player2);
 
@@ -413,52 +413,32 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * on incrémente pour globalstats et le levelstats du niveau joué
-     *
-     * @param player TODO
-     */
     private void updatePlayerGames(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.GAMES);
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap
                 (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.GAMES);
     }
 
-    /**
-     * on incrémente pour globalstats et le levelstats du niveau joué
-     *
-     * @param player TODO
-     */
     private void updatePlayerWins(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.WINS);
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap
                 (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.WINS);
     }
 
-    /**
-     * on incrémente pour globalstats et le levelstats du niveau joué
-     *
-     * @param player TODO
-     */
     private void updatePlayerDefeats(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.DEFEATS);
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap
                 (player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).getStats(), Statistics.DEFEATS);
     }
 
-    /**
-     * on met à jour pour globalstats et le levelstats du niveau joué puis on calcule le score (pour le niveau joué)
-     *
-     * @param player TODO
-     */
     private void updatePlayerScore(HumanPlayer player, boolean hasWon) {
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).updateStats();
         player.getGlobalStats().updateStats(player);
         // The score is calculated with the global statistics to be displayed in the hall of fame
         int score = player.getGlobalStats().calculateScore(hasWon);
 
-        int scoreBefore=player.getGlobalStats().getScore();
-        player.getGlobalStats().setScore(score+scoreBefore);
+        int scoreBefore = player.getGlobalStats().getScore();
+        player.getGlobalStats().setScore(score + scoreBefore);
         saveStatsPlayer(player);
 
         // Resets the values used for calculations
@@ -474,12 +454,6 @@ public class GameScreen implements Screen {
         return HexManagement.pixelToHex((int) vect.x, (int) vect.y, size);
     }
 
-    /**
-     * TODO
-     *
-     * @param x
-     * @param y
-     */
     void onTap(float x, float y) {
         if (!windowPause.isVisible() && level.getCurrentPlayer() instanceof HumanPlayer) {
 
@@ -536,11 +510,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * TODO
-     *
-     * @param clickPos
-     */
     private void showEffects(Coordinate clickPos) {
         // Shows effects
         EffectsManagement.eraseCells(effects);
@@ -586,12 +555,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * TODO
-     *
-     * @param c
-     * @param hidden
-     */
     private void showMarket(Coordinate c, boolean hidden) {
         boolean isShown = !hidden;
         List<String> canBuy = new ArrayList<String>();
@@ -616,13 +579,6 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     * TODO
-     *
-     * @param isShown
-     * @param isVisibleL
-     * @param buttonL
-     */
     private void changeMarketDisplay(boolean isShown, boolean isVisibleL, ImageButton buttonL) {
         if (isVisibleL) {
             buttonL.getImage().setColor(Color.WHITE);
@@ -989,11 +945,10 @@ public class GameScreen implements Screen {
                         Gdx.files.internal(Level.getPlayers()[0].getAvatar())))));
 
         Label labelP1;
-        if(Level.getPlayers()[0].getName().length()>5){
-           String labelNom= Level.getPlayers()[0].getName().substring(0,4)+"...";
+        if (Level.getPlayers()[0].getName().length() > 5) {
+            String labelNom = Level.getPlayers()[0].getName().substring(0, 4) + "...";
             labelP1 = new Label(labelNom, skinSgx, "title-white");
-        }
-        else
+        } else
             labelP1 = new Label(Level.getPlayers()[0].getName(), skinSgx, "title-white");
         labelP1.setFontScale(1.2f);
 
@@ -1011,11 +966,10 @@ public class GameScreen implements Screen {
                         Gdx.files.internal(Level.getPlayers()[1].getAvatar())))));
 
         Label labelP2;
-        if(Level.getPlayers()[1].getName().length()>5){
-            String labelNom2= Level.getPlayers()[1].getName().substring(0,4)+"...";
+        if (Level.getPlayers()[1].getName().length() > 5) {
+            String labelNom2 = Level.getPlayers()[1].getName().substring(0, 4) + "...";
             labelP2 = new Label(labelNom2, skinSgx, "title-white");
-        }
-        else
+        } else
             labelP2 = new Label(Level.getPlayers()[1].getName(), skinSgx, "title-white");
         labelP2.setFontScale(1.2f);
 
@@ -1042,17 +996,17 @@ public class GameScreen implements Screen {
 
         Table screenTablePlayers = new Table();
 
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
-			screenTablePlayers.setFillParent(true);
-			screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
-			screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && !(Gdx.app.getType() == Application.ApplicationType.Android)) {
+            screenTablePlayers.setFillParent(true);
+            screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
+            screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
             screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP1).left();
         }
         screenTablePlayers.row();
 
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
-			screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && !(Gdx.app.getType() == Application.ApplicationType.Android)) {
+            screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
             screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
         }

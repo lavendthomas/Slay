@@ -42,9 +42,7 @@ public class EndGame implements Screen {
     private SpriteBatch batch;
 
     /**
-     *
-     *
-     * @param aGame the instance of Game created in class Main
+     * @param aGame       the instance of Game created in class Main
      * @param winner
      * @param numberHuman
      */

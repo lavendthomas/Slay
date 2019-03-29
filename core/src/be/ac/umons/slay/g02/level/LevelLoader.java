@@ -37,7 +37,7 @@ import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.prefs;
-import static be.ac.umons.slay.g02.gui.screens.LevelSelection.humanPlayer;  
+import static be.ac.umons.slay.g02.gui.screens.LevelSelection.humanPlayer;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
@@ -214,25 +214,20 @@ public class LevelLoader {
      */
     private static Player loadHumanPlayer(int countHuman, Colors color) {
         Player player;
-        if (countHuman == 0)
-        {
-             if(numberHumans==1 &&(prefs.getBoolean("isPlayer1Logged"))&&(prefs.getBoolean("isPlayer2Logged")))
-            {
-               if(player1.getName().equals(humanPlayer)){
+        if (countHuman == 0) {
+            if (numberHumans == 1 && (prefs.getBoolean("isPlayer1Logged")) && (prefs.getBoolean("isPlayer2Logged"))) {
+                if (player1.getName().equals(humanPlayer)) {
 
-                   player = Menu.player1;
-                   player.setColor(color);
-                   player.setAvatar(Menu.player1.getAvatar());
-               } else {
-                   player = Menu.player2;
-                   player.setColor(color);
-                   player.setAvatar(Menu.player2.getAvatar());
-               }
-            }
-            else
-            {
-                if (prefs.getBoolean("isPlayer1Logged"))
-                {
+                    player = Menu.player1;
+                    player.setColor(color);
+                    player.setAvatar(Menu.player1.getAvatar());
+                } else {
+                    player = Menu.player2;
+                    player.setColor(color);
+                    player.setAvatar(Menu.player2.getAvatar());
+                }
+            } else {
+                if (prefs.getBoolean("isPlayer1Logged")) {
                     player = Menu.player1;
                     player.setColor(color);
                     player.setAvatar(Menu.player1.getAvatar());
@@ -243,15 +238,14 @@ public class LevelLoader {
                 }
             }
         } else {
-            if(numberHumans==1 )
-            {
+            if (numberHumans == 1) {
                 player = new HumanPlayer("P2", color);
                 player.setAvatar("profile" + File.separator + "anonymous.png");
             } else {
 
-                    player = Menu.player2;
-                    player.setColor(color);
-                    player.setAvatar(Menu.player2.getAvatar());
+                player = Menu.player2;
+                player.setColor(color);
+                player.setAvatar(Menu.player2.getAvatar());
             }
         }
         return player;
@@ -409,7 +403,7 @@ public class LevelLoader {
 
     /**
      * Returns object for loading the world
-     *
+     * <p>
      * Consists of a Level object and a libGDX TiledMap
      */
     public static class Map {

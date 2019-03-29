@@ -20,8 +20,8 @@ import static be.ac.umons.slay.g02.gui.Main.isInTest;
 import static be.ac.umons.slay.g02.gui.Main.prefs;
 
 /**
- *  Class that retrieves all data from the xml file containing players data, by creating instances
- *  of Account, HumanPlayer, GlobalStats and LevelStats and then putting the values in them
+ * Class that retrieves all data from the xml file containing players data, by creating instances
+ * of Account, HumanPlayer, GlobalStats and LevelStats and then putting the values in them
  */
 public class StatsLoader {
     /**
@@ -108,9 +108,10 @@ public class StatsLoader {
                         playerHuman.setGlobalStats(globalStats);
                         playerHuman.setListLevelStats(listStatsLevel);
                         if (playerHuman.getGlobalStats().getScore() != 0) {
-                            if (!isInTest){
-                            prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
-                            prefs.flush();}
+                            if (!isInTest) {
+                                prefs.putInteger("totalNumberPlayers", prefs.getInteger("totalNumberPlayers") + 1);
+                                prefs.flush();
+                            }
                         } else playerHuman.getGlobalStats().setRank(0);
                     }
                 }
@@ -131,7 +132,7 @@ public class StatsLoader {
      * Retrieves the value read by deleting the numbers before the statistic name (to get the
      * good key) then put it in the corresponding hashmap of statistics
      *
-     * @param elementStat the balise's name
+     * @param elementStat  the balise's name
      * @param hashmapStats the hashmap of statistics
      */
     private void putInHashmapStats(Element elementStat, HashMap<String, Integer> hashmapStats) {

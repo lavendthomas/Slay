@@ -6,7 +6,7 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.players.Player;
 
 /**
- *  An interface for level
+ * An interface for level
  */
 public interface Playable {
     /**
@@ -90,7 +90,7 @@ public interface Playable {
      * @param to     the tile in which to place the entity
      * @return true is an entity has successfully been bought
      */
-    boolean buy(Entity entity, Coordinate start,  Coordinate to);
+    boolean buy(Entity entity, Coordinate start, Coordinate to);
 
     /**
      * Returns a list of all purchasable entities in the territory at the mentionned coordinate
@@ -115,7 +115,7 @@ public interface Playable {
     Player hasWon();
 
     /**
-     *  Get the player whose turn it is
+     * Get the player whose turn it is
      *
      * @return a player
      */

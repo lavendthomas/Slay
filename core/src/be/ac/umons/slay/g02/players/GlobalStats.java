@@ -54,13 +54,11 @@ public class GlobalStats extends Statistics {
      * - a minimum value, i.e. the minimum value of the statistic among all worlds (0 is excluded if
      * at least one value of the statistic in a world is different of zero
      * - a maximum value, i.e. the maximum value of the statistic among all worlds
-     * - a total value, i.e. the value total of a statistic for all games played
      */
     public void updateStats(HumanPlayer player) {
         for (Map.Entry<String, Integer> key : getStats().entrySet()) {
             String stat = key.getKey();
             int globalValue = key.getValue();
-            int sum=0;
 
             // If the global statistic to update is a minimum
             if (stat.startsWith(MIN_)) {
@@ -89,9 +87,7 @@ public class GlobalStats extends Statistics {
                     globalValue = Math.max(levelValue, globalValue);
                     getStats().put(stat, Math.max(levelValue, globalValue));
                 }
-            }
-
-            else if (stat == GAMES)
+            } else if (stat == GAMES)
                 updateTotal();
         }
     }

@@ -19,7 +19,7 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- *  Modelises a Level of Slay
+ * Modelises a Level of Slay
  */
 public class Level implements Playable {
     private Tile[][] tileMap;
@@ -87,7 +87,7 @@ public class Level implements Playable {
     }
 
     /**
-     *  Get the player whose turn it is
+     * Get the player whose turn it is
      *
      * @return the current player
      */
@@ -211,12 +211,12 @@ public class Level implements Playable {
                         t.getTerritory().nextTurn(currentPlayer);
 
                         // Updates currentLands for stats - at each turn (currentLands += number of cells)
-                        if (prefs != null && (prefs.getBoolean("isPlayer1Logged")&&( getPlayers()[0].getName().equals(player1.getName())||
+                        if (prefs != null && (prefs.getBoolean("isPlayer1Logged") && (getPlayers()[0].getName().equals(player1.getName()) ||
                                 getPlayers()[1].getName().equals(player1.getName()))) && previousPlayer == player1
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player1, t.getTerritory().getCells().size());
-                        } else if (prefs != null && (prefs.getBoolean("isPlayer2Logged") && (getPlayers()[0].getName().equals(player2.getName())||
-                                getPlayers()[1].getName().equals(player2.getName())))&& previousPlayer == player2
+                        } else if (prefs != null && (prefs.getBoolean("isPlayer2Logged") && (getPlayers()[0].getName().equals(player2.getName()) ||
+                                getPlayers()[1].getName().equals(player2.getName()))) && previousPlayer == player2
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player2, t.getTerritory().getCells().size());
                         }
@@ -528,8 +528,8 @@ public class Level implements Playable {
     /**
      * Moves a entity from a tile to a other tile
      *
-     * @param from  Original tile
-     * @param to    Arrival tile
+     * @param from Original tile
+     * @param to   Arrival tile
      */
     private void moveEntity(Tile from, Tile to) {
         // Updates currentTrees for stats - when the player cuts a tree
@@ -584,8 +584,8 @@ public class Level implements Playable {
     /**
      * Merges the territories from a specific position
      *
-     * @param pos        Original coordinate
-     * @param processed  List coordinates already visited
+     * @param pos       Original coordinate
+     * @param processed List coordinates already visited
      */
     private void mergeTerritories(Coordinate pos, List<Coordinate> processed) {
         // Source: https://codereview.stackexchange.com/questions/90108/recursively-evaluate-neighbors-in-a-two-dimensional-grid
@@ -609,7 +609,7 @@ public class Level implements Playable {
     }
 
     /**
-     *   Splits the territories
+     * Splits the territories
      */
     private void splitTerritories() {
         /*
@@ -712,7 +712,7 @@ public class Level implements Playable {
     /**
      * Count the number of tiles belonging to a player
      *
-     * @param player  The player whose territories must be searched
+     * @param player The player whose territories must be searched
      * @return Number of tiles belonging to a player
      */
 

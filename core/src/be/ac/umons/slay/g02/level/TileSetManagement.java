@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * Table matching the id written in the TMX file to a tile name
- *
  */
 public enum TileSetManagement {
     VOID(0),
@@ -44,6 +42,7 @@ public enum TileSetManagement {
 
     /**
      * Returns the id of this TileType
+     *
      * @return
      */
     public int getId() {
@@ -56,6 +55,7 @@ public enum TileSetManagement {
 
     /**
      * Returns the TileType matching the id
+     *
      * @param id the id for which we want the id
      * @return A tileType object
      * @throws FileFormatException If the id does not match any TileType
@@ -89,7 +89,7 @@ public enum TileSetManagement {
      *
      * @return list of all tile names
      */
-    public static List<String> getNames () {
+    public static List<String> getNames() {
         List<String> res = new ArrayList<String>();
         for (TileSetManagement tile : TileSetManagement.values()) {
             res.add(tile.toString());

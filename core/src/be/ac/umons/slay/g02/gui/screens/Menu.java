@@ -214,9 +214,6 @@ public class Menu implements Screen {
         init();
     }
 
-    /**
-     *   TODO
-     */
     public void init() {
         stage.clear();
 
@@ -291,7 +288,7 @@ public class Menu implements Screen {
             Label labelPlayer2 = new Label("Player 2", skinSgx, "title");
             labelProfileLeft = new Label("Not Logged", skinSgx, "medium");
             labelProfileRight = new Label("Not Logged", skinSgx, "medium");
-			setAlignment1(labelPlayer1, labelPlayer2, labelProfileLeft, labelProfileRight);
+            setAlignment1(labelPlayer1, labelPlayer2, labelProfileLeft, labelProfileRight);
 
             if (prefs.getBoolean("isPlayer1Logged")) {
                 imageProfile = imagePlayer1;
@@ -344,33 +341,18 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param labels
-     */
     private void setLabelRed(Label... labels) {
         for (Label label : labels) {
             label.setColor(Color.RED);
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param labels
-     */
     private void setAlignment1(Label... labels) {
         for (Label label : labels) {
             label.setAlignment(1);
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param button
-     */
     public static void disableButton(Button... button) {
         if (button == null) {
             return;
@@ -383,11 +365,6 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param button
-     */
     public static void enableButton(Button... button) {
         if (button == null) {
             return;
@@ -400,11 +377,6 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param box
-     */
     public static void disableBox(SelectBox... box) {
         for (SelectBox b : box) {
             b.setDisabled(true);
@@ -412,11 +384,6 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param box
-     */
     public static void enableBox(SelectBox... box) {
         for (SelectBox b : box) {
             b.setDisabled(false);
@@ -424,44 +391,24 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param field
-     */
     public static void disableField(TextField... field) {
         for (TextField f : field) {
             f.setDisabled(true);
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param field
-     */
     public static void enableField(TextField... field) {
         for (TextField f : field) {
             f.setDisabled(false);
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param field
-     */
     public static void resetField(TextField... field) {
         for (TextField f : field) {
             f.setText("");
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param field
-     */
     public static void setPasswordMode(TextField... field) {
         for (TextField f : field) {
             f.setPasswordCharacter('*');
@@ -515,7 +462,7 @@ public class Menu implements Screen {
     }
 
     /**
-     *   TODO
+     * Displays the settings window
      */
     private void showSettings() {
         disableButton(buttonPlay, buttonSettings, buttonExit);
@@ -527,8 +474,8 @@ public class Menu implements Screen {
         else {
             if (SCREEN_WIDTH > SCREEN_HEIGHT)
                 windowSettings.setSize(windowSettingsWidth, windowSettingsWidth);
-			else
-                windowSettings.setSize(windowSettingsWidth,  2 * windowSettingsWidth);
+            else
+                windowSettings.setSize(windowSettingsWidth, 2 * windowSettingsWidth);
         }
         windowSettings.setPosition(SCREEN_WIDTH / 2 - windowSettings.getWidth() / 2, SCREEN_HEIGHT / 2 - windowSettings.getHeight() / 2);
         windowSettings.setMovable(false);
@@ -608,14 +555,14 @@ public class Menu implements Screen {
         table.add(switchRegistration);
         table.row();
 
-        if (prefs.getBoolean("isAccountEnabled") && (SCREEN_WIDTH <= SCREEN_HEIGHT || Gdx.app.getType() == Application.ApplicationType.Android )) {
+        if (prefs.getBoolean("isAccountEnabled") && (SCREEN_WIDTH <= SCREEN_HEIGHT || Gdx.app.getType() == Application.ApplicationType.Android)) {
             Label labelPlayer1 = new Label("Player 1", skinSgx, "title");
             Label labelPlayer2 = new Label("Player 2", skinSgx, "title");
 
             Label labelProfileLeft = new Label("Not Logged", skinSgx, "medium");
             Label labelProfileRight = new Label("Not Logged", skinSgx, "medium");
-			
-			setAlignment1(labelPlayer1, labelPlayer2, labelProfileLeft, labelProfileRight);
+
+            setAlignment1(labelPlayer1, labelPlayer2, labelProfileLeft, labelProfileRight);
 
             if (prefs.getBoolean("isPlayer1Logged")) {
                 imageProfile = imagePlayer1;
@@ -631,7 +578,7 @@ public class Menu implements Screen {
                 setAlignment1(labelProfileRight);
             } else
                 imageProfile = imageAnonymous;
-			
+
             createButtonProfileRight();
             table.add(labelPlayer1).width(labelProfileWidth);
             table.add(labelPlayer2).width(labelProfileWidth);
@@ -651,7 +598,7 @@ public class Menu implements Screen {
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
             buttonSettingsBack = new TextButton("Save", skinSgx, "big");
         } else {
-            buttonSettingsBack =  new TextButton(lang.get("button_back"), skinSgx, "big");
+            buttonSettingsBack = new TextButton(lang.get("button_back"), skinSgx, "big");
         }
         buttonSettingsBack.setWidth(buttonCenterWidth / 2);
         buttonSettingsBack.addListener(new ClickListener() {
@@ -679,7 +626,7 @@ public class Menu implements Screen {
     }
 
     /**
-     *   TODO
+     * Displays the alerting window when in Settings
      */
     private void showAlertSettings() {
         disableButton(buttonSettingsBack, switchRegistration, switchFullscreen);
@@ -718,7 +665,6 @@ public class Menu implements Screen {
 
                 if (Gdx.app.getType() == Application.ApplicationType.Android) {
                     prefs.putBoolean("isAccountEnabled", false);
-                    //TODO quit the settings window
                 }
             }
         });
@@ -741,7 +687,7 @@ public class Menu implements Screen {
     }
 
     /**
-     *   TODO
+     * Displays the login window
      */
     private void showLoginWindow() {
         int corner = (int) (Math.min(SCREEN_HEIGHT, SCREEN_WIDTH) * 0.9);
@@ -776,7 +722,7 @@ public class Menu implements Screen {
                 stage.setKeyboardFocus(fieldNameLogin);
                 imageProfile = imageAnonymous;
                 hasChangedAvatar = false;
-                if(cellErrorAvatarSignUp!=null) {
+                if (cellErrorAvatarSignUp != null) {
                     cellErrorAvatarSignUp.clearActor();
                     cellErrorUsernameSignUp.clearActor();
                     cellErrorPasswordSignUp.clearActor();
@@ -965,7 +911,7 @@ public class Menu implements Screen {
                     mainTableLogin.remove();
                     if (isProfileLeft)
                         prefs.putBoolean("isPlayer1Logged", true);
-					else
+                    else
                         prefs.putBoolean("isPlayer2Logged", true);
                     prefs.flush();
                     showProfile(prefs.getInteger("numPlayer"));
@@ -1163,11 +1109,12 @@ public class Menu implements Screen {
     }
 
     /**
-     * initialisation d'un joueur    TODO
+     * Initializes a player by settings him a name, a password, an avatar and all instances of
+     * classes necessary to store his data
      *
      * @param username player's username
      * @param password player's password
-     * @param avatar player's avatar
+     * @param avatar   player's avatar
      */
     private void initializeStatsPlayer(String username, String password, String avatar) {
         Account account = new Account();
@@ -1192,13 +1139,13 @@ public class Menu implements Screen {
     }
 
     /**
-     * initialise les statistiques des 10 niveaux   TODO
+     * Initializes the statistics of all levels
      *
-     * @return listLevelStats
+     * @return listLevelStats the list containing all the instances of LevelStats
      */
     private ArrayList initializeLevelStatsPlayer() {
         ArrayList listLevelStats = new ArrayList();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < LevelSelection.TOTAL_NUMBER_ISLANDS; i++) {
             LevelStats levelStats = new LevelStats();
             levelStats.setLevel(i + 1);
             listLevelStats.add(levelStats);
@@ -1207,7 +1154,7 @@ public class Menu implements Screen {
     }
 
     /**
-     * initialise les statistiques globales   TODO
+     * Initializes the global statistics
      *
      * @return globalStats
      */
@@ -1217,11 +1164,11 @@ public class Menu implements Screen {
     }
 
     /**
-     * vérifie que le joueur est dans la table des joueurs enregistrés (quand il se co dans Log In)
+     * Checks that the player is in the list of all players with an account when he logs in
      *
      * @param userName
-     * @param currentPasswordLogin    TODO
-     * @return message d'anomalie
+     * @param currentPasswordLogin
+     * @return error message
      */
     private String getPlayer(String userName, String currentPasswordLogin) {
         String messageError = "";
@@ -1242,9 +1189,9 @@ public class Menu implements Screen {
     }
 
     /**
-     * création d'un joueur à partir du joueur 1 ou joueur 2    TODO
+     * Creates a player from player 1 or player 2
      *
-     * @param player joueur 1 ou joueur 2
+     * @param player player1 or player2
      */
     private void createPlayer(HumanPlayer player) {
         Account account = new Account();
@@ -1269,26 +1216,26 @@ public class Menu implements Screen {
     }
 
     /**
-     * récupération des 10 niveaux de statistiques d'un joueur   TODO
+     * Retrieves all the instances of LevelStats of a player
      *
-     * @param player
-     * @return liste des 10 niveaux de statistiques
+     * @param player the player
+     * @return the list of all the instances of LevelStats
      */
     private static ArrayList getLevelStatsPlayer(HumanPlayer player) {
         ArrayList listLevelStats = new ArrayList();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < LevelSelection.TOTAL_NUMBER_ISLANDS; i++) {
             listLevelStats.add(player.getListLevelStats().get(i));
         }
         return listLevelStats;
     }
 
     /**
-     * Validation de la saisie    TODO
+     * Validates the input
      *
      * @param userName
      * @param newPassword1
      * @param newPassword2
-     * @return message d'anomalie
+     * @return error message
      */
     public String validatePlayer(String userName, String newPassword1, String newPassword2) {
         String messageError = "";
@@ -1315,17 +1262,10 @@ public class Menu implements Screen {
             return prefs.getString("INCORRECT_LENGTH_PASSWORD");
         if (!(newPassword1.equals(newPassword2)))
             return prefs.getString("PASSWORDS_NOT_MATCH");
-		
+
         return messageError;
     }
 
-    /**
-     *   TODO
-     *
-     *   int player = 1 si c'est le joueur du bouton gauche, 2 sinon
-     *
-     * @param player
-     */
     private void showProfile(int player) {
         disableButton(buttonPlay, buttonSettings, buttonExit, buttonHall, buttonProfileLeft, buttonProfileRight);
         windowProfile.clear();
@@ -1367,7 +1307,7 @@ public class Menu implements Screen {
 
         } else
             imageAvatar = new ImageButton(imageAnonymous);
-		
+
         prefs.flush();
 
         Label labelWelcome = new Label("Welcome " + playerName + " !", skinSgx, "title-white");
@@ -1442,7 +1382,7 @@ public class Menu implements Screen {
     }
 
     /**
-     *   TODO
+     * Displays the edit window
      */
     private void showEdit() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
@@ -1476,7 +1416,7 @@ public class Menu implements Screen {
                 soundButton2.play(prefs.getFloat("volume", 0.2f));
                 if (isProfileLeft)
                     messageErrorEdit = validateEdit(fieldCurrentPassword, player1, fieldNewPassword1, fieldNewPassword2);
-				else
+                else
                     messageErrorEdit = validateEdit(fieldCurrentPassword, player2, fieldNewPassword1, fieldNewPassword2);
                 // If there is an error message
                 if (!(messageErrorEdit.equals(""))) {
@@ -1620,9 +1560,6 @@ public class Menu implements Screen {
         stage.addActor(windowEdit);
     }
 
-    /**
-     *   TODO
-     */
     private void createButtonProfileRight() {
         buttonProfileRight = new ImageButton(imageProfile);
         buttonProfileRight.addListener(new ClickListener() {
@@ -1643,9 +1580,6 @@ public class Menu implements Screen {
         });
     }
 
-    /**
-     *   TODO
-     */
     private void createButtonProfileLeft() {
         buttonProfileLeft = new ImageButton(imageProfile);
         buttonProfileLeft.addListener(new ClickListener() {
@@ -1665,11 +1599,6 @@ public class Menu implements Screen {
         });
     }
 
-    /**
-     *   TODO
-     *
-     * @param player
-     */
     private void changeAvatar(HumanPlayer player) {
         if (hasImportedAvatar) {
             if (player.getAvatar().substring(0, player.getAvatar().length() - 5).equals("profile/" + "_" + player.getName()))
@@ -1686,15 +1615,6 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param fieldCurrentPassword
-     * @param player
-     * @param fieldNewPassword1
-     * @param fieldNewPassword2
-     * @return
-     */
     private String validateEdit(TextField fieldCurrentPassword, HumanPlayer player, TextField fieldNewPassword1, TextField fieldNewPassword2) {
         String messageErrorEdit = "";
 
@@ -1713,9 +1633,6 @@ public class Menu implements Screen {
         return messageErrorEdit;
     }
 
-    /**
-     *   TODO
-     */
     private void showAvatarSelectionWindow() {
         if (isInEdit)
             disableButton(buttonEditAvatar, buttonEditSave, buttonEditCancel);
@@ -2011,7 +1928,7 @@ public class Menu implements Screen {
     }
 
     /**
-     *   TODO
+     * Displays the Log Out window
      */
     private void showLogOut() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);
@@ -2066,14 +1983,6 @@ public class Menu implements Screen {
         stage.addActor(windowLogOut);
     }
 
-    /**
-     *   TODO
-     *
-     * @param cell
-     * @param player
-     * @param labelProfile
-     * @param string
-     */
     private void resetButtonProfile(Cell cell, HumanPlayer player, Label labelProfile, String string) {
         cell.clearActor();
         imageProfile = imageAnonymous;
@@ -2090,11 +1999,6 @@ public class Menu implements Screen {
 
     }
 
-    /**
-     *   TODO
-     *
-     * @param player
-     */
     public static void saveStatsPlayer(HumanPlayer player) {
         boolean isFound = isPlayerInTabStats(player.getName());
         if (isFound) {
@@ -2121,12 +2025,6 @@ public class Menu implements Screen {
         prefs.flush();
     }
 
-    /**
-     *   TODO
-     *
-     * @param player
-     * @return
-     */
     private static GlobalStats setGlobalStats(HumanPlayer player) {
         GlobalStats globalStats = new GlobalStats();
         globalStats.setScore(player.getGlobalStats().getScore());
@@ -2141,19 +2039,11 @@ public class Menu implements Screen {
         return globalStats;
     }
 
-    /**
-     * réinitialise l'apparence des boutons grisés   TODO
-     */
     private void resetButtonsProfileLooks() {
         buttonProfileLeft.getImage().setColor(Color.WHITE);
         buttonProfileRight.getImage().setColor(Color.WHITE);
     }
 
-    /**
-     *   TODO
-     *
-     * @param name
-     */
     private void updateAvatar(String name) {
         Iterator iter = tabPlayers.iterator();
         while (iter.hasNext()) {
@@ -2164,12 +2054,6 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @param name
-     * @return
-     */
     private static boolean isPlayerInTabStats(String name) {
         Iterator iter = tabPlayers.iterator();
         while (iter.hasNext()) {
@@ -2181,12 +2065,6 @@ public class Menu implements Screen {
         return false;
     }
 
-    /**
-     *   TODO
-     *
-     * @param name
-     * @return
-     */
     private static int getScorePlayerInTabStats(String name) {
         Iterator iter = tabPlayers.iterator();
         while (iter.hasNext()) {
@@ -2197,12 +2075,6 @@ public class Menu implements Screen {
         return 0;
     }
 
-    /**
-     *   TODO
-     *
-     * @param player
-     * @return
-     */
     private static int storePlayer(HumanPlayer player) {
         boolean isFound = false;
         int i = 0;
@@ -2222,18 +2094,13 @@ public class Menu implements Screen {
 
             if (playerTab.getGlobalStats().getScore() != 0)
                 playerTab.getGlobalStats().setRank(j + 1);
-            else 
-				playerTab.getGlobalStats().setRank(0);
+            else
+                playerTab.getGlobalStats().setRank(0);
             j++;
         }
         return i + 1;
     }
 
-    /**
-     *   TODO
-     *
-     * @param player
-     */
     private static void deletePlayer(HumanPlayer player) {
         int i = 0;
         boolean isFound = false;
@@ -2248,9 +2115,6 @@ public class Menu implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     */
     private void recalculateRank() {
         for (int i = 0; i < tabPlayers.size(); i++) {
             HumanPlayer playerTab = (HumanPlayer) tabPlayers.get(i);
@@ -2259,7 +2123,7 @@ public class Menu implements Screen {
     }
 
     /**
-     *   TODO
+     * Displays the exit window
      */
     private void showExit() {
         disableButton(buttonPlay, buttonSettings, buttonExit);
@@ -2316,7 +2180,7 @@ public class Menu implements Screen {
     }
 
     /**
-     *   TODO
+     * Displays the delete window
      */
     private void showDelete() {
         disableButton(buttonEdit, buttonLogOut, buttonDelete, buttonBack);

@@ -250,7 +250,7 @@ public class Hall implements Screen {
                 tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
 
                 cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvgGlobal(Statistics.LOST_UNITS, player)),
-                       skinSgxTable);
+                        skinSgxTable);
                 cell.setColor(currentColor);
                 cell.getLabel().setColor(colorLabel);
                 cell.setHeight(cellHeight);

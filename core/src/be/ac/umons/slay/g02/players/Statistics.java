@@ -2,7 +2,6 @@ package be.ac.umons.slay.g02.players;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.gui.screens.LevelSelection;
@@ -196,7 +195,7 @@ public class Statistics {
     }
 
     /**
-     *  Calculates the "total" statistics
+     * Calculates the "total" statistics
      *
      * @param key
      */
@@ -235,19 +234,20 @@ public class Statistics {
     }
 
     /**
-     * totalL0 - totalLostL0  //TODO
+     * Calculates the total of remaining units : total of all owned units during the game minus the
+     * number of losses
      *
-     * @param key
-     * @return
+     * @param key the type of unit
+     * @return the number of total units still alive at the end of the game
      */
     private int calculateTotalLeft(String key) {
         // Fix the case when value is < 0 due to a bug (not linked to statistics)
-        if(stats.get(key) - stats.get(LOST_ + key)<0) return 0;
+        if (stats.get(key) - stats.get(LOST_ + key) < 0) return 0;
         return stats.get(key) - stats.get(LOST_ + key);
     }
 
     /**
-     *  //TODO
+     * Calculates the average statistics
      *
      * @param key
      * @return
@@ -258,8 +258,7 @@ public class Statistics {
     }
 
     /**
-     *  on va dans chaque niveau , on récupère l'average, on les cumule puis on divise par
-     *  le nombre total de niveaux
+     * Calculates the average global statistics
      *
      * @param key
      * @return
@@ -267,15 +266,14 @@ public class Statistics {
     public int calculateAvgGlobal(String key, HumanPlayer player) {
         int sum = 0;
 
-            for (int i = 1; i <= LevelSelection.TOTAL_NUMBER_ISLANDS; i++) {
-                int levelValue = player.getListLevelStats(i).getStats().get(key);
-                sum += calculateAvg(key, player.getListLevelStats(i).getStats());
-            }
-        return ((sum /player.getGlobalStats().getStats().get(GAMES)) / LevelSelection.TOTAL_NUMBER_ISLANDS);
+        for (int i = 1; i <= LevelSelection.TOTAL_NUMBER_ISLANDS; i++) {
+            sum += calculateAvg(key, player.getListLevelStats(i).getStats());
+        }
+        return ((sum / player.getGlobalStats().getStats().get(GAMES)) / LevelSelection.TOTAL_NUMBER_ISLANDS);
     }
 
     /**
-     *  //TODO
+     * Calculates the average number of left units
      *
      * @param key
      * @return
@@ -286,7 +284,7 @@ public class Statistics {
     }
 
     /**
-     *  //TODO
+     * Calculates the minimum of a statistic
      *
      * @param key
      */
@@ -310,7 +308,7 @@ public class Statistics {
     }
 
     /**
-     *  //TODO
+     * Calculates the maximum of a statistic
      *
      * @param key
      */
@@ -334,8 +332,9 @@ public class Statistics {
                             + currentStats.get(CURRENT_LOST_L3), stats.get(MAX_ + key)));
         } else if (key.equals(LANDS_TURN)) {
             // max lands/turn in stats = max(currentLands/currentTurns, max lands/turn in stats)
-            if(currentStats.get(CURRENT_TURNS)!=0){
-            stats.put(MAX_ + key,Math.max(currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS), stats.get(MAX_ + key)));}
+            if (currentStats.get(CURRENT_TURNS) != 0) {
+                stats.put(MAX_ + key, Math.max(currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS), stats.get(MAX_ + key)));
+            }
         } else
             // max value in stats = max(currentStat, max value in stats)
 
@@ -344,7 +343,7 @@ public class Statistics {
 
     /**
      * Gets the army value from the game that has just been played (then used to determine MIN_ARMY and MAX_ARMY)
-     *
+     * <p>
      * It is the sum of all player's units values (= total number of units of type A multiplied by their price)
      * It is stored in the variable currentArmy to simplify the reading of calculations in the other methods
      */
@@ -357,7 +356,7 @@ public class Statistics {
 
     /**
      * Calculates the score of the player
-     *
+     * <p>
      * The statistics used are :
      * - number of cut trees [bonus]
      * - number of tiles/turn [bonus]

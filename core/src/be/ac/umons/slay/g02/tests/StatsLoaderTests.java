@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * Class testing StatsLoader, i.e. it tests if players data that are in a xml file are
  * correctly retrieved by testing if the recovered value is equal to the stored value
- *
+ * <p>
  * Tests are for global and levels statistics
  */
 public class StatsLoaderTests {

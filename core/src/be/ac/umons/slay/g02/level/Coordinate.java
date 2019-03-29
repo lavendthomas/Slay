@@ -89,7 +89,7 @@ public class Coordinate {
      * Test the equality between this coordinate and another
      *
      * @param o The object to test
-     * @return  True if equal, false otherwise
+     * @return True if equal, false otherwise
      */
     @Override
     public boolean equals(Object o) {

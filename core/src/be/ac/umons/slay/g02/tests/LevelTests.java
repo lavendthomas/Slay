@@ -122,7 +122,7 @@ public class LevelTests {
         level.move(c0, c1);
         int after = level.get(c0).getTerritory().getCoins();
 
-        assertEquals(before+3,after);
+        assertEquals(before + 3, after);
     }
 
     @Test
@@ -135,7 +135,7 @@ public class LevelTests {
         level.move(c0, c1);
         int after = level.get(c0).getTerritory().getCoins();
 
-        assertEquals(before,after);
+        assertEquals(before, after);
     }
 
     @Test
@@ -154,7 +154,7 @@ public class LevelTests {
         Coordinate c0 = new Coordinate(2, 2);
         Coordinate c1 = new Coordinate(2, 1);
 
-        assertEquals(true,level.canMove(c0, c1));
+        assertEquals(true, level.canMove(c0, c1));
     }
 
     @Test
@@ -166,7 +166,7 @@ public class LevelTests {
         Entity entity = level.get(c0).getEntity();
 
         level.move(c0, c1);
-        assertEquals(entity,level.get(c1).getEntity());
+        assertEquals(entity, level.get(c1).getEntity());
     }
 
     @Test
