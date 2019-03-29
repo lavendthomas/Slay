@@ -5,43 +5,43 @@ import java.util.Map;
 import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 
 /**
- *   //TODO
+ * Class handling all global statistics plus the rank and score of the player
  */
 public class GlobalStats extends Statistics {
     private int rank;
     private int score = 0;
 
     /**
-     *  //TODO
+     * Gives the players'rank in the hall of fame
      *
-     * @return
+     * @return the players'rank
      */
     public int getRank() {
         return rank;
     }
 
     /**
-     *  //TODO
+     * Sets the players'rank in the hall of fame
      *
-     * @param rank
+     * @param rank the players'rank
      */
     public void setRank(int rank) {
         this.rank = rank;
     }
 
     /**
-     *  //TODO
+     * Gives the players'score in the hall of fame
      *
-     * @return
+     * @return the players'score
      */
     public int getScore() {
         return score;
     }
 
     /**
-     *  //TODO
+     * Sets the players'score in the hall of fame
      *
-     * @param score
+     * @param score the players'score
      */
     public void setScore(int score) {
         this.score = score;
@@ -49,7 +49,7 @@ public class GlobalStats extends Statistics {
 
     /**
      * Updates the values of the statistics in the hashmap stats
-     *
+     * <p>
      * A global statistic can be :
      * - a minimum value, i.e. the minimum value of the statistic among all worlds (0 is excluded if
      * at least one value of the statistic in a world is different of zero
@@ -79,14 +79,13 @@ public class GlobalStats extends Statistics {
                 }
             }
             // If the global statistic to update is a maximum
-            else if (stat.startsWith(MAX_))
-            {
+            else if (stat.startsWith(MAX_)) {
 
                 // Searches for the maximum value among all levels
 
                 for (int i = 1; i <= LevelSelection.TOTAL_NUMBER_ISLANDS; i++) {
                     int levelValue = player.getListLevelStats(i).getStats().get(stat);
-                    globalValue=Math.max(levelValue, globalValue);
+                    globalValue = Math.max(levelValue, globalValue);
                     getStats().put(stat, Math.max(levelValue, globalValue));
                 }
             }
@@ -96,8 +95,8 @@ public class GlobalStats extends Statistics {
                 because they are not used to calculate average statistics, which is why they have
                 been updated elsewhere)
             */
-           else if (stat == GAMES )
-               updateTotal();
+            else if (stat == GAMES)
+                updateTotal();
         }
     }
 }

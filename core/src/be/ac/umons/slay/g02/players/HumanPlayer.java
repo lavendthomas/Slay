@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *   //TODO
+ * Class assigned to a user with an account
  */
 public class HumanPlayer extends Player {
     Account account;
@@ -13,10 +13,10 @@ public class HumanPlayer extends Player {
     List listLevelStats = new ArrayList();
 
     /**
-     *  //TODO
+     * Constructor class which determines the player's attributes
      *
-     * @param name
-     * @param color
+     * @param name  the player's name to display
+     * @param color the player's color in game
      */
     public HumanPlayer(String name, Colors color) {
         this.name = name;
@@ -24,59 +24,66 @@ public class HumanPlayer extends Player {
     }
 
     /**
-     *  //TODO
+     * Gives the list of all instances of LevelStats (there are as many as there are playable
+     * levels)
      *
-     * @return
+     * @return the list of all instances of LevelStats
      */
     public List getListLevelStats() {
         return listLevelStats;
     }
 
     /**
-     *  //TODO
+     * Sets the list of all instances of LevelStats (there are as many as there are playable
+     * levels)
      *
-     * @param listLevelStats
+     * @param listLevelStats the list of all instances of LevelStats
      */
     public void setListLevelStats(List listLevelStats) {
         this.listLevelStats = listLevelStats;
     }
 
+    /**
+     * Gets the player's account
+     *
+     * @return the player's account
+     */
     public Account getAccount() {
         return account;
     }
 
     /**
-     *  //TODO
+     * Sets the player's account
      *
-     * @param account
+     * @param account the player's account
      */
     public void setAccount(Account account) {
         this.account = account;
     }
 
     /**
-     *  //TODO
+     * Gives the instance of GlobalStats assigned to the player
      *
-     * @return
+     * @return the player's instance of GlobalStats
      */
     public GlobalStats getGlobalStats() {
         return globalStats;
     }
 
     /**
-     *  //TODO
+     * Sets the instance of GlobalStats assigned to the player
      *
-     * @param globalStats
+     * @param globalStats the player's instance of GlobalStats
      */
     public void setGlobalStats(GlobalStats globalStats) {
         this.globalStats = globalStats;
     }
 
     /**
-     *  //TODO
+     * Gives the instance of LevelStats corresponding to the level number in the entry
      *
-     * @param level
-     * @return
+     * @param level the level number for which we want the instance of LevelStats
+     * @return the corresponding instance of LevelStats
      */
     public LevelStats getListLevelStats(int level) {
         Iterator iter = listLevelStats.iterator();
@@ -90,11 +97,6 @@ public class HumanPlayer extends Player {
         return null;
     }
 
-    /**
-     *  //TODO
-     *
-     * @return
-     */
     @Override
     public String toString() {
         return name;

@@ -1,7 +1,7 @@
 package be.ac.umons.slay.g02.players;
 
 /**
- *    //TODO
+ * Class assigned to a player
  */
 public abstract class Player {
     String name;
@@ -9,65 +9,59 @@ public abstract class Player {
     Colors color;
 
     /**
-     *  //TODO
+     * Gives the color given to the player
      *
-     * @return
+     * @return the player's color
      */
     public Colors getColor() {
         return color;
     }
 
     /**
-     *  //TODO
+     * Gives the player's name
      *
-     * @return
+     * @return the player's name
      */
     public String getName() {
         return name;
     }
 
     /**
-     *  //TODO
+     * Sets the player's name
      *
-     * @param name
+     * @param name the player's name
      */
     public void setName(String name) {
         this.name = name;
     }
 
     /**
-     *  //TODO
+     * Sets the player's color
      *
-     * @param color
+     * @param color the player's color
      */
     public void setColor(Colors color) {
         this.color = color;
     }
 
     /**
-     *  //TODO
+     * Gives the player's avatar
      *
-     * @return
+     * @return the player's avatar
      */
     public String getAvatar() {
         return avatar;
     }
 
     /**
-     *  //TODO
+     * Sets the player's avatar
      *
-     * @param avatar
+     * @param avatar the player's avatar
      */
     public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
-    /**
-     *  //TODO
-     *
-     * @param o
-     * @return
-     */
     @Override
     public boolean equals(Object o) {
         if (this == o)
