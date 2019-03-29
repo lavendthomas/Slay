@@ -316,7 +316,7 @@ public class LevelSelection implements Screen {
 
         final Table table = new Table();
         table.setFillParent(true);
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android) {
+        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             table.left().padBottom(SCREEN_HEIGHT * 22 / 100);
             table.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT);
 
@@ -346,18 +346,18 @@ public class LevelSelection implements Screen {
 
             table.add(labelIsland).padLeft(SCREEN_WIDTH/4);
             table.row().pad(buttonGapY/4, 0, 0, 0);
-            table.add(selectBoxIsland);
+            table.add(selectBoxIsland).size(SCREEN_WIDTH * 5 / 100);
             table.add(levelPreview).padLeft(SCREEN_WIDTH * 7 / 100).height(SCREEN_HEIGHT * 25 / 100).width(SCREEN_HEIGHT * 25 / 100);
             table.row().pad(buttonGapY, 0, 0, 0);
             table.add(labelHuman).padLeft(SCREEN_WIDTH/4).width(SCREEN_WIDTH * 25 / 100);
             table.row().pad(buttonGapY/4, 0, 0, 0);
-            table.add(selectBoxNumber);
-            table.add(selectBoxPlayer);
+            table.add(selectBoxNumber).size(SCREEN_WIDTH * 5 / 100);
+            table.add(selectBoxPlayer).height(SCREEN_WIDTH * 5 / 100);
             table.row().pad(SCREEN_HEIGHT * 17 / 100, 0, 0, 0);
             table.add(labelDifficulty).padLeft(SCREEN_WIDTH/4);
             table.row().pad(buttonGapY/4, 0, 0, 0);
-            table.add(selectBoxDifficulty1).left().colspan(1).padLeft(SCREEN_WIDTH/8);
-            table.add(selectBoxDifficulty2);
+            table.add(selectBoxDifficulty1).height(SCREEN_WIDTH * 5 / 100).left().colspan(1).padLeft(SCREEN_WIDTH / 8);
+            table.add(selectBoxDifficulty2).height(SCREEN_WIDTH * 5 / 100);
 
             cellPreview = table.getCell(levelPreview);
 
