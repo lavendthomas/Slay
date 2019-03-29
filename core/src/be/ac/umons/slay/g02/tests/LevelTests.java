@@ -219,4 +219,77 @@ public class LevelTests {
         assertEquals(false, level.canMove(c0, c1));
     }
 
+    @Test
+    public void buySoldier() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(1, 3);
+        Coordinate c1 = new Coordinate(1, 2);
+        Entity entity = new Soldier(SoldierLevel.L0);
+        level.buy(entity, c0, c1);
+        assertEquals(entity, level.get(c1).getEntity());
+    }
+
+    @Test
+    public void buyAndConquerNeutral() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(1, 3);
+        Coordinate c1 = new Coordinate(1, 1);
+        Entity entity = new Soldier(SoldierLevel.L0);
+        level.buy(entity, c0, c1);
+        assertEquals(entity, level.get(c1).getEntity());
+    }
+
+    @Test
+    public void buyAndAttackEnemy() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(1, 3);
+        Coordinate c1 = new Coordinate(2, 1);
+        Entity entity = new Soldier(SoldierLevel.L1);
+        level.buy(entity, c0, c1);
+        assertEquals(entity, level.get(c1).getEntity());
+    }
+
+    @Test
+    public void buyAndConquerEnemy() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(1, 3);
+        Coordinate c1 = new Coordinate(2, 1);
+        Entity entity = new Soldier(SoldierLevel.L1);
+        level.buy(entity, c0, c1);
+        assertEquals(level.get(c0).getTerritory().getOwner(), level.get(c1).getTerritory().getOwner());
+    }
+
+    @Test
+    public void buyAndAttackCapital() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(1, 3);
+        Coordinate c1 = new Coordinate(2, 1);
+        Coordinate c2 = new Coordinate(3, 1);
+        Entity entity = new Soldier(SoldierLevel.L1);
+        level.buy(entity, c0, c1);
+        level.buy(entity, c0, c2);
+        assertEquals(level.get(c0).getTerritory().getOwner(), level.get(c2).getTerritory().getOwner());
+    }
+
+    @Test
+    public void win() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(1, 3);
+        Coordinate c1 = new Coordinate(2, 1);
+        Coordinate c2 = new Coordinate(3, 1);
+        Coordinate c3 = new Coordinate(3, 2);
+        Entity entity = new Soldier(SoldierLevel.L1);
+        level.buy(entity, c0, c1);
+        level.buy(entity, c0, c2);
+        level.buy(entity, c0, c3);
+        Player player = level.get(c0).getTerritory().getOwner();
+        assertEquals(player, level.hasWon());
+    }
+
 }
