@@ -79,12 +79,14 @@ public class GlobalStats extends Statistics {
                 }
             }
             // If the global statistic to update is a maximum
-            else if (stat.startsWith(MAX_)) {
+            else if (stat.startsWith(MAX_))
+            {
 
                 // Searches for the maximum value among all levels
 
                 for (int i = 1; i <= LevelSelection.TOTAL_NUMBER_ISLANDS; i++) {
                     int levelValue = player.getListLevelStats(i).getStats().get(stat);
+                    globalValue=Math.max(levelValue, globalValue);
                     getStats().put(stat, Math.max(levelValue, globalValue));
                 }
             }
@@ -94,8 +96,8 @@ public class GlobalStats extends Statistics {
                 because they are not used to calculate average statistics, which is why they have
                 been updated elsewhere)
             */
-            else if (stat != GAMES && stat != WINS && stat != DEFEATS)
-                updateTotal();
+           else if (stat == GAMES )
+               updateTotal();
         }
     }
 }

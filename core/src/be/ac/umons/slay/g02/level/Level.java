@@ -212,10 +212,12 @@ public class Level implements Playable {
                         t.getTerritory().nextTurn();
 
                         // Updates currentLands for stats - at each turn (currentLands += number of cells)
-                        if (prefs != null && prefs.getBoolean("isPlayer1Logged") && previousPlayer == player1
+                        if (prefs != null && (prefs.getBoolean("isPlayer1Logged")&&( getPlayers()[0].getName().equals(player1.getName())||
+                                getPlayers()[1].getName().equals(player1.getName()))) && previousPlayer == player1
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player1, t.getTerritory().getCells().size());
-                        } else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && previousPlayer == player2
+                        } else if (prefs != null && (prefs.getBoolean("isPlayer2Logged") && (getPlayers()[0].getName().equals(player1.getName())||
+                                getPlayers()[1].getName().equals(player1.getName())))&& previousPlayer == player2
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player2, t.getTerritory().getCells().size());
                         }
@@ -525,7 +527,7 @@ public class Level implements Playable {
     }
 
     /**
-     * Move a entity from a tile to a other tile
+     * Moves a entity from a tile to a other tile
      *
      * @param from  Original tile
      * @param to    Arrival tile
