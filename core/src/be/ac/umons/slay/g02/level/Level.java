@@ -24,7 +24,9 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 public class Level implements Playable {
     private Tile[][] tileMap;
 
-    // Number of the currently played level
+    /**
+     * Number of the currently played level
+     */
     private static int islandNumber = LevelSelection.getCurrentIslandNumber();
 
     /**
@@ -87,7 +89,7 @@ public class Level implements Playable {
     /**
      *  Get the player whose turn it is
      *
-     * @return
+     * @return the current player
      */
     @Override
     public Player getCurrentPlayer() {

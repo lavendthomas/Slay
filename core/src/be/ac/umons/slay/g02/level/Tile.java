@@ -12,7 +12,6 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 /**
  * Class representing a tile of the game with a type and maybe a territory or an entity
  */
-
 public class Tile {
     private TileType type;
     private Entity entity;
