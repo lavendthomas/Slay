@@ -19,7 +19,7 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- *  TODO
+ *  Modelises a Level of Slay
  */
 public class Level implements Playable {
     private Tile[][] tileMap;

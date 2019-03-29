@@ -13,7 +13,7 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- *  TODO
+ *  Represents a Territory, a group of linked tiles that share resources
  */
 public class Territory {
 
@@ -92,7 +92,6 @@ public class Territory {
             wages += cell.getEntity().getCost();
         }
         cells.add(cell);
-        // newCapital(); //TODO useful ?
     }
 
     /**
@@ -151,7 +150,6 @@ public class Territory {
      * @return Tiles list
      */
     List<Tile> getCells() {
-        // TODO should return a copy for encapsulation
         return cells;
     }
 

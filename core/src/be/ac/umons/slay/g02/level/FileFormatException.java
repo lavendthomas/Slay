@@ -1,7 +1,7 @@
 package be.ac.umons.slay.g02.level;
 
 /**
- *  TODO
+ *  Exception thrown then the files on disk do not match the standards
  */
 public class FileFormatException extends Exception {
 

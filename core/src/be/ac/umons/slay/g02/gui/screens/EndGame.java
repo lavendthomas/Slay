@@ -31,7 +31,7 @@ import static be.ac.umons.slay.g02.gui.Main.soundButton3;
 import static be.ac.umons.slay.g02.gui.Main.stage;
 
 /**
- * classe qui affiche l'écran de fin de jeu   TODO
+ * classe qui affiche l'écran de fin de jeu
  */
 public class EndGame implements Screen {
 
@@ -42,7 +42,7 @@ public class EndGame implements Screen {
     private SpriteBatch batch;
 
     /**
-     *   TODO
+     *
      *
      * @param aGame the instance of Game created in class Main
      * @param winner
