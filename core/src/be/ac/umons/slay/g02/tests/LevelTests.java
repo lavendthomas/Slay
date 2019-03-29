@@ -80,7 +80,7 @@ public class LevelTests {
      *
      * @return
      */
-    static Playable loadLvl() {
+    private static Playable loadLvl() {
         Playable level = new Level(5, 5);
         Player p1 = new HumanPlayer("P1", Colors.C1);
         p1.setAvatar("profile" + File.separator + "anonymous.png");
@@ -113,6 +113,8 @@ public class LevelTests {
         t22.setTerritory(new Territory(p1, t13, t22, t23));
         t23.setTerritory(new Territory(p1, t13, t22, t23));
         t33.setTerritory(new Territory(p1, t33));
+        t12.setTerritory(new Territory(p1, t12));
+        t11.setTerritory(new Territory(p1, t11));
 
         t21.setTerritory(new Territory(p2, t21, t31, t32));
         t31.setTerritory(new Territory(p2, t21, t31, t32));
@@ -134,15 +136,14 @@ public class LevelTests {
                 if (i == 0 || i == level.width() - 1 || j == 0 || j == level.height()-1)
                     level.set(water, new Coordinate(i, j));
             }
-
         }
-
         Soldier s0 = new Soldier(SoldierLevel.fromLevel(0), false);
         Soldier s1 = new Soldier(SoldierLevel.fromLevel(1), false);
 
         level.set(s0, c21);
         level.set(s0, c32);
         level.set(s1, c22);
+        level.set(StaticEntity.TREE, c33);
         level.set(StaticEntity.CAPITAL, c13);
         level.set(StaticEntity.CAPITAL, c31);
         level.get(c13).getTerritory().setCoins(200);
@@ -166,6 +167,28 @@ public class LevelTests {
         assertEquals("L1",level.get(c1).getEntity().getName());
     }
 
+    @Test
+    public void chopTree() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(2, 2);
+        Coordinate c1 = new Coordinate(3, 3);
+        int before = level.get(c0).getTerritory().getCoins();
+        level.move(c0, c1);
+        int after = level.get(c0).getTerritory().getCoins();
+
+        assertEquals(before,after);
+    }
+
+    @Test
+    public void cantAttack() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(2, 1);
+        Coordinate c1 = new Coordinate(2, 2);
+        assertEquals(false,level.canMove(c0, c1));
+    }
+
     /**
      *  //TODO
      */
@@ -184,16 +207,19 @@ public class LevelTests {
     public void conquerEnemyTerritory() {
         Playable level = loadLvl();
 
-        Coordinate c0 = new Coordinate(2, 2);
-        Coordinate c1 = new Coordinate(2, 1);
+        Coordinate c0 = new Coordinate(2, 1);
+        Coordinate c1 = new Coordinate(1, 1);
+
+        System.out.println(level.get(c1).getEntity());
+        System.out.println(level.canMove(c0, c1));
 
         level.move(c0, c1);
         //TODO Comportement bizarre après le split dans move
-        assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
+        assertEquals("P2",level.get(c1).getTerritory().getOwner().getName());
     }
 
     @Test
-    public void cantConquerEnemyTerritory() {
+    public void cantConquerEnemyTerritoryProtected() {
         Playable level = loadLvl();
 
         Coordinate c0 = new Coordinate(3, 2);
@@ -201,8 +227,6 @@ public class LevelTests {
 
         assertEquals(false, level.canMove(c0, c1));
     }
-
-
 
     @Test
     public void conquerNeutralTerritory() {
@@ -214,14 +238,7 @@ public class LevelTests {
         assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
     }
 
-    @Test
-    public void cantAttack() {
-        Playable level = loadLvl();
 
-        Coordinate c0 = new Coordinate(2, 1);
-        Coordinate c1 = new Coordinate(2, 2);
-        assertEquals(false,level.canMove(c0, c1));
-    }
 
 
 

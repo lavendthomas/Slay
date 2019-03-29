@@ -209,7 +209,7 @@ public class Level implements Playable {
 
                     if (terr != null && !processed.contains(terr)) {
                         // Adds funds and kills soldier for all territories
-                        t.getTerritory().nextTurn();
+                        t.getTerritory().nextTurn(currentPlayer);
 
                         // Updates currentLands for stats - at each turn (currentLands += number of cells)
                         if (prefs != null && (prefs.getBoolean("isPlayer1Logged")&&( getPlayers()[0].getName().equals(player1.getName())||
