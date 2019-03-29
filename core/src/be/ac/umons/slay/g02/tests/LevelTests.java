@@ -10,6 +10,7 @@ import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
+import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Coordinate;
 import be.ac.umons.slay.g02.level.Level;
 import be.ac.umons.slay.g02.level.Playable;
@@ -20,6 +21,7 @@ import be.ac.umons.slay.g02.players.Colors;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 import be.ac.umons.slay.g02.players.Statistics;
+import be.ac.umons.slay.g02.players.StatsLoader;
 
 import static org.junit.Assert.assertEquals;
 
