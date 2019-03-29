@@ -1724,8 +1724,11 @@ public class Menu implements Screen {
             buttonTabLogin.setTouchable(Touchable.disabled);
             buttonTabSignUp.setTouchable(Touchable.disabled);
         }
+
+        int SCREEN_SIZE = Math.min(SCREEN_HEIGHT, SCREEN_WIDTH);
+
         windowAvatarSelection.clear();
-        windowAvatarSelection.setSize(SCREEN_HEIGHT * 70 / 100, SCREEN_HEIGHT * 77 / 100);
+        windowAvatarSelection.setSize(SCREEN_SIZE * 70 / 100, SCREEN_SIZE * 77 / 100);
         windowAvatarSelection.setPosition(SCREEN_WIDTH / 2 - windowAvatarSelection.getWidth() / 2, SCREEN_HEIGHT / 2 - windowAvatarSelection.getHeight() / 2);
         windowAvatarSelection.setMovable(false);
         windowAvatarSelection.getTitleTable().padLeft(windowAvatarSelection.getWidth() / 2 - windowAvatarSelection.getTitleLabel().getWidth() / 2);
@@ -1756,6 +1759,28 @@ public class Menu implements Screen {
         tableSelection.add(girlButton).width(widthImageSelect).height(heightImageSelect).padRight(heightImageSelect / 5);
         tableSelection.add(mustacheButton).width(widthImageSelect).height(heightImageSelect);
         tableSelection.row().padTop(windowAvatarSelection.getHeight() * 7 / 100);
+
+        TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
+        buttonCancel.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                soundButton2.play(prefs.getFloat("volume", 0.2f));
+                tableSelection.remove();
+                windowAvatarSelection.remove();
+                imageTmp = imageProfile;
+                hasImportedAvatar = false;
+
+                if (isInEdit) {
+                    enableButton(buttonEditAvatar, buttonEditSave, buttonEditCancel);
+                    isInEdit = false;
+                    hasChangedAvatar = false;
+                } else if (isInSignUp) {
+                    enableButton(buttonSignUpCancel, buttonSignUp, buttonLoginAvatar);
+                    buttonTabLogin.setTouchable(Touchable.enabled);
+                    buttonTabSignUp.setTouchable(Touchable.enabled);
+                }
+            }
+        });
 
         TextButton buttonImport = new TextButton(lang.get("button_import"), skinSgx, "big");
         buttonImport.addListener(new ClickListener() {
@@ -1796,13 +1821,17 @@ public class Menu implements Screen {
             }
         });
         buttonImport.setWidth(windowAvatarSelection.getWidth() * 23 / 100);
+        TextButton buttonSave = new TextButton(lang.get("button_save"), skinSgx, "big");
 
-        tableSelection.add(buttonImport).colspan(2).width(Value.percentWidth(1f)).left();
+        if (Gdx.app.getType() != Application.ApplicationType.Android) {
+            tableSelection.add(buttonImport).colspan(2).width(Value.percentWidth(1f)).left();
+        } else {
+            tableSelection.add(buttonCancel).colspan(2).width(Value.percentWidth(1f)).left();
+        }
         tableSelection.add(buttonSelectionAvatar).width(heightImageSelect).height(heightImageSelect);
 
         cellAvatarSelect = tableSelection.getCell(buttonSelectionAvatar);
 
-        TextButton buttonSave = new TextButton(lang.get("button_save"), skinSgx, "big");
         buttonSave.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -1848,27 +1877,6 @@ public class Menu implements Screen {
                     cellSignUp.setActor(buttonLoginAvatar);
                     cellErrorAvatarSignUp.clearActor();
                     cellErrorAvatarSignUp.setActor(noMessageError1);
-                }
-            }
-        });
-        TextButton buttonCancel = new TextButton(lang.get("button_cancel"), skinSgx, "big");
-        buttonCancel.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                soundButton2.play(prefs.getFloat("volume", 0.2f));
-                tableSelection.remove();
-                windowAvatarSelection.remove();
-                imageTmp = imageProfile;
-                hasImportedAvatar = false;
-
-                if (isInEdit) {
-                    enableButton(buttonEditAvatar, buttonEditSave, buttonEditCancel);
-                    isInEdit = false;
-                    hasChangedAvatar = false;
-                } else if (isInSignUp) {
-                    enableButton(buttonSignUpCancel, buttonSignUp, buttonLoginAvatar);
-                    buttonTabLogin.setTouchable(Touchable.enabled);
-                    buttonTabSignUp.setTouchable(Touchable.enabled);
                 }
             }
         });
@@ -1992,11 +2000,13 @@ public class Menu implements Screen {
                 hasChangedAvatar = true;
             }
         });
+
         tableSelection.add(buttonSave).colspan(2).width(buttonImport.getWidth()).right();
         tableSelection.row().padTop(windowAvatarSelection.getHeight() * 8 / 100);
         buttonCancel.setWidth(buttonImport.getWidth());
-        tableSelection.add(buttonCancel).colspan(5).width(Value.percentWidth(1f));
-
+        if (Gdx.app.getType() != Application.ApplicationType.Android) {
+            tableSelection.add(buttonCancel).colspan(5).width(Value.percentWidth(1f));
+        }
         stage.addActor(windowAvatarSelection);
     }
 
