@@ -1,6 +1,6 @@
 package be.ac.umons.slay.g02.tests;
 
-
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -21,10 +21,10 @@ import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 import be.ac.umons.slay.g02.players.Statistics;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
- *  Class testing
+ * Class testing Level
  */
 public class LevelTests {
     static ArrayList tabPlayers;
@@ -37,10 +37,9 @@ public class LevelTests {
     static HumanPlayer player;
 
     /**
-     *  Creates a player, a level and a soldier, then merges two units of player
+     * Creates a player, a level and a soldier, then merges two units of player
      */
-
-   /* @BeforeClass
+    @BeforeClass
     public static void setUp() {
         Main.isInTest = true;
 
@@ -66,12 +65,7 @@ public class LevelTests {
         // Simulates the merge of two L0 belonging to player, it creates one L1
         level.updatePlayerStatsMerge(player, 0, 0, 1);
     }
-*/
-    /**
-     * Load a level for tests
-     *
-     * @return Level
-     */
+
     private static Playable loadLvl() {
         Playable level = new Level(5, 5);
         Player p1 = new HumanPlayer("P1", Colors.C1);
@@ -122,9 +116,9 @@ public class LevelTests {
         level.set(t33, c33);
 
         Tile water = new Tile(TileType.WATER);
-        for(int i = 0; i < level.width(); i++) {
-            for(int j = 0; j < level.height(); j++) {
-                if (i == 0 || i == level.width() - 1 || j == 0 || j == level.height()-1)
+        for (int i = 0; i < level.width(); i++) {
+            for (int j = 0; j < level.height(); j++) {
+                if (i == 0 || i == level.width() - 1 || j == 0 || j == level.height() - 1)
                     level.set(water, new Coordinate(i, j));
             }
         }
@@ -156,7 +150,7 @@ public class LevelTests {
         Playable level = loadLvl();
         level.nextTurn();
         level.move(c0, c1);
-        assertEquals("L1",level.get(c1).getEntity().getName());
+        assertEquals("L1", level.get(c1).getEntity().getName());
     }
 
     @Test
@@ -191,7 +185,7 @@ public class LevelTests {
 
         Coordinate c0 = new Coordinate(2, 1);
         Coordinate c1 = new Coordinate(2, 2);
-        assertEquals(false,level.canMove(c0, c1));
+        assertEquals(false, level.canMove(c0, c1));
     }
 
     @Test
@@ -200,7 +194,7 @@ public class LevelTests {
 
         Coordinate c0 = new Coordinate(2, 2);
         Coordinate c1 = new Coordinate(2, 1);
-        
+
         assertEquals(true,level.canMove(c0, c1));
     }
 
@@ -258,11 +252,8 @@ public class LevelTests {
     }
 
 
-
-
-
     /**
-     *  Tests if the counter currentLostL. (for global statistics) is correctly updated
+     * Tests if the counter currentLostL. (for global statistics) is correctly updated
      */
     @Test
     public void testUpdatePlayerStatsLostGlobal() {
@@ -278,7 +269,7 @@ public class LevelTests {
     }
 
     /**
-     *  Tests if the counter currentLostL. (for statistics of a specific level) is correctly updated
+     * Tests if the counter currentLostL. (for statistics of a specific level) is correctly updated
      */
     @Test
     public void testUpdatePlayerStatsLostLevel() {
@@ -294,8 +285,8 @@ public class LevelTests {
     }
 
     /**
-     *  Checks that the two L0 are removed, i.e. the counter of L0 is subtracted from two (in
-     *  global statistics)
+     * Checks that the two L0 are removed, i.e. the counter of L0 is subtracted from two (in
+     * global statistics)
      */
     @Test
     public void testUpdatePlayerStatsMergeGlobalOld() {
@@ -304,8 +295,8 @@ public class LevelTests {
     }
 
     /**
-     *  Checks that the L1 is added, i.e. the counter of L1 is increased by one (in global
-     *  statistics)
+     * Checks that the L1 is added, i.e. the counter of L1 is increased by one (in global
+     * statistics)
      */
     @Test
     public void testUpdatePlayerStatsMergeGlobalNew() {
@@ -314,8 +305,8 @@ public class LevelTests {
     }
 
     /**
-     *  Checks that the two L0 are removed, i.e. the counter of L0 is subtracted from two (in
-     *  statistics of the level)
+     * Checks that the two L0 are removed, i.e. the counter of L0 is subtracted from two (in
+     * statistics of the level)
      */
     @Test
     public void testUpdatePlayerStatsMergeLevelOld() {
@@ -324,8 +315,8 @@ public class LevelTests {
     }
 
     /**
-     *  Checks that the L1 is added, i.e. the counter of L1 is increased by one (in statistics of
-     *  the level)
+     * Checks that the L1 is added, i.e. the counter of L1 is increased by one (in statistics of
+     * the level)
      */
     @Test
     public void testUpdatePlayerStatsMergeLevelNew() {

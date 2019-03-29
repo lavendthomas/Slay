@@ -2,6 +2,7 @@ package be.ac.umons.slay.g02.players;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.gui.screens.LevelSelection;
@@ -195,7 +196,7 @@ public class Statistics {
     }
 
     /**
-     *  //TODO
+     *  Calculates the "total" statistics
      *
      * @param key
      */
@@ -240,6 +241,8 @@ public class Statistics {
      * @return
      */
     private int calculateTotalLeft(String key) {
+        // Fix the case when value is < 0 due to a bug (not linked to statistics)
+        if(stats.get(key) - stats.get(LOST_ + key)<0) return 0;
         return stats.get(key) - stats.get(LOST_ + key);
     }
 
@@ -249,9 +252,26 @@ public class Statistics {
      * @param key
      * @return
      */
-    public int calculateAvg(String key) {
-        if (stats.get(GAMES) == 0) return 0;
-        return stats.get(key) / stats.get(GAMES);
+    public int calculateAvg(String key, LinkedHashMap<String, Integer> hashMap) {
+        if (hashMap.get(GAMES) == 0) return 0;
+        return hashMap.get(key) / hashMap.get(GAMES);
+    }
+
+    /**
+     *  on va dans chaque niveau , on récupère l'average, on les cumule puis on divise par
+     *  le nombre total de niveaux
+     *
+     * @param key
+     * @return
+     */
+    public int calculateAvgGlobal(String key, HumanPlayer player) {
+        int sum = 0;
+
+            for (int i = 1; i <= LevelSelection.TOTAL_NUMBER_ISLANDS; i++) {
+                int levelValue = player.getListLevelStats(i).getStats().get(key);
+                sum += calculateAvg(key, player.getListLevelStats(i).getStats());
+            }
+        return ((sum /player.getGlobalStats().getStats().get(GAMES)) / LevelSelection.TOTAL_NUMBER_ISLANDS);
     }
 
     /**

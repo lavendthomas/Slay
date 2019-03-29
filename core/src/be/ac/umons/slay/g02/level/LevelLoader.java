@@ -37,11 +37,14 @@ import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.prefs;
+import static be.ac.umons.slay.g02.gui.screens.LevelSelection.humanPlayer;  
 import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- * TODO juste ça, le reste est fait
+ * Utility that is used to load a level from disk.
+ * The level is a combination of a TMX file and an XLM file having the same base name
+ * (without extension)
  */
 public class LevelLoader {
     private static final String LEVELS_PATH = "worlds";
@@ -211,23 +214,44 @@ public class LevelLoader {
      */
     private static Player loadHumanPlayer(int countHuman, Colors color) {
         Player player;
-        if (countHuman == 0) {
-            if (prefs.getBoolean("isPlayer1Logged")) {
-                player = Menu.player1;
-                player.setColor(color);
-                player.setAvatar(Menu.player1.getAvatar());
-            } else {
-                player = new HumanPlayer("P1", color);
-                player.setAvatar("profile" + File.separator + "anonymous.png");
+        if (countHuman == 0)
+        {
+             if(numberHumans==1 &&(prefs.getBoolean("isPlayer1Logged"))&&(prefs.getBoolean("isPlayer2Logged")))
+            {
+               if(player1.getName().equals(humanPlayer)){
+
+                   player = Menu.player1;
+                   player.setColor(color);
+                   player.setAvatar(Menu.player1.getAvatar());
+               } else {
+                   player = Menu.player2;
+                   player.setColor(color);
+                   player.setAvatar(Menu.player2.getAvatar());
+               }
+            }
+            else
+            {
+                if (prefs.getBoolean("isPlayer1Logged"))
+                {
+                    player = Menu.player1;
+                    player.setColor(color);
+                    player.setAvatar(Menu.player1.getAvatar());
+                } else {
+                    player = Menu.player2;
+                    player.setColor(color);
+                    player.setAvatar(Menu.player2.getAvatar());
+                }
             }
         } else {
-            if (prefs.getBoolean("isPlayer2Logged")) {
-                player = Menu.player2;
-                player.setColor(color);
-                player.setAvatar(Menu.player2.getAvatar());
-            } else {
+            if(numberHumans==1 )
+            {
                 player = new HumanPlayer("P2", color);
                 player.setAvatar("profile" + File.separator + "anonymous.png");
+            } else {
+
+                    player = Menu.player2;
+                    player.setColor(color);
+                    player.setAvatar(Menu.player2.getAvatar());
             }
         }
         return player;

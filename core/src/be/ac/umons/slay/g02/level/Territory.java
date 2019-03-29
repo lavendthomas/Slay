@@ -6,7 +6,6 @@ import java.util.Random;
 
 import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.StaticEntity;
-import be.ac.umons.slay.g02.gui.screens.LevelSelection;
 import be.ac.umons.slay.g02.players.Player;
 
 import static be.ac.umons.slay.g02.gui.Main.prefs;
@@ -14,7 +13,7 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- *  TODO
+ *  Represents a Territory, a group of linked tiles that share resources
  */
 public class Territory {
 
@@ -93,7 +92,6 @@ public class Territory {
             wages += cell.getEntity().getCost();
         }
         cells.add(cell);
-        // newCapital(); //TODO useful ?
     }
 
     /**
@@ -152,14 +150,13 @@ public class Territory {
      * @return Tiles list
      */
     List<Tile> getCells() {
-        // TODO should return a copy for encapsulation
         return cells;
     }
 
     /**
-     * //TODO
+     * Returns the owner of this territory, who can make change to it
      *
-     * @return
+     * @return the owner
      */
     public Player getOwner() {
         return owner;
@@ -347,11 +344,6 @@ public class Territory {
         return capitals;
     }
 
-    /**
-     * //TODO
-     *
-     * @return
-     */
     @Override
     public String toString() {
         return "{" + owner + ":" + hashCode() + " $: " + coins + " +:" + income + " -: " + wages + "}";

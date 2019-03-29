@@ -19,12 +19,14 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- *  TODO
+ *  Modelises a Level of Slay
  */
 public class Level implements Playable {
     private Tile[][] tileMap;
 
-    // Number of the currently played level
+    /**
+     * Number of the currently played level
+     */
     private static int islandNumber = LevelSelection.getCurrentIslandNumber();
 
     /**
@@ -87,7 +89,7 @@ public class Level implements Playable {
     /**
      *  Get the player whose turn it is
      *
-     * @return
+     * @return the current player
      */
     @Override
     public Player getCurrentPlayer() {
@@ -137,9 +139,9 @@ public class Level implements Playable {
     /**
      * Returns the tile at the mentioned coordinates
      *
-     * @param x
-     * @param y
-     * @return
+     * @param x the x coordinate (width)
+     * @param y the y coordinate (height)
+     * @return the tile at that position
      */
     @Override
     public Tile get(int x, int y) {
@@ -150,7 +152,7 @@ public class Level implements Playable {
      * Returns the tile at the mentioned coordinates
      *
      * @param coords the coordinates for which we want the tile
-     * @return a Tile
+     * @return the tile at that position
      */
     @Override
     public Tile get(Coordinate coords) {
@@ -163,7 +165,7 @@ public class Level implements Playable {
      * @param entity the new entity to place
      * @param start  the origin Tile
      * @param to     the tile in which to place the entity
-     * @return   TODO
+     * @return true is an entity has successfully been bought
      */
     @Override
     public boolean buy(Entity entity, Coordinate start, Coordinate to) {
@@ -213,8 +215,8 @@ public class Level implements Playable {
                                 getPlayers()[1].getName().equals(player1.getName()))) && previousPlayer == player1
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player1, t.getTerritory().getCells().size());
-                        } else if (prefs != null && (prefs.getBoolean("isPlayer2Logged") && (getPlayers()[0].getName().equals(player1.getName())||
-                                getPlayers()[1].getName().equals(player1.getName())))&& previousPlayer == player2
+                        } else if (prefs != null && (prefs.getBoolean("isPlayer2Logged") && (getPlayers()[0].getName().equals(player2.getName())||
+                                getPlayers()[1].getName().equals(player2.getName())))&& previousPlayer == player2
                                 && t.getTerritory().getOwner() == previousPlayer) {
                             updatePlayerStatsLands(player2, t.getTerritory().getCells().size());
                         }
@@ -626,7 +628,7 @@ public class Level implements Playable {
                 if (!cell.hasTerritory())
                     continue;
 
-                if (!processedTerritories.contains(cell.getTerritory())) { // TODO check that this works
+                if (!processedTerritories.contains(cell.getTerritory())) {
                     List<Coordinate> neighbours = neighbourTilesInSameTerritory(pos);
                     List<Tile> tiles = new LinkedList<Tile>();  // List of all tiles in neighbourhood
                     for (Coordinate p : neighbours) {         // in the same territory
@@ -636,7 +638,6 @@ public class Level implements Playable {
                     if (tiles.containsAll(cell.getTerritory().getCells())) {
                         // If all the cells in the territory are in the neighbourhood,
                         // we don't have to split anything
-                        // TODO useless because being checked after ?
                         continue;
                     } else {
                         // Removes all the cells that are not in the neighbourhood
@@ -735,7 +736,8 @@ public class Level implements Playable {
     @Override
     public Player hasWon() {
         List<Player> inGame = new ArrayList<Player>();
-        for (Player player : players) {
+        for (int i = 0; i < players.length; i++) {
+            Player player = players[i];
             int n = countTerritories(player);
 
             if (n > 0)
@@ -759,7 +761,7 @@ public class Level implements Playable {
     public static void updatePlayerStatsTrees(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getCurrentStats(),
                 Statistics.CURRENT_TREES);
-        player.getListLevelStats(islandNumber).incrementStatInMap(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), Statistics.CURRENT_TREES);
     }
 
@@ -772,7 +774,7 @@ public class Level implements Playable {
     private void updatePlayerStatsTurns(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getCurrentStats(),
                 Statistics.CURRENT_TURNS);
-        player.getListLevelStats(islandNumber).incrementStatInMap(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), Statistics.CURRENT_TURNS);
     }
 
@@ -786,7 +788,7 @@ public class Level implements Playable {
     private void updatePlayerStatsLands(HumanPlayer player, int cellNumber) {
         player.getGlobalStats().addToStat(player.getGlobalStats().getCurrentStats(),
                 Statistics.CURRENT_LANDS, cellNumber);
-        player.getListLevelStats(islandNumber).addToStat(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).addToStat(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), Statistics.CURRENT_LANDS, cellNumber);
     }
 
@@ -800,7 +802,7 @@ public class Level implements Playable {
     public static void updatePlayerStatsLost(HumanPlayer player, Entity entity) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getCurrentStats(),
                 "currentLost_" + entity.getName());
-        player.getListLevelStats(islandNumber).incrementStatInMap(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), "currentLost_" + entity.getName());
     }
 
@@ -814,7 +816,7 @@ public class Level implements Playable {
     private void updatePlayerStatsBuy(HumanPlayer player, Entity entity) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getCurrentStats(),
                 "current" + entity.getName());
-        player.getListLevelStats(islandNumber).incrementStatInMap(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), "current" + entity.getName());
     }
 
@@ -832,19 +834,19 @@ public class Level implements Playable {
         // Current old unit -= 1 (for the first one)
         player.getGlobalStats().addToStat(player.getGlobalStats().getCurrentStats(),
                 "current" + SoldierLevel.fromLevel(fromLvl).getName(), -1);
-        player.getListLevelStats(islandNumber).addToStat(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).addToStat(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), "current" + SoldierLevel.fromLevel(fromLvl).getName(), -1);
 
         // Current old unit -= 1 (for the second one)
         player.getGlobalStats().addToStat(player.getGlobalStats().getCurrentStats(),
                 "current" + SoldierLevel.fromLevel(toLvl).getName(), -1);
-        player.getListLevelStats(islandNumber).addToStat(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).addToStat(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), "current" + SoldierLevel.fromLevel(toLvl).getName(), -1);
 
         // Current new unit += 1
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getCurrentStats(),
                 "current" + SoldierLevel.fromLevel(newLvl).getName());
-        player.getListLevelStats(islandNumber).incrementStatInMap(player.getListLevelStats(islandNumber)
+        player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).incrementStatInMap(player.getListLevelStats(LevelSelection.getCurrentIslandNumber())
                 .getCurrentStats(), "current" + SoldierLevel.fromLevel(newLvl).getName());
     }
 

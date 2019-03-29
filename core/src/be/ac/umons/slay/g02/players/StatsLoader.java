@@ -20,13 +20,15 @@ import static be.ac.umons.slay.g02.gui.Main.isInTest;
 import static be.ac.umons.slay.g02.gui.Main.prefs;
 
 /**
- *  //TODO
+ *  Class that retrieves all data from the xml file containing players data, by creating instances
+ *  of Account, HumanPlayer, GlobalStats and LevelStats and then putting the values in them
  */
 public class StatsLoader {
     /**
-     *  //TODO
+     * Creates an instance of HumanPlayer for each player in the file and creates instances of
+     * Account, HumanPlayer, GlobalStats and LevelStats for each one of them to store their data
      *
-     * @return
+     * @return an instance of ArrayList containing all the instances of HumanPlayer created
      */
     public ArrayList createTab() {
         ArrayList tabScore = new ArrayList();
@@ -126,10 +128,11 @@ public class StatsLoader {
     }
 
     /**
-     * //TODO
+     * Retrieves the value read by deleting the numbers before the statistic name (to get the
+     * good key) then put it in the corresponding hashmap of statistics
      *
-     * @param elementStat
-     * @param hashmapStats
+     * @param elementStat the balise's name
+     * @param hashmapStats the hashmap of statistics
      */
     private void putInHashmapStats(Element elementStat, HashMap<String, Integer> hashmapStats) {
         // Deletes the numbers (used for easier reading) before the statistics
@@ -137,13 +140,12 @@ public class StatsLoader {
         for (int i = 0; i < stat.length(); i++) {
             String a = "" + stat.charAt(0);
             if (!a.equals("_"))
-                stat = stat.substring(1, stat.length());
+                stat = stat.substring(1);
             else
                 i = stat.length();
         }
-        stat = stat.substring(2, stat.length());
-        if (hashmapStats.containsKey(stat)) {
+        stat = stat.substring(2);
+        if (hashmapStats.containsKey(stat))
             hashmapStats.put(stat, Integer.parseInt(elementStat.getFirstChild().getNodeValue()));
-        }
     }
 }

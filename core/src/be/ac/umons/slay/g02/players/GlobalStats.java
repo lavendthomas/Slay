@@ -60,6 +60,7 @@ public class GlobalStats extends Statistics {
         for (Map.Entry<String, Integer> key : getStats().entrySet()) {
             String stat = key.getKey();
             int globalValue = key.getValue();
+            int sum=0;
 
             // If the global statistic to update is a minimum
             if (stat.startsWith(MIN_)) {
@@ -90,11 +91,6 @@ public class GlobalStats extends Statistics {
                 }
             }
 
-            /*
-                All other global statistics are total ones (Games, Wins and Defeats are excluded
-                because they are not used to calculate average statistics, which is why they have
-                been updated elsewhere)
-            */
             else if (stat == GAMES)
                 updateTotal();
         }

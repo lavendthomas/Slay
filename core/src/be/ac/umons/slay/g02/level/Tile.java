@@ -10,9 +10,8 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- * Class representing a tile of the game with a type and maybe a territory or a entity
+ * Class representing a tile of the game with a type and maybe a territory or an entity
  */
-
 public class Tile {
     private TileType type;
     private Entity entity;
@@ -131,7 +130,7 @@ public class Tile {
     }
 
     /**
-     *  Place an entity in the tile and updates the territory data if necessary
+     * Places an entity in the tile and updates the territory data if necessary
      *
      * @param entity The entity to place
      * @param rec    If you should check for changes in income/wages and capitals or not.
@@ -145,9 +144,9 @@ public class Tile {
     }
 
     /**
-     *  TODO
+     * Sets an entity and checks for changes in income/wages and capitals
      *
-     * @param entity
+     * @param entity the entity
      */
     void setEntity(Entity entity) {
         setEntity(entity, true);
@@ -164,7 +163,7 @@ public class Tile {
     }
 
     /**
-     *  Test if the owners of the tile to test is the same as the current one
+     * Checks if the owner of the tile to test is the same as the current one
      *
      * @param other The other tile to test
      * @return True if same owner, false otherwise
@@ -176,10 +175,11 @@ public class Tile {
     }
 
     /**
-     *  TODO
+     * Checks if two territories can merge by checking if they have the same owner, it that is
+     * the case, they do merge
      *
-     * @param other
-     * @return
+     * @param other a tile belonging to another territory
+     * @return true if the territories have merged
      */
     boolean mergeTerritories(Tile other) {
         if (hasSameOwner(other)) {
@@ -192,7 +192,7 @@ public class Tile {
     }
 
     /**
-     * Get the territory of the tile
+     * Gets the territory of the tile
      *
      * @return Tile territory
      */
@@ -224,7 +224,7 @@ public class Tile {
     }
 
     /**
-     * Test if there is a territory
+     * Tests if there is a territory
      *
      * @return True if there is a territory, false otherwise
      */
@@ -232,11 +232,6 @@ public class Tile {
         return !(territory == null);
     }
 
-    /**
-     *  TODO
-     *
-     * @return
-     */
     @Override
     public String toString() {
         return "[" + type.toString() + ":" + entity + ":" + territory + "]";

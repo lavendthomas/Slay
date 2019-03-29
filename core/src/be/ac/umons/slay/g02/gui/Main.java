@@ -21,7 +21,7 @@ import be.ac.umons.slay.g02.gui.screens.Menu;
 import be.ac.umons.slay.g02.players.StatsLoader;
 
 /**
- * gere les changements d'ecran	 TODO
+ * Class initializing some values and managing screen changes
  */
 public class Main extends Game {
     public static Skin skinSgx;
@@ -50,31 +50,31 @@ public class Main extends Game {
     private static boolean isStatsLoad = false;
     public static ArrayList tabPlayers;
 
-   // Used for unit testing
+    // Used for unit testing
     private static final String DATA = "data/";
     private static String nameFile = "PlayerData3.xml";
     public static boolean isInTest = false;
 
     /**
-     *   TODO
+     * Sets the name of the xml file used to store the data of players with an account
      *
-     * @param nameFile
+     * @param nameFile the file name
      */
     public static void setNameFile(String nameFile) {
         Main.nameFile = nameFile;
     }
 
     /**
-     *   TODO
+     * Gets the name of the xml file used to store the data of players with an account
      *
-     * @return
+     * @return the path to the file
      */
     public static String getNameFile() {
         return DATA + nameFile;
     }
 
     /**
-     *	TODO
+     * Initializes some values then brings the user to the menu
      */
     @Override
     public void create() {
@@ -144,6 +144,8 @@ public class Main extends Game {
             tabPlayers = statsLoader.createTab();
             isStatsLoad = true;
         }
+
+        // Creates the menu
         this.setScreen(new Menu(this));
 
         if (Gdx.app.getType() != Application.ApplicationType.Android) {
@@ -166,12 +168,6 @@ public class Main extends Game {
     public void resize(int width, int height) {
         SCREEN_WIDTH = width;
         SCREEN_HEIGHT = height;
-        if (SCREEN_WIDTH > SCREEN_HEIGHT) {
-            //skinSgx.getFont("title").getData().setScale(SCREEN_WIDTH * 0.8f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.8f / VIRTUAL_HEIGHT);
-            //skinSgxTable.getFont("font").getData().setScale(SCREEN_WIDTH * 1f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 1f / VIRTUAL_HEIGHT);
-            //skinSgxTable.getFont("title").getData().setScale(SCREEN_WIDTH * 0.9f / VIRTUAL_WIDTH, SCREEN_HEIGHT * 0.9f / VIRTUAL_HEIGHT);
-        }
-        //stage.getViewport().setScreenBounds(0, 0, width, height);
         this.getScreen().resize(width, height);
     }
 

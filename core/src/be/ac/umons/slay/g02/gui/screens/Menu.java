@@ -69,7 +69,7 @@ import static be.ac.umons.slay.g02.gui.Main.stage;
 import static be.ac.umons.slay.g02.gui.Main.tabPlayers;
 
 /**
- * classe qui affiche le menu principal   TODO
+ * Class displaying the menu
  */
 public class Menu implements Screen {
     public static Drawable imageRobot = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal(prefs.getString("pathImageRobot")))));
@@ -198,7 +198,6 @@ public class Menu implements Screen {
     private String playerName;
     private FileHandle sourceImage;
     private File selectedFile;
-
     private int buttonCenterHeight;
     private int buttonCenterGap;
     private int labelProfileWidth;
@@ -206,9 +205,9 @@ public class Menu implements Screen {
     private int tableCenterPositionY;
 
     /**
-     *   TODO
+     * Initializes the menu
      *
-     * @param aGame
+     * @param aGame the instance of Game created in class Main
      */
     public Menu(Game aGame) {
         game = aGame;
@@ -649,7 +648,11 @@ public class Menu implements Screen {
             table.add(labelProfile);
             table.add(labelProfile);
         }
-        buttonSettingsBack = new TextButton(lang.get("button_back"), skinSgx, "big");
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            buttonSettingsBack = new TextButton("Save", skinSgx, "big");
+        } else {
+            buttonSettingsBack =  new TextButton(lang.get("button_back"), skinSgx, "big");
+        }
         buttonSettingsBack.setWidth(buttonCenterWidth / 2);
         buttonSettingsBack.addListener(new ClickListener() {
             @Override
