@@ -48,16 +48,15 @@ public class AIRandom extends Player implements AI {
             // Buy a unit ?
             Coordinate cFrom = territory.get(0);
             Territory terr = level.get(cFrom).getTerritory();
-            for (int i = 1; i <= 4; i++) {
-                Soldier entity = new Soldier(SoldierLevel.fromLevel(i));
-                // Try adding each possible soldier by starting with the weakest
-                if (terr.canBuy(entity)) {
-                    // Can buy soldier => choice random tile
-                    List<Coordinate> moves = level.getMoves(entity, cFrom);
-                    int rand = new Random().nextInt(moves.size());
-                    level.buy(entity, cFrom, moves.get(rand));
-                }
+
+            Soldier entity = new Soldier(SoldierLevel.fromLevel(new Random().nextInt(5)));
+            if (terr.canBuy(entity)) {
+                // Can buy soldier => choice random tile
+                List<Coordinate> moves = level.getMoves(entity, cFrom);
+                int rand = new Random().nextInt(moves.size());
+                level.buy(entity, cFrom, moves.get(rand));
             }
+
 
             // Move a unit ?
             for (Coordinate coordinate : territory) {

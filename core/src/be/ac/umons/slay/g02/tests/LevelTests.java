@@ -1,24 +1,17 @@
 package be.ac.umons.slay.g02.tests;
 
-import com.badlogic.gdx.Gdx;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-
-import com.badlogic.gdx.Application;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import be.ac.umons.slay.g02.entities.Entity;
 import be.ac.umons.slay.g02.entities.Soldier;
 import be.ac.umons.slay.g02.entities.SoldierLevel;
 import be.ac.umons.slay.g02.entities.StaticEntity;
-import be.ac.umons.slay.g02.gui.Main;
 import be.ac.umons.slay.g02.level.Coordinate;
-import be.ac.umons.slay.g02.level.FileFormatException;
 import be.ac.umons.slay.g02.level.Level;
-import be.ac.umons.slay.g02.level.LevelLoader;
 import be.ac.umons.slay.g02.level.Playable;
 import be.ac.umons.slay.g02.level.Territory;
 import be.ac.umons.slay.g02.level.Tile;
@@ -27,12 +20,11 @@ import be.ac.umons.slay.g02.players.Colors;
 import be.ac.umons.slay.g02.players.HumanPlayer;
 import be.ac.umons.slay.g02.players.Player;
 import be.ac.umons.slay.g02.players.Statistics;
-import be.ac.umons.slay.g02.players.StatsLoader;
 
 import static org.junit.Assert.*;
 
 /**
- *  Class testing ... TODO
+ *  Class testing
  */
 public class LevelTests {
     static ArrayList tabPlayers;
@@ -47,8 +39,8 @@ public class LevelTests {
     /**
      *  Creates a player, a level and a soldier, then merges two units of player
      */
-    /*
-    @BeforeClass
+
+   /* @BeforeClass
     public static void setUp() {
         Main.isInTest = true;
 
@@ -73,12 +65,12 @@ public class LevelTests {
 
         // Simulates the merge of two L0 belonging to player, it creates one L1
         level.updatePlayerStatsMerge(player, 0, 0, 1);
-    }*/
-
+    }
+*/
     /**
-     * //TODO
+     * Load a level for tests
      *
-     * @return
+     * @return Level
      */
     private static Playable loadLvl() {
         Playable level = new Level(5, 5);
@@ -109,12 +101,11 @@ public class LevelTests {
         Tile t32 = new Tile(TileType.NEUTRAL);
         Tile t33 = new Tile(TileType.NEUTRAL);
 
-        t13.setTerritory(new Territory(p1, t13, t22, t23));
-        t22.setTerritory(new Territory(p1, t13, t22, t23));
-        t23.setTerritory(new Territory(p1, t13, t22, t23));
-        t33.setTerritory(new Territory(p1, t33));
-        t12.setTerritory(new Territory(p1, t12));
-        t11.setTerritory(new Territory(p1, t11));
+        t13.setTerritory(new Territory(p1, t13, t12, t22, t23, t33));
+        t22.setTerritory(new Territory(p1, t13, t12, t22, t23, t33));
+        t23.setTerritory(new Territory(p1, t13, t12, t22, t23, t33));
+        t33.setTerritory(new Territory(p1, t13, t12, t22, t23, t33));
+        t12.setTerritory(new Territory(p1, t13, t12, t22, t23, t33));
 
         t21.setTerritory(new Territory(p2, t21, t31, t32));
         t31.setTerritory(new Territory(p2, t21, t31, t32));
@@ -144,19 +135,20 @@ public class LevelTests {
         level.set(s0, c32);
         level.set(s1, c22);
         level.set(StaticEntity.TREE, c33);
-        level.set(StaticEntity.CAPITAL, c13);
-        level.set(StaticEntity.CAPITAL, c31);
-        level.get(c13).getTerritory().setCoins(200);
-        level.get(c31).getTerritory().setCoins(200);
 
         level.mergeTerritories();
+
+        Territory terr1 = level.get(c13).getTerritory();
+        terr1.setCapital(level.get(c13));
+        terr1.setCoins(200);
+
+        Territory terr2 = level.get(c31).getTerritory();
+        terr2.setCapital(level.get(c31));
+        terr2.setCoins(200);
 
         return level;
     }
 
-    /**
-     *  //TODO
-     */
     @Test
     public void mergeSoldier() {
         Coordinate c0 = new Coordinate(2, 1);
@@ -168,11 +160,24 @@ public class LevelTests {
     }
 
     @Test
-    public void chopTree() {
+    public void chopTreeInTerritory() {
         Playable level = loadLvl();
 
         Coordinate c0 = new Coordinate(2, 2);
         Coordinate c1 = new Coordinate(3, 3);
+        int before = level.get(c0).getTerritory().getCoins();
+        level.move(c0, c1);
+        int after = level.get(c0).getTerritory().getCoins();
+
+        assertEquals(before+3,after);
+    }
+
+    @Test
+    public void chopTreeOnNeutral() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(2, 2);
+        Coordinate c1 = new Coordinate(1, 1);
         int before = level.get(c0).getTerritory().getCoins();
         level.move(c0, c1);
         int after = level.get(c0).getTerritory().getCoins();
@@ -189,33 +194,46 @@ public class LevelTests {
         assertEquals(false,level.canMove(c0, c1));
     }
 
-    /**
-     *  //TODO
-     */
+    @Test
+    public void canAttack() {
+        Playable level = loadLvl();
+
+        Coordinate c0 = new Coordinate(2, 2);
+        Coordinate c1 = new Coordinate(2, 1);
+        
+        assertEquals(true,level.canMove(c0, c1));
+    }
+
     @Test
     public void attackSoldier() {
         Playable level = loadLvl();
 
         Coordinate c0 = new Coordinate(2, 2);
         Coordinate c1 = new Coordinate(2, 1);
+        Entity entity = level.get(c0).getEntity();
 
         level.move(c0, c1);
-        assertEquals("L1",level.get(c1).getEntity().getName());
+        assertEquals(entity,level.get(c1).getEntity());
     }
 
     @Test
-    public void conquerEnemyTerritory() {
+    public void canMoveInTerritory() {
         Playable level = loadLvl();
 
-        Coordinate c0 = new Coordinate(2, 1);
-        Coordinate c1 = new Coordinate(1, 1);
+        Coordinate c0 = new Coordinate(2, 2);
+        Coordinate c1 = new Coordinate(2, 1);
+        assertEquals(true, level.canMove(c0, c1));
+    }
 
-        System.out.println(level.get(c1).getEntity());
-        System.out.println(level.canMove(c0, c1));
+    @Test
+    public void moveInTerritory() {
+        Playable level = loadLvl();
 
+        Coordinate c0 = new Coordinate(2, 2);
+        Coordinate c1 = new Coordinate(2, 1);
+        Entity entity = level.get(c0).getEntity();
         level.move(c0, c1);
-        //TODO Comportement bizarre après le split dans move
-        assertEquals("P2",level.get(c1).getTerritory().getOwner().getName());
+        assertEquals(entity, level.get(c1).getEntity());
     }
 
     @Test
@@ -233,9 +251,10 @@ public class LevelTests {
         Playable level = loadLvl();
 
         Coordinate c0 = new Coordinate(2, 2);
-        Coordinate c1 = new Coordinate(1, 2);
+        Coordinate c1 = new Coordinate(1, 1);
+        Player player = level.get(c0).getTerritory().getOwner();
         level.move(c0, c1);
-        assertEquals("P1",level.get(c1).getTerritory().getOwner().getName());
+        assertEquals(player, level.get(c1).getTerritory().getOwner());
     }
 
 
