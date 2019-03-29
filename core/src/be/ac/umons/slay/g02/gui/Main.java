@@ -52,7 +52,7 @@ public class Main extends Game {
 
     // Used for unit testing
     private static final String DATA = "data/";
-    private static String nameFile = "PlayerData3.xml";
+    private static String nameFile = "PlayerData.xml";
     public static boolean isInTest = false;
 
     /**
