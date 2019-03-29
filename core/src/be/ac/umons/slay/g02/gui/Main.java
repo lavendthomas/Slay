@@ -119,7 +119,9 @@ public class Main extends Game {
         prefs.putString("pathImageTmp", "profile/anonymous.png");
         prefs.putBoolean("isPlayer1Logged", false);
         prefs.putBoolean("isPlayer2Logged", false);
-        prefs.putBoolean("isAccountEnabled", true);
+        if (!prefs.contains("isAccountEnabled")) {
+            prefs.putBoolean("isAccountEnabled", true);
+        }
         prefs.putInteger("playerRank", 0);
         prefs.putInteger("totalNumberPlayers", 0);
         prefs.putInteger("numPlayer", 0);

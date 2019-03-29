@@ -54,9 +54,9 @@ public class EndGame implements Screen {
         int buttonCenterWidth;
 
         if (SCREEN_WIDTH > SCREEN_HEIGHT)
-            buttonCenterWidth = VIRTUAL_WIDTH * 20 / 100;
+            buttonCenterWidth = VIRTUAL_WIDTH * 30 / 100;
         else
-            buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 28 / 100, (int) (SCREEN_WIDTH * 0.9));
+            buttonCenterWidth = Math.min(VIRTUAL_WIDTH * 40 / 100, (int) (SCREEN_WIDTH * 0.9));
 
         int buttonCenterHeight = VIRTUAL_HEIGHT * 5 / 100;
         int buttonCenterGap = SCREEN_HEIGHT * 7 / 100;
@@ -98,7 +98,7 @@ public class EndGame implements Screen {
         sprite.setOrigin(0, 0);
         sprite.setPosition(-sprite.getWidth() / 2, -sprite.getHeight() / 2);
 
-        TextButton buttonSelection = new TextButton("SELECTION SCREEN", skinSgx, "big");
+        TextButton buttonSelection = new TextButton("BACK TO LEVEL SELECTION", skinSgx, "big");
         buttonSelection.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
