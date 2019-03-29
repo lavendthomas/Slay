@@ -10,35 +10,37 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- * TODO
+ * Class representing a tile of the game with a type and maybe a territory or an entity
  */
+
 public class Tile {
     private TileType type;
     private Entity entity;
     private Territory territory;
 
     /**
-     * TODO
+     * Constructor with tile type
      *
-     * @param type
+     * @param type The tile type
      */
+
     public Tile(TileType type) {
         this.type = type;
     }
 
     /**
-     * TODO
+     * Get the entity contained in the tile
      *
-     * @return
+     * @return Entity contained in the tile
      */
     public Entity getEntity() {
         return entity;
     }
 
     /**
-     * TODO
+     * Get the type of the tile
      *
-     * @return
+     * @return Type of the tile
      */
     public TileType getType() {
         return type;
@@ -129,9 +131,9 @@ public class Tile {
     }
 
     /**
-     *  TODO
+     * Places an entity in the tile and updates the territory data if necessary
      *
-     * @param entity
+     * @param entity The entity to place
      * @param rec    If you should check for changes in income/wages and capitals or not.
      */
     void setEntity(Entity entity, boolean rec) {
@@ -143,9 +145,9 @@ public class Tile {
     }
 
     /**
-     *  TODO
+     * Sets an entity and checks for changes in income/wages and capitals
      *
-     * @param entity
+     * @param entity the entity
      */
     void setEntity(Entity entity) {
         setEntity(entity, true);
@@ -154,18 +156,18 @@ public class Tile {
     /**
      * Returns true if this cell has this entity in it
      *
-     * @param entity     TODO
-     * @return
+     * @param entity The entity to test
+     * @return True if this tile has the entity, false otherwise
      */
     boolean contains(Entity entity) {
         return this.entity == entity;
     }
 
     /**
-     *  TODO
+     * Checks if the owner of the tile to test is the same as the current one
      *
-     * @param other
-     * @return
+     * @param other The other tile to test
+     * @return True if same owner, false otherwise
      */
     boolean hasSameOwner(Tile other) {
         if (territory == null)
@@ -174,10 +176,11 @@ public class Tile {
     }
 
     /**
-     *  TODO
+     * Checks if two territories can merge by checking if they have the same owner, it that is
+     * the case, they do merge
      *
-     * @param other
-     * @return
+     * @param other a tile belonging to another territory
+     * @return true if the territories have merged
      */
     boolean mergeTerritories(Tile other) {
         if (hasSameOwner(other)) {
@@ -190,9 +193,9 @@ public class Tile {
     }
 
     /**
-     *  TODO
+     * Gets the territory of the tile
      *
-     * @return
+     * @return Tile territory
      */
     public Territory getTerritory() {
         return this.territory;
@@ -222,19 +225,14 @@ public class Tile {
     }
 
     /**
-     *  TODO
+     * Tests if there is a territory
      *
-     * @return
+     * @return True if there is a territory, false otherwise
      */
     boolean hasTerritory() {
         return !(territory == null);
     }
 
-    /**
-     *  TODO
-     *
-     * @return
-     */
     @Override
     public String toString() {
         return "[" + type.toString() + ":" + entity + ":" + territory + "]";

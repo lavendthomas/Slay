@@ -85,7 +85,7 @@ public class Level implements Playable {
     }
 
     /**
-     *  TODO
+     *  Get the player whose turn it is
      *
      * @return
      */
@@ -184,10 +184,7 @@ public class Level implements Playable {
     }
 
     /**
-     *   TODO
-     *
-     * Teste s il y a un gagnant avant d'Effectuer les actions de changement de tour
-     * haswon renvoie le gagnant sil y en a un, null sinon
+     * Before perform turn change actions, verify if there is a winner using the method hasWon
      *
      * @return true if there is no winner and the game should be continued
      */
@@ -610,7 +607,7 @@ public class Level implements Playable {
     }
 
     /**
-     *   TODO
+     *   Splits the territories
      */
     private void splitTerritories() {
         /*
@@ -712,11 +709,12 @@ public class Level implements Playable {
     }
 
     /**
-     *   TODO
+     * Count the number of tiles belonging to a player
      *
-     * @param player
-     * @return
+     * @param player  The player whose territories must be searched
+     * @return Number of tiles belonging to a player
      */
+
     public int countTerritories(Player player) {
         int count = 0;
         for (int i = 0; i < width; i++) {
@@ -737,8 +735,7 @@ public class Level implements Playable {
     @Override
     public Player hasWon() {
         List<Player> inGame = new ArrayList<Player>();
-        for (int i = 0; i < players.length; i++) {
-            Player player = players[i];
+        for (Player player : players) {
             int n = countTerritories(player);
 
             if (n > 0)

@@ -195,7 +195,7 @@ public class Statistics {
     }
 
     /**
-     *  //TODO
+     *  Calculates the "total" statistics
      *
      * @param key
      */

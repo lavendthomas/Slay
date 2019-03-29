@@ -1,7 +1,7 @@
 package be.ac.umons.slay.g02.players;
 
 /**
- *  //TODO
+ * Class containing the username and the password of a logged user
  */
 public class Account {
 
@@ -9,36 +9,36 @@ public class Account {
     String password;
 
     /**
-     *  //TODO
+     * Gives the username
      *
-     * @return
+     * @return the username
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     *  //TODO
+     * Sets a username
      *
-     * @param username
+     * @param username the username
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     *  //TODO
+     * Gives the password
      *
-     * @return
+     * @return the password
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     *  //TODO
+     * Sets a password
      *
-     * @param password
+     * @param password the password
      */
     public void setPassword(String password) {
         this.password = password;

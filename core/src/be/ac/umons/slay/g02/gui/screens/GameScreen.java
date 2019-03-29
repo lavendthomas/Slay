@@ -73,7 +73,7 @@ import static java.lang.Math.round;
 import static java.lang.StrictMath.sqrt;
 
 /**
- *   TODO   classe qui affiche l'interface pendant une partie
+ * Class displaying the game
  */
 public class GameScreen implements Screen {
     private Game game;
@@ -91,6 +91,7 @@ public class GameScreen implements Screen {
     private ImageButton buttonL2;
     private ImageButton buttonL3;
     private ImageButton buttonChest;
+    private ImageButton lastButtonCLicked;
 
     private CheckBox checkboxPlayer1;
     private CheckBox checkboxPlayer2;
@@ -129,8 +130,9 @@ public class GameScreen implements Screen {
     private int translateY;
     private int nbreH;
     private boolean AIisPaused = false;
-    private boolean endPlay = false; // partie continue tant que faux
-    private ImageButton lastButtonCLicked;
+
+    // The game continues while as long as it is false
+    private boolean endPlay = false;
 
     private int worldW;
     private int worldH;
@@ -138,10 +140,10 @@ public class GameScreen implements Screen {
     private String levelName;
 
     /**
-     *   TODO
+     * Class constructor initializing some values
      *
-     * @param aGame
-     * @param levelName
+     * @param aGame     the instance of Game created in class Main
+     * @param levelName the level name
      */
     GameScreen(Game aGame, String levelName, int numberHumans) {
         game = aGame;
@@ -155,10 +157,12 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *   TODO
+     * Creates the world and the interface
      */
     private void init() {
         try {
+            // Creates the world :
+
             camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             LevelLoader.Map lvlLoader = LevelLoader.load(levelName, numberHumans);
             level = lvlLoader.getLevel();
@@ -174,7 +178,7 @@ public class GameScreen implements Screen {
             size = prop.get("hexsidelength", Integer.class);
             errorOffset = size * sqrt(3) - round(size * sqrt(3));
 
-            // Chargement des couches utiles et du tileset
+            // Loads the useful layers and the tileset
             territories = (TiledMapTileLayer) map.getLayers().get("Territories");
             entities = (TiledMapTileLayer) map.getLayers().get("Entities");
             effects = (TiledMapTileLayer) map.getLayers().get("Effects");
@@ -197,14 +201,13 @@ public class GameScreen implements Screen {
             camera.translate(-translateX, -translateY, 0);
 
         } catch (Exception e) {
-            new Exception(/*TODO*/);
+            game.setScreen(new LevelSelection(game));
         }
+
+        // Creates the interface
         loadButtons();
     }
 
-    /**
-     *  TODO
-     */
     private void handleInput() { //TODO Bloquer dépassements (trop zoom, trop à gauche ...)
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
             changeZoom(0.02f);
@@ -235,15 +238,14 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *  TODO
+     * Displays the pause window
      */
     private void showPauseWindow() {
         int CORNER_SIZE = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT);
         windowPause.clear();
-        windowPause.setSize( CORNER_SIZE / 2, CORNER_SIZE / 2);
+        windowPause.setSize(CORNER_SIZE / 2, CORNER_SIZE / 2);
         windowPause.setPosition(SCREEN_WIDTH / 2 - windowPause.getWidth() / 2, SCREEN_HEIGHT / 2 - windowPause.getHeight() / 2);
         windowPause.setMovable(false);
-        // place le titre de la fenetre au milieu
         windowPause.getTitleTable().padLeft(windowPause.getWidth() / 2 - windowPause.getTitleLabel().getWidth() / 2);
         windowPause.setVisible(true);
 
@@ -282,15 +284,15 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *  TODO
+     * Displays the quit window
      */
     private void showWindowQuit() {
         int CORNER_SIZE = Math.min(SCREEN_WIDTH, SCREEN_HEIGHT);
+
         windowQuit.clear();
         windowQuit.setSize(CORNER_SIZE / 4, CORNER_SIZE / 4);
         windowQuit.setPosition(SCREEN_WIDTH / 2 - windowQuit.getWidth() / 2, SCREEN_HEIGHT / 2 - windowQuit.getHeight() / 2);
         windowQuit.setMovable(false);
-        // place le titre de la fenetre au milieu
         windowQuit.getTitleTable().padLeft(windowQuit.getWidth() / 2 - windowQuit.getTitleLabel().getWidth() / 2);
 
         Table table = new Table();
@@ -360,14 +362,16 @@ public class GameScreen implements Screen {
 
     /**
      * Updates all stats for winner and loser (if logged)
+     * If the winner's name is equal to the player for whom the statistics are updated then we
+     * increment the number of wins, otherwise we increment the number of defeats
      *
-     * @param winner  TODO
+     * @param winner the winner of the game
      */
     private void updatePlayerStats(Player winner) {
         // Player 1
-        if ((prefs.getBoolean("isPlayer1Logged")) && (getPlayers()[0].getName().equals(player1.getName())||
+        if ((prefs.getBoolean("isPlayer1Logged")) && (getPlayers()[0].getName().equals(player1.getName()) ||
                 getPlayers()[1].getName().equals(player1.getName()))) {
-					
+
             // Number of games ++
             updatePlayerGames(player1);
 
@@ -388,9 +392,9 @@ public class GameScreen implements Screen {
             }
         }
         // Player 2
-        if ((prefs.getBoolean("isPlayer2Logged")) && (getPlayers()[1].getName().equals(player2.getName())||
-                getPlayers()[0].getName().equals(player2.getName())) ) {
-					
+        if ((prefs.getBoolean("isPlayer2Logged")) && (getPlayers()[1].getName().equals(player2.getName()) ||
+                getPlayers()[0].getName().equals(player2.getName()))) {
+
             // Number of games ++
             updatePlayerGames(player2);
 
@@ -414,7 +418,7 @@ public class GameScreen implements Screen {
     /**
      * on incrémente pour globalstats et le levelstats du niveau joué
      *
-     * @param player  TODO
+     * @param player TODO
      */
     private void updatePlayerGames(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.GAMES);
@@ -425,7 +429,7 @@ public class GameScreen implements Screen {
     /**
      * on incrémente pour globalstats et le levelstats du niveau joué
      *
-     * @param player  TODO
+     * @param player TODO
      */
     private void updatePlayerWins(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.WINS);
@@ -436,7 +440,7 @@ public class GameScreen implements Screen {
     /**
      * on incrémente pour globalstats et le levelstats du niveau joué
      *
-     * @param player  TODO
+     * @param player TODO
      */
     private void updatePlayerDefeats(HumanPlayer player) {
         player.getGlobalStats().incrementStatInMap(player.getGlobalStats().getStats(), Statistics.DEFEATS);
@@ -447,7 +451,7 @@ public class GameScreen implements Screen {
     /**
      * on met à jour pour globalstats et le levelstats du niveau joué puis on calcule le score (pour le niveau joué)
      *
-     * @param player  TODO
+     * @param player TODO
      */
     private void updatePlayerScore(HumanPlayer player, boolean hasWon) {
         player.getListLevelStats(LevelSelection.getCurrentIslandNumber()).updateStats();
@@ -455,25 +459,18 @@ public class GameScreen implements Screen {
         // The score is calculated with the global statistics to be displayed in the hall of fame
         int score = player.getGlobalStats().calculateScore(hasWon);
 
-        int scoreBefore=player.getGlobalStats().getScore();
-        player.getGlobalStats().setScore(score+scoreBefore);
-		
+        int scoreBefore = player.getGlobalStats().getScore();
+        player.getGlobalStats().setScore(score + scoreBefore);
+
         saveStatsPlayer(player);
 
         // Resets the values used for calculations
         resetCurrentStats(player);
     }
 
-    /**
-     *   TODO
-     *
-     * @param x
-     * @param y
-     * @return
-     */
     private Coordinate getCoordinate(float x, float y) {
         Vector2 vect = viewport.unproject(new Vector2(x, y));
-        // Bien mettre le système d'axe
+        // Adjusts the axis system
         int offset = (int) (vect.y / size * errorOffset);
 
         vect.set((int) (vect.x - (tileW / 2)), (int) (vect.y - (tileH) + offset));
@@ -481,7 +478,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *   TODO
+     * TODO
      *
      * @param x
      * @param y
@@ -494,7 +491,7 @@ public class GameScreen implements Screen {
             if (level.isInLevel(clickPos)) {
 
                 Tile clickedTile = level.get(clickPos);
-                // Change state if needed
+                // Changes state if needed
                 switch (click) {
                     case NOTHING_SELECTED:
                         if (clickedTile.getTerritory() != null && !(clickedTile.getEntity() instanceof Soldier) &&
@@ -533,20 +530,22 @@ public class GameScreen implements Screen {
                         break;
                 }
                 showEffects(clickPos);
-                if(clickedTile.getType() == TileType.NEUTRAL) {
-                    previousClick = clickPos; // Retenir dernière position que quand click dans le niveau et sur tile neutre
+
+                if (clickedTile.getType() == TileType.NEUTRAL) {
+                    // Remembers last position only when clicking in the map and on neutral tile
+                    previousClick = clickPos;
                 }
             }
         }
     }
 
     /**
-     *   TODO
+     * TODO
      *
      * @param clickPos
      */
     private void showEffects(Coordinate clickPos) {
-        // Show effects
+        // Shows effects
         EffectsManagement.eraseCells(effects);
 
         switch (click) {
@@ -557,8 +556,10 @@ public class GameScreen implements Screen {
                 break;
 
             case ON_TERRITORY:
-                // If we click on a territory but not on a soldier, tiles from that territory
-                // have to be highlighted and we show the market for this territory
+                /*
+                     If we click on a territory but not on a soldier, tiles from that territory
+                     have to be highlighted and we show the market for this territory
+                */
                 if (level.get(clickPos).getTerritory().getOwner().equals(level.getCurrentPlayer())) {
                     List<Coordinate> listTerr = level.neighbourTilesInSameTerritory(clickPos);
                     EffectsManagement.highlightCells(effects, listTerr, tileMap.get("WHITE_HIGHLIGHT"));
@@ -589,7 +590,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *   TODO
+     * TODO
      *
      * @param c
      * @param hidden
@@ -619,7 +620,7 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *   TODO
+     * TODO
      *
      * @param isShown
      * @param isVisibleL
@@ -640,11 +641,11 @@ public class GameScreen implements Screen {
     /**
      * Displays the coins of the selected territory and its income
      *
-     * @param c
-     * @param hidden
+     * @param c        the coordinate of the territory on which the player has clicked
+     * @param isHidden true if it has to be hidden, false otherwise
      */
-    private void showCoins(Coordinate c, boolean hidden) {
-        if (hidden) {
+    private void showCoins(Coordinate c, boolean isHidden) {
+        if (isHidden) {
             buttonChest.setVisible(false);
             labelCoins.setVisible(false);
             labelIncome.setVisible(false);
@@ -666,31 +667,37 @@ public class GameScreen implements Screen {
     private void loadLevel() {
         showNextTurnEffects();
         if (level.getCurrentPlayer() instanceof AI && !AIisPaused) {
-            boolean hasWon = ((AI) level.getCurrentPlayer()).play(level.getCurrentPlayer(), true); // true = il y a un gagnant
-            if (!hasWon) {
-                endPlay = true; // Signale fin de partie
-            }
+            // There is a winner
+            boolean hasWon = ((AI) level.getCurrentPlayer()).play(level.getCurrentPlayer(), true);
+            if (!hasWon)
+                // Indicates the end of the game
+                endPlay = true;
         }
+        // Goes through each cell of the table of the logical part
         for (int i = 0; i < level.width(); i++) {
-            for (int j = 0; j < level.height(); j++) { // Parcours de chaque case du tableau de la partie logique
+            for (int j = 0; j < level.height(); j++) {
                 Tile tile = level.get(i, j);
-                if (tile.getEntity() != null) { // Si la case contient une entité, la rajouter à l'interface graphique
+                // If there is an entity in the cell, it is added to the graphical interface
+                if (tile.getEntity() != null) {
                     TiledMapTile image = tileMap.get(tile.getEntity().getName().toUpperCase());
                     HexManagement.drawTile(new Coordinate(i, j), image, entities);
 
-                } else { // Il n'y a pas ou plus d'entité présente dans la case
-                    if (entities.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
+                }
+                // There is no more entity in the cell
+                else {
+                    // The cell is cleared if it is not empty in the graphical interface
+                    if (entities.getCell(i, j) != null)
                         entities.setCell(i, j, new TiledMapTileLayer.Cell());
-                    }
                 }
                 if (tile.getTerritory() != null) { // Si la case appartient à un territoire, le rajouter à l'interface graphique
                     TiledMapTile image = tileMap.get(tile.getTerritory().getOwner().getColor().getName());
                     HexManagement.drawTile(new Coordinate(i, j), image, territories);
-
-                } else { // Il n'y a pas ou plus de territoire présent sur la case
-                    if (territories.getCell(i, j) != null) { // Si la cellule n'est pas encore vide dans l'interface graphique, la vider
+                }
+                // There is no more territory on the cell
+                else {
+                    // The cell is cleared if it is not empty in the graphical interface
+                    if (territories.getCell(i, j) != null)
                         territories.setCell(i, j, new TiledMapTileLayer.Cell());
-                    }
                 }
             }
         }
@@ -741,22 +748,19 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *  TODO + traduire en dessous
+     * Loads the buttons
      */
     private void loadButtons() {
         int image_corner = Math.max(SCREEN_WIDTH, SCREEN_HEIGHT);
         hudCam = new OrthographicCamera();
-        if (hud == null) {
 
-            //hud = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT, hudCam));
-
+        if (hud == null)
             hud = new Stage(new ScreenViewport());
-        } else {
+        else
             hud.clear();
-        }
 
         if (numberHumans == 0) {
-            // Initialisation des boutons
+            // Initialises speed and pause buttons
             TextureRegionDrawable imageV4 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v4.png"))));
             final ImageButton buttonV4 = new ImageButton(imageV4);
             TextureRegionDrawable imageV3 = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v3.png"))));
@@ -768,8 +772,7 @@ public class GameScreen implements Screen {
             TextureRegionDrawable imagePause = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/v0.png"))));
             final ImageButton buttonV0 = new ImageButton(imagePause);
 
-            // Bien positionner les boutons
-
+            // Adjusts speed and pause buttons position
             float offsetW = 10;
             float offsetH = buttonV4.getHeight();
             buttonV4.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_HEIGHT * 1 / 200, offsetH);
@@ -782,13 +785,12 @@ public class GameScreen implements Screen {
             offsetW += buttonV0.getWidth() + 10;
             buttonV0.setPosition((SCREEN_WIDTH - offsetW) * 96 / 100 + SCREEN_HEIGHT * 1 / 200, offsetH);
 
-
-            if (lastButtonCLicked == null) {
+            if (lastButtonCLicked == null)
                 makeButtonGreen(true, buttonV3);
-            } else {
+            else
                 makeButtonGreen(true, lastButtonCLicked);
-            }
-            // Ajouter les actions
+
+            // Adds speed and pause buttons :
 
             buttonV4.addListener(new ClickListener() {
                 @Override
@@ -866,7 +868,7 @@ public class GameScreen implements Screen {
             hud.addActor(buttonV0);
 
         } else {
-            // Adds button Next
+            // Adds button Next :
 
             TextureRegionDrawable imageNext = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/next.png"))));
             buttonNext = new ImageButton(imageNext);
@@ -889,7 +891,7 @@ public class GameScreen implements Screen {
             });
             hud.addActor(buttonNext);
         }
-        // Adds button Pause
+        // Adds button Pause :
 
         TextureRegionDrawable imageDots = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("images/dots.png"))));
         buttonPause = new ImageButton(imageDots);
@@ -906,7 +908,7 @@ public class GameScreen implements Screen {
             }
         });
 
-        // Adds entity market
+        // Adds entity market :
 
         TextureRegionDrawable imageL0 = new TextureRegionDrawable(new TextureRegion((new Texture(Gdx.files.internal("images/L0.png")))));
         buttonL0 = new ImageButton(imageL0);
@@ -977,7 +979,7 @@ public class GameScreen implements Screen {
             }
         });
 
-        // Player 1
+        // Player 1 :
 
         checkboxPlayer1 = new CheckBox("", skinSgx, "radio");
         checkboxPlayer1.getImage().setScale(1.5f);
@@ -992,7 +994,7 @@ public class GameScreen implements Screen {
         Label labelP1 = new Label(Level.getPlayers()[0].getName(), skinSgx, "title-white");
         labelP1.setFontScale(1.2f);
 
-        // Player 2
+        // Player 2 :
 
         checkboxPlayer2 = new CheckBox("", skinSgx, "radio");
         checkboxPlayer2.getImage().setScale(1.5f);
@@ -1030,23 +1032,23 @@ public class GameScreen implements Screen {
         labelWages.setVisible(false);
 
         Table screenTablePlayers = new Table();
-		
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
-			screenTablePlayers.setFillParent(true);
-			screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
-			screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
+
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && !(Gdx.app.getType() == Application.ApplicationType.Android)) {
+            screenTablePlayers.setFillParent(true);
+            screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
+            screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
             screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP1).left();
         }
         screenTablePlayers.row();
-		
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
-			screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
+
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && !(Gdx.app.getType() == Application.ApplicationType.Android)) {
+            screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
             screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
         }
         Table tableMarket = new Table();
-		
+
         if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             tableMarket.add(buttonL0).padRight(1.5f * buttonL1.getWidth());
             tableMarket.add(buttonL1).padRight(1.5f * buttonL1.getWidth());
@@ -1077,7 +1079,7 @@ public class GameScreen implements Screen {
         if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             screenTableMarket.add(tableMarket).padTop(SCREEN_HEIGHT - buttonL0.getHeight());
         } else {
-            screenTableMarket.add(tableMarket).padTop((SCREEN_HEIGHT - buttonL0.getHeight()) / 2 ).padRight(SCREEN_WIDTH - buttonL0.getWidth());
+            screenTableMarket.add(tableMarket).padTop((SCREEN_HEIGHT - buttonL0.getHeight()) / 2).padRight(SCREEN_WIDTH - buttonL0.getWidth());
         }
         hud.addActor(buttonPause);
         hud.addActor(screenTableMarket);
@@ -1088,9 +1090,13 @@ public class GameScreen implements Screen {
             @Override
             public boolean keyUp(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ENTER && !windowPause.isVisible()) {
-                    boolean hasWon = level.nextTurn(); // true = il y a un gagnant
+
+                    // True if there is a winner
+                    boolean hasWon = level.nextTurn();
+
                     if (!hasWon)
-                        endPlay = true; // Signale fin de partie
+                        // Indicates the end of the game
+                        endPlay = true;
                     click = ClickState.NOTHING_SELECTED;
                     EffectsManagement.eraseCells(effects);
                     showEffects(previousClick);
@@ -1116,7 +1122,10 @@ public class GameScreen implements Screen {
     }
 
     /**
-     *  TODO
+     * Changes the appearance of the ball before players name in the corner
+     * <p>
+     * The ball is the player's color and full when it is his turn
+     * Otherwise, the ball is a white circle
      */
     private void showNextTurnEffects() {
         if (level.getCurrentPlayer() == getPlayers()[0]) {
@@ -1149,17 +1158,12 @@ public class GameScreen implements Screen {
         }
     }
 
-    /**
-     *   TODO
-     *
-     * @return
-     */
     public static Playable getLevel() {
         return level;
     }
 
     /**
-     *   TODO
+     * Enumeration of all possible screen states based on what the player has just clicked
      */
     enum ClickState {
         NOTHING_SELECTED,

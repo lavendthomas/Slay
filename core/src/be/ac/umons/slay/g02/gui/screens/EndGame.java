@@ -44,7 +44,7 @@ public class EndGame implements Screen {
     /**
      *   TODO
      *
-     * @param aGame
+     * @param aGame the instance of Game created in class Main
      * @param winner
      * @param numberHuman
      */
