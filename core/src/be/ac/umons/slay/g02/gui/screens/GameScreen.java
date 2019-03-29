@@ -369,9 +369,8 @@ public class GameScreen implements Screen {
      */
     private void updatePlayerStats(Player winner) {
         // Player 1
-        if ((prefs.getBoolean("isPlayer1Logged")) && (getPlayers()[0].getName().equals(player1.getName()) ||
+        if ((prefs.getBoolean("isPlayer1Logged")) && (getPlayers()[0].getName().equals(player1.getName())||
                 getPlayers()[1].getName().equals(player1.getName()))) {
-
             // Number of games ++
             updatePlayerGames(player1);
 
@@ -392,9 +391,8 @@ public class GameScreen implements Screen {
             }
         }
         // Player 2
-        if ((prefs.getBoolean("isPlayer2Logged")) && (getPlayers()[1].getName().equals(player2.getName()) ||
-                getPlayers()[0].getName().equals(player2.getName()))) {
-
+        if ((prefs.getBoolean("isPlayer2Logged")) && (getPlayers()[1].getName().equals(player2.getName())||
+                getPlayers()[0].getName().equals(player2.getName())) ) {
             // Number of games ++
             updatePlayerGames(player2);
 
@@ -459,9 +457,8 @@ public class GameScreen implements Screen {
         // The score is calculated with the global statistics to be displayed in the hall of fame
         int score = player.getGlobalStats().calculateScore(hasWon);
 
-        int scoreBefore = player.getGlobalStats().getScore();
-        player.getGlobalStats().setScore(score + scoreBefore);
-
+        int scoreBefore=player.getGlobalStats().getScore();
+        player.getGlobalStats().setScore(score+scoreBefore);
         saveStatsPlayer(player);
 
         // Resets the values used for calculations
@@ -991,7 +988,13 @@ public class GameScreen implements Screen {
                 new TextureRegion(new Texture(
                         Gdx.files.internal(Level.getPlayers()[0].getAvatar())))));
 
-        Label labelP1 = new Label(Level.getPlayers()[0].getName(), skinSgx, "title-white");
+        Label labelP1;
+        if(Level.getPlayers()[0].getName().length()>5){
+           String labelNom= Level.getPlayers()[0].getName().substring(0,4)+"...";
+            labelP1 = new Label(labelNom, skinSgx, "title-white");
+        }
+        else
+            labelP1 = new Label(Level.getPlayers()[0].getName(), skinSgx, "title-white");
         labelP1.setFontScale(1.2f);
 
         // Player 2 :
@@ -1007,7 +1010,13 @@ public class GameScreen implements Screen {
                 new TextureRegion(new Texture(
                         Gdx.files.internal(Level.getPlayers()[1].getAvatar())))));
 
-        Label labelP2 = new Label(Level.getPlayers()[1].getName(), skinSgx, "title-white");
+        Label labelP2;
+        if(Level.getPlayers()[1].getName().length()>5){
+            String labelNom2= Level.getPlayers()[1].getName().substring(0,4)+"...";
+            labelP2 = new Label(labelNom2, skinSgx, "title-white");
+        }
+        else
+            labelP2 = new Label(Level.getPlayers()[1].getName(), skinSgx, "title-white");
         labelP2.setFontScale(1.2f);
 
         // Territory's money
@@ -1033,17 +1042,17 @@ public class GameScreen implements Screen {
 
         Table screenTablePlayers = new Table();
 
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && !(Gdx.app.getType() == Application.ApplicationType.Android)) {
-            screenTablePlayers.setFillParent(true);
-            screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
-            screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
+			screenTablePlayers.setFillParent(true);
+			screenTablePlayers.padTop(SCREEN_HEIGHT - (2 * (SCREEN_HEIGHT * 6 / 100) + 3 * SCREEN_HEIGHT * 2 / 100)).left().padLeft(SCREEN_HEIGHT * 2 / 100);
+			screenTablePlayers.add(checkboxPlayer1).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f).padTop(checkboxPlayer1.getImage().getHeight() * 2 / 3);
             screenTablePlayers.add(avatarP1).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP1).left();
         }
         screenTablePlayers.row();
 
-        if (SCREEN_WIDTH > SCREEN_HEIGHT && !(Gdx.app.getType() == Application.ApplicationType.Android)) {
-            screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && ! (Gdx.app.getType() == Application.ApplicationType.Android)) {
+			screenTablePlayers.add(checkboxPlayer2).padTop(checkboxPlayer1.getImage().getHeight() * 1.7f).padRight(SCREEN_HEIGHT * 2 / 100 + checkboxPlayer1.getImage().getWidth() / 2.6f);
             screenTablePlayers.add(avatarP2).height(SCREEN_HEIGHT * 6 / 100).width(SCREEN_HEIGHT * 6 / 100).padTop(SCREEN_HEIGHT * 2 / 100).padRight(SCREEN_HEIGHT * 2 / 100);
             screenTablePlayers.add(labelP2).left().padTop(SCREEN_HEIGHT * 2 / 100);
         }

@@ -131,7 +131,7 @@ public class StatsLoader {
      * Retrieves the value read by deleting the numbers before the statistic name (to get the
      * good key) then put it in the corresponding hashmap of statistics
      *
-     * @param elementStat   TODO  player's name ?
+     * @param elementStat the balise's name
      * @param hashmapStats the hashmap of statistics
      */
     private void putInHashmapStats(Element elementStat, HashMap<String, Integer> hashmapStats) {

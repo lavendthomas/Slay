@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.gui.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -77,7 +78,7 @@ public class LevelSelection implements Screen {
     private int cellHeight;     //TODO : tout traduire
 
     // pour savoir quelle carte afficher pour la preview et quand on clique sur Play
-    private static int currentIslandNumber = 1;
+    public static int currentIslandNumber = 1;
     // dans la fenetre des stats
     private int islandNumberStats = 1;
 
@@ -143,7 +144,6 @@ public class LevelSelection implements Screen {
         int buttonGapY = SCREEN_HEIGHT * 10 / 100;
         cellHeight = SCREEN_HEIGHT * 6 / 100;
 
-        currentIslandNumber = 1;
         numberHumans = 0;
         difficulty1 = 1;
         difficulty2 = 1;
@@ -365,7 +365,7 @@ public class LevelSelection implements Screen {
             buttonPlay.setWidth(SCREEN_WIDTH * 12 / 100);
         }
 
-        if (!prefs.getBoolean("isAccountEnabled")) {
+        if (!prefs.getBoolean("isAccountEnabled") && Gdx.app.getType() != Application.ApplicationType.Android) {
             table.center().padRight(SCREEN_WIDTH * 6 / 100);
             buttonBack.setPosition(SCREEN_WIDTH / 2 - buttonBack.getWidth() * 3 / 2, SCREEN_HEIGHT * 10 / 100);
             buttonPlay.setPosition(SCREEN_WIDTH / 2 + buttonBack.getWidth() / 2, SCREEN_HEIGHT * 10 / 100);
@@ -843,8 +843,8 @@ public class LevelSelection implements Screen {
         Label labelScrollG = new Label("", skinSgx);
         Label labelGames = new Label(GAMES + colon + levelS.get(Statistics.GAMES), skinSgx, "white");
         Label labelGamesG = new Label(GAMES + colon + globalS.get(Statistics.GAMES), skinSgx, "white");
-        createLabel(labelsIsland, levelS, playerStatistics, player.getGlobalStats());
-        createLabel(labelsGlobal, globalS, playerStatistics, player.getGlobalStats());
+        createLabel(labelsIsland, levelS, playerStatistics, player);
+        createLabel(labelsGlobal, globalS, playerStatistics, player);
 
         // Fills containerIsland and containerGlobal
         createContainer(labelsIsland, labelGames, labelScroll, buttonStatBack);
@@ -896,7 +896,7 @@ public class LevelSelection implements Screen {
      * @param hashmapStats the hashmap of statistics
      */
     private void createLabel(ArrayList<Label> labelList, LinkedHashMap<String, Integer> hashmapStats,
-                             LevelStats levelStat, GlobalStats globalStats) {
+                             LevelStats levelStat, HumanPlayer player) {
         int i = 0;
 
         for (Map.Entry<String, String> entry : statsList.entrySet()) {
@@ -915,25 +915,28 @@ public class LevelSelection implements Screen {
             String text = colorText + entry.getKey() + " : ";
 
             // Average statistics are calculated, not stored in a hashmap
-            if (text.substring(0, 3).equals(AVERAGE_BEGINNING)) {
+            if (text.contains(AVERAGE_BEGINNING)) {
                 if (text.contains(LEFT_UNITS)) {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
-                    if (labelList.equals(labelsIsland))
+                    if (hashmapStats.equals(levelStat.getStats()))
+
                        labelList.add(new Label(text + levelStat.calculateAvgLeft(value), style));
 
                     // The average statistic is calculated with statistics from GlobalStats
                     else
-                        labelList.add(new Label(text + globalStats.calculateAvgLeft(value)
-                                / LevelSelection.TOTAL_NUMBER_ISLANDS, style));
+                        labelList.add(new Label(text + player.getGlobalStats().calculateAvgGlobal
+                                (value, player), style));
                 } else {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
-                    if (labelList.equals(labelsIsland))
-                        labelList.add(new Label(text + levelStat.calculateAvg(value), style));
+                    if (hashmapStats.equals(levelStat.getStats()))
+
+                        labelList.add(new Label(text + levelStat.calculateAvg(value,
+                                levelStat.getStats()), style));
 
                     // The average statistic is calculated with statistics from GlobalStats
                     else {
-                        labelList.add(new Label(text + globalStats.calculateAvg(value)
-                                / LevelSelection.TOTAL_NUMBER_ISLANDS, style));
+                        labelList.add(new Label(text + player.getGlobalStats().calculateAvgGlobal
+                                (value, player), style));
                     }
                 }
             }

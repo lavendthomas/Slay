@@ -228,36 +228,36 @@ public class Hall implements Screen {
                 cell.setHeight(cellHeight);
                 tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
 
-                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.TURNS)
-                        / LevelSelection.TOTAL_NUMBER_ISLANDS), skinSgxTable);
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvgGlobal(Statistics.TURNS, player))
+                        , skinSgxTable);
                 cell.setColor(currentColor);
                 cell.getLabel().setColor(colorLabel);
                 cell.setHeight(cellHeight);
                 tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
 
-                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.LANDS_TURN)
-                        / LevelSelection.TOTAL_NUMBER_ISLANDS), skinSgxTable);
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvgGlobal(Statistics.LANDS_TURN, player)),
+                        skinSgxTable);
                 cell.setColor(currentColor);
                 cell.getLabel().setColor(colorLabel);
                 cell.setHeight(cellHeight);
                 tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
 
-                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.TREES)
-                        / LevelSelection.TOTAL_NUMBER_ISLANDS), skinSgxTable);
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvgGlobal(Statistics.TREES, player)),
+                        skinSgxTable);
                 cell.setColor(currentColor);
                 cell.getLabel().setColor(colorLabel);
                 cell.setHeight(cellHeight);
                 tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
 
-                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.LOST_UNITS)
-                        / LevelSelection.TOTAL_NUMBER_ISLANDS), skinSgxTable);
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvgGlobal(Statistics.LOST_UNITS, player)),
+                       skinSgxTable);
                 cell.setColor(currentColor);
                 cell.getLabel().setColor(colorLabel);
                 cell.setHeight(cellHeight);
                 tableHall.add(cell).height(Value.percentHeight(1.3f)).fill();
 
-                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvg(Statistics.ARMY)
-                        / LevelSelection.TOTAL_NUMBER_ISLANDS), skinSgxTable);
+                cell = new TextButton(String.valueOf(player.getGlobalStats().calculateAvgGlobal(Statistics.ARMY, player)),
+                        skinSgxTable);
                 cell.setColor(currentColor);
                 cell.getLabel().setColor(colorLabel);
                 cell.setHeight(cellHeight);
