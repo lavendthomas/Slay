@@ -41,7 +41,9 @@ import static be.ac.umons.slay.g02.gui.screens.Menu.player1;
 import static be.ac.umons.slay.g02.gui.screens.Menu.player2;
 
 /**
- * TODO juste ça, le reste est fait
+ * Utility that is used to load a level from disk.
+ * The level is a combination of a TMX file and an XLM file having the same base name
+ * (without extension)
  */
 public class LevelLoader {
     private static final String LEVELS_PATH = "worlds";

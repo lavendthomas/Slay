@@ -137,9 +137,9 @@ public class Level implements Playable {
     /**
      * Returns the tile at the mentioned coordinates
      *
-     * @param x
-     * @param y
-     * @return
+     * @param x the x coordinate (width)
+     * @param y the y coordinate (height)
+     * @return the tile at that position
      */
     @Override
     public Tile get(int x, int y) {
@@ -150,7 +150,7 @@ public class Level implements Playable {
      * Returns the tile at the mentioned coordinates
      *
      * @param coords the coordinates for which we want the tile
-     * @return a Tile
+     * @return the tile at that position
      */
     @Override
     public Tile get(Coordinate coords) {
@@ -163,7 +163,7 @@ public class Level implements Playable {
      * @param entity the new entity to place
      * @param start  the origin Tile
      * @param to     the tile in which to place the entity
-     * @return   TODO
+     * @return true is an entity has successfully been bought
      */
     @Override
     public boolean buy(Entity entity, Coordinate start, Coordinate to) {
@@ -626,7 +626,7 @@ public class Level implements Playable {
                 if (!cell.hasTerritory())
                     continue;
 
-                if (!processedTerritories.contains(cell.getTerritory())) { // TODO check that this works
+                if (!processedTerritories.contains(cell.getTerritory())) {
                     List<Coordinate> neighbours = neighbourTilesInSameTerritory(pos);
                     List<Tile> tiles = new LinkedList<Tile>();  // List of all tiles in neighbourhood
                     for (Coordinate p : neighbours) {         // in the same territory
@@ -636,7 +636,6 @@ public class Level implements Playable {
                     if (tiles.containsAll(cell.getTerritory().getCells())) {
                         // If all the cells in the territory are in the neighbourhood,
                         // we don't have to split anything
-                        // TODO useless because being checked after ?
                         continue;
                     } else {
                         // Removes all the cells that are not in the neighbourhood
