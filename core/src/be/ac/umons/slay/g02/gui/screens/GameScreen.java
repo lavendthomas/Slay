@@ -365,7 +365,9 @@ public class GameScreen implements Screen {
      */
     private void updatePlayerStats(Player winner) {
         // Player 1
-        if (prefs.getBoolean("isPlayer1Logged") && getPlayers()[0].getName().equals(player1.getName())) {
+        if ((prefs.getBoolean("isPlayer1Logged")) && (getPlayers()[0].getName().equals(player1.getName())||
+                getPlayers()[1].getName().equals(player1.getName()))) {
+					
             // Number of games ++
             updatePlayerGames(player1);
 
@@ -386,7 +388,9 @@ public class GameScreen implements Screen {
             }
         }
         // Player 2
-        if (prefs.getBoolean("isPlayer2Logged") && getPlayers()[1].getName().equals(player2.getName())) {
+        if ((prefs.getBoolean("isPlayer2Logged")) && (getPlayers()[1].getName().equals(player2.getName())||
+                getPlayers()[0].getName().equals(player2.getName())) ) {
+					
             // Number of games ++
             updatePlayerGames(player2);
 
@@ -451,7 +455,9 @@ public class GameScreen implements Screen {
         // The score is calculated with the global statistics to be displayed in the hall of fame
         int score = player.getGlobalStats().calculateScore(hasWon);
 
-        player.getGlobalStats().setScore(score);
+        int scoreBefore=player.getGlobalStats().getScore();
+        player.getGlobalStats().setScore(score+scoreBefore);
+		
         saveStatsPlayer(player);
 
         // Resets the values used for calculations

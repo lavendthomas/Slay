@@ -145,7 +145,7 @@ public class Hall implements Screen {
         cell.setHeight(cellHeight);
         tableHall.add(cell).height(Value.percentHeight(1.2f)).width(Value.percentWidth(1f)).center().fill();
 
-        cell = new TextButton("Full army\nvalue", skinSgxTable);
+        cell = new TextButton("Army\nvalue", skinSgxTable);
         cell.getLabel().setColor(Color.BLACK);
         cell.setColor(colorViolet);
         cell.setWidth(SCREEN_WIDTH * 7 / 100);

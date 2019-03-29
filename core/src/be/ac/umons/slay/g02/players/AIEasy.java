@@ -49,11 +49,13 @@ public class AIEasy extends Player implements AI {
             allTerritories = AIMethods.loadTerritories(level, this, false);
         } else {
             allTerritories = AIMethods.loadTerritories(level, player, false);
-        }        for (List<Coordinate> territory : allTerritories) {
+        }
+        int n = 0;
+        for (List<Coordinate> territory : allTerritories) {
             // For each territory
 
             // Buy ?
-            tryToAddUnit(territory);
+            tryToAddUnit(territory, n);
 
             // Move ?
             for (Coordinate cFrom : territory) {
@@ -78,15 +80,16 @@ public class AIEasy extends Player implements AI {
      * @param territory List of coordinates representing the territory in which searched
      */
 
-    private void tryToAddUnit(List<Coordinate> territory) {
+    private void tryToAddUnit(List<Coordinate> territory, int n) {
         // AIEasy only buys weak units
         Coordinate cFrom = territory.get(0);
         Tile tileFrom = level.get(cFrom);
         Soldier soldier = new Soldier(SoldierLevel.L0);
-        if (tileFrom.getTerritory() != null && tileFrom.getTerritory().canBuy(soldier)) {
+        if (tileFrom.getTerritory() != null && tileFrom.getTerritory().canBuy(soldier) && n < 3) {
             Coordinate cTo = findBestPlace(level.getMoves(soldier, cFrom), cFrom);
             if (cTo != null) {
                 level.buy(soldier, cFrom, cTo);
+                n++;
             }
         }
 

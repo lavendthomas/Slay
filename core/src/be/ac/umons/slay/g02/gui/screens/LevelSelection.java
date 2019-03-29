@@ -116,7 +116,7 @@ public class LevelSelection implements Screen {
     public static final int TOTAL_NUMBER_ISLANDS = 10;
 
     private String humanPlayerStats;
-    private String humanPlayer;
+    public static String humanPlayer;
 
     // permet de savoir s'il faut creer des IA au debut du jeu
     public static int numberHumans = 0;
@@ -245,6 +245,8 @@ public class LevelSelection implements Screen {
             }
         };
         selectBoxNumber.addListener(selectBoxNumberListener);
+		
+        playerNames.clear();
 
         selectBoxPlayer = new SelectBox<String>(skinSgx);
 
@@ -312,8 +314,7 @@ public class LevelSelection implements Screen {
                 game.setScreen(new GameScreen(game, String.format("g02_%02d", currentIslandNumber), numberHumans));
             }
         });
-
-
+		
         final Table table = new Table();
         table.setFillParent(true);
         if (SCREEN_WIDTH > SCREEN_HEIGHT) {
@@ -918,7 +919,7 @@ public class LevelSelection implements Screen {
             if (text.substring(0, 3).equals(AVERAGE_BEGINNING)) {
                 if (text.contains(LEFT_UNITS)) {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
-                    if (hashmapStats.equals(levelStat.getStats()))
+                    if (labelList.equals(labelsIsland))
                        labelList.add(new Label(text + levelStat.calculateAvgLeft(value), style));
 
                     // The average statistic is calculated with statistics from GlobalStats
@@ -927,7 +928,7 @@ public class LevelSelection implements Screen {
                                 / LevelSelection.TOTAL_NUMBER_ISLANDS, style));
                 } else {
                     // The average statistic is calculated with statistics from LevelStats (for a specific world)
-                    if (hashmapStats.equals(levelStat.getStats()))
+                    if (labelList.equals(labelsIsland))
                         labelList.add(new Label(text + levelStat.calculateAvg(value), style));
 
                     // The average statistic is calculated with statistics from GlobalStats

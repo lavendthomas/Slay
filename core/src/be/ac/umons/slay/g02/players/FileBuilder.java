@@ -65,7 +65,7 @@ public class FileBuilder {
                     newElement.appendChild(nom);
 
                     Element pass = doc.createElement("password");
-                    pass.appendChild(doc.createTextNode(DataHashing.hash(player.getAccount().getPassword())));
+                    pass.appendChild(doc.createTextNode(player.getAccount().getPassword()));
                     newElement.appendChild(pass);
 
                     Element avatar = doc.createElement("avatar");

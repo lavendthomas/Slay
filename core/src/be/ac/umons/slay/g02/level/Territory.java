@@ -286,24 +286,26 @@ public class Territory {
     /**
      * Adds money and kills soldiers if funds are not sufficient
      */
-    void nextTurn() {
-        // Updates territory's money
-        coins += income - wages;
+    void nextTurn(Player currentPlayer) {
+        if (currentPlayer.equals(owner)) {
+            // Updates territory's money
+            coins += income - wages;
 
-        // If not enough money we kill all soldiers (all entities that have a maintaining cost)
-        if (coins < 0) {
-            for (Tile c : cells) {
-                if (c.getEntity() != null && c.getEntity().getCost() > 0) {
-                    // Updates currentLostL. for stats - when a soldier dies because of bankrupt
-                    if (prefs != null && prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
-                        Level.updatePlayerStatsLost(player1, c.getEntity());
+            // If not enough money we kill all soldiers (all entities that have a maintaining cost)
+            if (coins < 0) {
+                for (Tile c : cells) {
+                    if (c.getEntity() != null && c.getEntity().getCost() > 0) {
+                        // Updates currentLostL. for stats - when a soldier dies because of bankrupt
+                        if (prefs != null && prefs.getBoolean("isPlayer1Logged") && getOwner().getName().equals(player1.getName()))
+                            Level.updatePlayerStatsLost(player1, c.getEntity());
 
-                    else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
-                        Level.updatePlayerStatsLost(player2, c.getEntity());
-                    c.setEntity(StaticEntity.GRAVE);
+                        else if (prefs != null && prefs.getBoolean("isPlayer2Logged") && getOwner().getName().equals(player2.getName()))
+                            Level.updatePlayerStatsLost(player2, c.getEntity());
+                        c.setEntity(StaticEntity.GRAVE);
+                    }
                 }
+                coins = income - wages;
             }
-            coins = income - wages;
         }
     }
 

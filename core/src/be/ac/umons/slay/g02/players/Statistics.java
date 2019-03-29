@@ -314,10 +314,11 @@ public class Statistics {
                             + currentStats.get(CURRENT_LOST_L3), stats.get(MAX_ + key)));
         } else if (key.equals(LANDS_TURN)) {
             // max lands/turn in stats = max(currentLands/currentTurns, max lands/turn in stats)
-            stats.put(MAX_ + key,
-                    Math.max(currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS), stats.get(MAX_ + key)));
+            if(currentStats.get(CURRENT_TURNS)!=0){
+            stats.put(MAX_ + key,Math.max(currentStats.get(CURRENT_LANDS) / currentStats.get(CURRENT_TURNS), stats.get(MAX_ + key)));}
         } else
             // max value in stats = max(currentStat, max value in stats)
+
             stats.put(MAX_ + key, Math.max(currentStats.get(current), stats.get(MAX_ + key)));
     }
 
