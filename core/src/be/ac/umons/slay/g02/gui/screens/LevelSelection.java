@@ -1,6 +1,5 @@
 package be.ac.umons.slay.g02.gui.screens;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -366,11 +365,11 @@ public class LevelSelection implements Screen {
             buttonPlay.setWidth(SCREEN_WIDTH * 12 / 100);
         }
 
-        if (!prefs.getBoolean("isAccountEnabled") && Gdx.app.getType() != Application.ApplicationType.Android) {
+        if (!prefs.getBoolean("isAccountEnabled")) {
             table.center().padRight(SCREEN_WIDTH * 6 / 100);
             buttonBack.setPosition(SCREEN_WIDTH / 2 - buttonBack.getWidth() * 3 / 2, SCREEN_HEIGHT * 10 / 100);
             buttonPlay.setPosition(SCREEN_WIDTH / 2 + buttonBack.getWidth() / 2, SCREEN_HEIGHT * 10 / 100);
-        } else if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android) {
+        } else if (SCREEN_WIDTH > SCREEN_HEIGHT) {
             buttonStats = new TextButton("Statistics", skinSgx, "big");
             buttonStats.addListener(new ClickListener() {
                 @Override

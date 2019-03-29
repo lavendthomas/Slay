@@ -649,7 +649,11 @@ public class Menu implements Screen {
             table.add(labelProfile);
             table.add(labelProfile);
         }
-        buttonSettingsBack = new TextButton(lang.get("button_back"), skinSgx, "big");
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            buttonSettingsBack = new TextButton("Save", skinSgx, "big");
+        } else {
+            buttonSettingsBack =  new TextButton(lang.get("button_back"), skinSgx, "big");
+        }
         buttonSettingsBack.setWidth(buttonCenterWidth / 2);
         buttonSettingsBack.addListener(new ClickListener() {
             @Override
