@@ -1,7 +1,7 @@
 package be.ac.umons.slay.g02.level;
 
 /**
- *  TODO
+ *  Possible type for tiles
  */
 public enum TileType {
     NEUTRAL,

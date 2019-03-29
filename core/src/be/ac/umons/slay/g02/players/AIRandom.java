@@ -45,29 +45,29 @@ public class AIRandom extends Player implements AI {
 
         for (List<Coordinate> territory : allTerritories) {
 
-            // Ajouter une unité ?
+            // Buy a unit ?
             Coordinate cFrom = territory.get(0);
             Territory terr = level.get(cFrom).getTerritory();
             for (int i = 1; i <= 4; i++) {
                 Soldier entity = new Soldier(SoldierLevel.fromLevel(i));
-                // Essai ajouter chacun des soldats possibles en commencant par le plus faible
+                // Try adding each possible soldier by starting with the weakest
                 if (terr.canBuy(entity)) {
-                    // Je peux l'acheter => choix d'une case aléatoire où la placer
+                    // Can buy soldier => choice random tile
                     List<Coordinate> moves = level.getMoves(entity, cFrom);
                     int rand = new Random().nextInt(moves.size());
                     level.buy(entity, cFrom, moves.get(rand));
                 }
             }
 
-            // Déplacer une unité ?
+            // Move a unit ?
             for (Coordinate coordinate : territory) {
-                // Parcours toutes les cases de ce terroire
+                // Go through all the boxes of this terroir
                 Tile tile = level.get(coordinate);
                 if (tile.getEntity() != null && tile.getEntity() instanceof Soldier) {
-                    // Si il y a un soldat
+                    // There is a soldier
                     Soldier soldier = (Soldier) tile.getEntity();
                     if (!soldier.getMoved()) {
-                        // Il ne s'est pas encore déplacé = > choix d'une case aléatoire
+                        // Soldier not already moved = > choice random tile
                         List<Coordinate> moves = level.getMoves(coordinate, 4);
                         int rand = new Random().nextInt(moves.size());
                         level.move(coordinate, moves.get(rand));
@@ -75,7 +75,7 @@ public class AIRandom extends Player implements AI {
                 }
             }
         }
-        // finir son tour
+        // Ends its turn
         return level.nextTurn();
     }
 }

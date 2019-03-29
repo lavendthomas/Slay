@@ -53,21 +53,15 @@ public class AIMedium extends Player implements AI {
             allTerritories = AIMethods.loadTerritories(level, player, false);
         }
         for (List<Coordinate> territory : allTerritories) {
-            // Pour chaque territoire
             tryToAddUnit(territory);
 
-            // Déplacement ?
             for (Coordinate cFrom : territory) {
-                // Parcours toutes les cases de ce terroire
                 Tile tile = level.get(cFrom);
                 if (tile.getEntity() != null && tile.getEntity() instanceof Soldier) {
-                    // Si il y a un soldat
                     Soldier soldier = (Soldier) tile.getEntity();
                     if (!soldier.getMoved()) {
-                        // Il ne s'est pas encore déplacé
                         Coordinate cTo = findBestPlace(level.getMoves(cFrom, 4), cFrom, null);
                         if (cTo == null) {
-                            // Default case, get closer to the enemy
                             cTo = AIMethods.searchEnnemy(cFrom, level, this, null); // Soldat null car dplct
                         }
                         if (cTo != null) {
@@ -77,7 +71,6 @@ public class AIMedium extends Player implements AI {
                 }
             }
         }
-        // finir son tour
         return level.nextTurn();
     }
 

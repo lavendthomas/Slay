@@ -33,8 +33,8 @@ public class Territory {
     /**
      * Class constructor
      *
-     * @param owner  TODO
-     * @param cells
+     * @param owner  The owner of this territory
+     * @param cells  Tiles in the same territory
      */
     public Territory(Player owner, Tile... cells) {
         this.owner = owner;
@@ -45,45 +45,45 @@ public class Territory {
     }
 
     /**
-     *  //TODO
+     * Get number of coins in this territory
      *
-     * @return
+     * @return Number of coins
      */
     public int getCoins() {
         return this.coins;
     }
 
     /**
-     *  //TODO
+     * Modify number of coins
      *
-     * @param coins
+     * @param coins Number of coins to set
      */
     public void setCoins(int coins) {
         this.coins = coins;
     }
 
     /**
-     *  //TODO
+     *  Get territory incomes
      *
-     * @return
+     * @return Territory incomes
      */
     public int getIncome() {
         return this.income;
     }
 
     /**
-     *  //TODO
+     * Get territory wages
      *
-     * @return
+     * @return Territory wages
      */
     public int getWages() {
         return this.wages;
     }
 
     /**
-     *  //TODO
+     * Add a tile in this territory
      *
-     * @param cell
+     * @param cell Tile to add
      */
     public void add(Tile cell) {
         if (cell.getEntity() != StaticEntity.TREE)
@@ -99,8 +99,7 @@ public class Territory {
     /**
      * Removes a cell
      *
-     * @param cell  //TODO
-
+     * @param cell Tile to remove
      * @return
      */
     public boolean remove(Tile cell) {
@@ -135,10 +134,10 @@ public class Territory {
     }
 
     /**
-     *  //TODO
+     * Test if this territory has same owner that other territory
      *
-     * @param other
-     * @return
+     * @param other Other territory
+     * @return True if same owner, false otherwise
      */
     public boolean hasSameOwner(Territory other) {
         if (other == null) {
@@ -148,9 +147,9 @@ public class Territory {
     }
 
     /**
-     *  //TODO
+     *  Get tiles list of this territory
      *
-     * @return
+     * @return Tiles list
      */
     List<Tile> getCells() {
         // TODO should return a copy for encapsulation
@@ -170,8 +169,8 @@ public class Territory {
      * Updates the income and wages of the territory
      * and makes sure there is one and only one capital on the territory
      *
-     * @param removed	TODO
-     * @param added
+     * @param removed  Entity to remove
+     * @param added    Entity to add
      */
     void update(Entity removed, Entity added) {
         if (removed != StaticEntity.TREE)
@@ -334,9 +333,9 @@ public class Territory {
     }
 
     /**
-     * //TODO
+     * Get list of capitals in the territory
      *
-     * @return
+     * @return List of capitals in the territory
      */
     private List<Tile> getCapitals() {
         List<Tile> capitals = new ArrayList<Tile>();

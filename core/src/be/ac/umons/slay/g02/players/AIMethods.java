@@ -20,7 +20,7 @@ public class AIMethods {
      * Number of milliseconds that artificial intelligence must wait before playing
      */
 
-    private static int speed = 333; // 3 tours / seconde
+    private static int speed = 333; // Three turns by second
 
     /**
      * Search all territories of a player or his enemies
@@ -97,19 +97,15 @@ public class AIMethods {
     static Coordinate chopTree(Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
         for (Coordinate cTo : moves) {
             if (!cFrom.equals(cTo)) {
-                // Parcours de toutes les cases où mon soldat peut être placé
+                // Walk through all the boxes where my soldier can be placed
                 Tile current = level.get(cTo);
-                // Récupère la tuile correspondante
                 if (current.getTerritory() != null) {
-                    // Il y a un territoire
-
                     if (current.getTerritory().getOwner().equals(player)) {
-                        // Même territoire
+                        // Same territory
 
                         if (current.getEntity() != null) {
-                            // Il y a une entité
+                            // There is a entity
                             if (current.getEntity() == StaticEntity.TREE) {
-                                // D'abord sur les arbres
                                 return cTo;
                             }
                         }
@@ -132,9 +128,7 @@ public class AIMethods {
     static Coordinate captureNeutral(Playable level, List<Coordinate> moves, Coordinate cFrom, Player player) {
         for (Coordinate cTo : moves) {
             if (!cFrom.equals(cTo)) {
-                // Parcours de toutes les cases où mon soldat peut être placé
                 Tile current = level.get(cTo);
-                // Récupère la tuile correspondante
                 if (current.getTerritory() == null) {
                     return cTo;
                 }
