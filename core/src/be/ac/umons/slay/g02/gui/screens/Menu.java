@@ -1798,7 +1798,9 @@ public class Menu implements Screen {
             }
         });
         buttonImport.setWidth(windowAvatarSelection.getWidth() * 23 / 100);
-        tableSelection.add(buttonImport).colspan(2).width(Value.percentWidth(1f)).left();
+        if (Gdx.app.getType() != Application.ApplicationType.Android) {
+            tableSelection.add(buttonImport).colspan(2).width(Value.percentWidth(1f)).left();
+        }
         tableSelection.add(buttonSelectionAvatar).width(heightImageSelect).height(heightImageSelect);
 
         cellAvatarSelect = tableSelection.getCell(buttonSelectionAvatar);

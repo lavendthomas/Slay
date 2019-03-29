@@ -1,5 +1,6 @@
 package be.ac.umons.slay.g02.gui.screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -163,6 +164,7 @@ public class LevelSelection implements Screen {
         labelHuman.setAlignment(1);
         Label labelDifficulty = new Label("Difficulty", skinSgx, "title");
         selectBoxIsland = new SelectBox<Integer>(skinSgx);
+        selectBoxIsland.setScale(2f);
         islandNumbers = new Array<Integer>();
         fillIslandNumbers();
         selectBoxIsland.setItems(islandNumbers);
@@ -310,35 +312,64 @@ public class LevelSelection implements Screen {
                 game.setScreen(new GameScreen(game, String.format("g02_%02d", currentIslandNumber), numberHumans));
             }
         });
+
+
         final Table table = new Table();
         table.setFillParent(true);
-        table.left().padBottom(SCREEN_HEIGHT * 22 / 100);
-        table.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT);
+        if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android) {
+            table.left().padBottom(SCREEN_HEIGHT * 22 / 100);
+            table.setSize(SCREEN_WIDTH / 2, SCREEN_HEIGHT);
 
-        labelIsland.setAlignment(1);
-        table.add(labelIsland);
-        table.add(selectBoxIsland);
+            labelIsland.setAlignment(1);
+            table.add(labelIsland);
+            table.add(selectBoxIsland);
 
-        table.add(levelPreview).padLeft(SCREEN_WIDTH * 7 / 100).height(SCREEN_HEIGHT * 25 / 100).width(SCREEN_HEIGHT * 25 / 100);
-        table.row().pad(buttonGapY, 0, 0, 0);
-        table.add(labelHuman).width(SCREEN_WIDTH * 25 / 100);
-        table.add(selectBoxNumber);
-        table.add(selectBoxPlayer).padLeft(SCREEN_WIDTH * 7.2f / 100);
-        table.row().pad(SCREEN_HEIGHT * 17 / 100, 0, 0, 0);
-        table.add(labelDifficulty);
-        table.add(selectBoxDifficulty1).left().colspan(1);
-        table.add(selectBoxDifficulty2).padLeft(SCREEN_WIDTH * 7.2f / 100);
+            table.add(levelPreview).padLeft(SCREEN_WIDTH * 7 / 100).height(SCREEN_HEIGHT * 25 / 100).width(SCREEN_HEIGHT * 25 / 100);
+            table.row().pad(buttonGapY, 0, 0, 0);
+            table.add(labelHuman).width(SCREEN_WIDTH * 25 / 100);
+            table.add(selectBoxNumber);
+            table.add(selectBoxPlayer).padLeft(SCREEN_WIDTH * 7.2f / 100);
+            table.row().pad(SCREEN_HEIGHT * 17 / 100, 0, 0, 0);
+            table.add(labelDifficulty);
+            table.add(selectBoxDifficulty1).left().colspan(1);
+            table.add(selectBoxDifficulty2).padLeft(SCREEN_WIDTH * 7.2f / 100);
 
-        cellPreview = table.getCell(levelPreview);
+            cellPreview = table.getCell(levelPreview);
 
-        buttonBack.setWidth(SCREEN_WIDTH * 12 / 100);
-        buttonPlay.setWidth(SCREEN_WIDTH * 12 / 100);
+            buttonBack.setWidth(SCREEN_WIDTH * 12 / 100);
+            buttonPlay.setWidth(SCREEN_WIDTH * 12 / 100);
+        } else {
+            table.left().padBottom(SCREEN_HEIGHT * 22 / 100);
+            table.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        if (!prefs.getBoolean("isAccountEnabled")) {
+            labelIsland.setAlignment(1);
+
+            table.add(labelIsland).padLeft(SCREEN_WIDTH/4);
+            table.row().pad(buttonGapY/4, 0, 0, 0);
+            table.add(selectBoxIsland);
+            table.add(levelPreview).padLeft(SCREEN_WIDTH * 7 / 100).height(SCREEN_HEIGHT * 25 / 100).width(SCREEN_HEIGHT * 25 / 100);
+            table.row().pad(buttonGapY, 0, 0, 0);
+            table.add(labelHuman).padLeft(SCREEN_WIDTH/4).width(SCREEN_WIDTH * 25 / 100);
+            table.row().pad(buttonGapY/4, 0, 0, 0);
+            table.add(selectBoxNumber);
+            table.add(selectBoxPlayer);
+            table.row().pad(SCREEN_HEIGHT * 17 / 100, 0, 0, 0);
+            table.add(labelDifficulty).padLeft(SCREEN_WIDTH/4);
+            table.row().pad(buttonGapY/4, 0, 0, 0);
+            table.add(selectBoxDifficulty1).left().colspan(1).padLeft(SCREEN_WIDTH/8);
+            table.add(selectBoxDifficulty2);
+
+            cellPreview = table.getCell(levelPreview);
+
+            buttonBack.setWidth(SCREEN_WIDTH * 12 / 100);
+            buttonPlay.setWidth(SCREEN_WIDTH * 12 / 100);
+        }
+
+        if (!prefs.getBoolean("isAccountEnabled") && Gdx.app.getType() != Application.ApplicationType.Android) {
             table.center().padRight(SCREEN_WIDTH * 6 / 100);
             buttonBack.setPosition(SCREEN_WIDTH / 2 - buttonBack.getWidth() * 3 / 2, SCREEN_HEIGHT * 10 / 100);
             buttonPlay.setPosition(SCREEN_WIDTH / 2 + buttonBack.getWidth() / 2, SCREEN_HEIGHT * 10 / 100);
-        } else if (SCREEN_WIDTH > SCREEN_HEIGHT) {
+        } else if (SCREEN_WIDTH > SCREEN_HEIGHT && Gdx.app.getType() != Application.ApplicationType.Android) {
             buttonStats = new TextButton("Statistics", skinSgx, "big");
             buttonStats.addListener(new ClickListener() {
                 @Override
