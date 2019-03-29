@@ -8,24 +8,18 @@ import be.ac.umons.slay.g02.entities.SoldierLevel;
 import static org.junit.Assert.assertEquals;
 
 /**
- *  TODO
+ * Class testing Soldier
  */
 public class SoldierTests {
-    /**
-     *  TODO
-     */
     @Test
-    public void cantAttackTest () {
+    public void cantAttackTest() {
         Soldier s1 = new Soldier(SoldierLevel.L0);
         Soldier s2 = new Soldier(SoldierLevel.L1);
         assertEquals(s1.canAttack(s2), false);
     }
 
-    /**
-     *   TODO
-     */
     @Test
-    public void canAttackTest () {
+    public void canAttackTest() {
         Soldier s1 = new Soldier(SoldierLevel.L0);
         Soldier s2 = new Soldier(SoldierLevel.L1);
         assertEquals(s2.canAttack(s1), true);

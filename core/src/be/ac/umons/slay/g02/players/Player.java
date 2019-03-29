@@ -63,12 +63,11 @@ public abstract class Player {
     }
 
     /**
-     * Return if the object to be compared is equal to the player
+     * Returns if the object to be compared is equal to the player
      *
-     * @param o  Object to compare
+     * @param o Object to compare
      * @return True if they are equal, false otherwise
      */
-
     @Override
     public boolean equals(Object o) {
         if (this == o)
