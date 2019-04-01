@@ -214,40 +214,69 @@ public class LevelLoader {
      */
     private static Player loadHumanPlayer(int countHuman, Colors color) {
         Player player;
-        if (countHuman == 0) {
-            if (numberHumans == 1 && (prefs.getBoolean("isPlayer1Logged")) && (prefs.getBoolean("isPlayer2Logged"))) {
-                if (player1.getName().equals(humanPlayer)) {
 
+        // No human created yet, 2 left
+        if (countHuman == 0) {
+
+            // Only 1 human is selected
+            if (numberHumans == 1) {
+
+                // player1 is logged and is the one selected
+                if (prefs.getBoolean("isPlayer1Logged") && player1.getName().equals(humanPlayer)) {
                     player = Menu.player1;
                     player.setColor(color);
                     player.setAvatar(Menu.player1.getAvatar());
-                } else {
+                }
+
+                // player2 is logged and is the one selected
+                else if (prefs.getBoolean("isPlayer2Logged") && player2.getName().equals(humanPlayer)) {
                     player = Menu.player2;
                     player.setColor(color);
                     player.setAvatar(Menu.player2.getAvatar());
                 }
-            } else {
+
+                // The one selected is not logged, the first player is anonymous
+                else {
+                    player = new HumanPlayer("P1", color);
+                    player.setAvatar("profile" + File.separator + "anonymous.png");
+                }
+            }
+
+            // 2 humans are selected
+            else {
+
+                // player1 is logged so it is the one created
                 if (prefs.getBoolean("isPlayer1Logged")) {
                     player = Menu.player1;
                     player.setColor(color);
                     player.setAvatar(Menu.player1.getAvatar());
-                } else {
-                    player = Menu.player2;
-                    player.setColor(color);
-                    player.setAvatar(Menu.player2.getAvatar());
+                }
+
+                // The player is anonymous, it is the first to be created so it is P1
+                else {
+                    player = new HumanPlayer("P1", color);
+                    player.setAvatar("profile" + File.separator + "anonymous.png");
                 }
             }
-        } else {
-            if (numberHumans == 1) {
-                player = new HumanPlayer("P2", color);
-                player.setAvatar("profile" + File.separator + "anonymous.png");
-            } else {
+        }
 
+        // 1 human already created, 1 left
+        else {
+
+            // player2 is logged and is the next human player
+            if (prefs.getBoolean("isPlayer2Logged")) {
                 player = Menu.player2;
                 player.setColor(color);
                 player.setAvatar(Menu.player2.getAvatar());
             }
+
+            // the next human player is anonymous
+            else {
+                player = new HumanPlayer("P2", color);
+                player.setAvatar("profile" + File.separator + "anonymous.png");
+            }
         }
+
         return player;
     }
 
